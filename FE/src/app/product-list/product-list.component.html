@@ -1,10 +1,67 @@
-<h2>Our Products</h2>
-<div class="product-grid">
-  <div class="product-card" *ngFor="let product of products">
-    <img [src]="product.imageUrl" [alt]="product.name">
-    <h3>{{ product.name }}</h3>
-    <p>{{ product.price | currency }}</p>
-    <a routerLink="/product/{{ product.id }}" class="btn">View Details</a>
-    <button (click)="addToCart(product)" class="btn">Add to Cart</button>
+<section class="product-list">
+  <div class="container">
+    <h2>Shop Living Chairs</h2>
+    <div class="product-grid">
+      <!-- Product 1 -->
+      <div class="product-card" @fadeIn>
+        <div class="product-image">
+          <img class="main-image" src="/img/sanpham/giuong/Giuong-nem-GNXL016.jpg" alt="Giuong Nem GNXL016">
+        </div>
+        <div class="product-info">
+          <h3>Giuong Nem GNXL016</h3>
+          <p class="material">Fabric + Oak</p>
+          <div class="color-options">● ● ● + more options</div>
+          <p class="price">Rec. retail price <span class="original-price">$27,990,000 đ</span> $599.99</p>
+        </div>
+      </div>
+      <!-- Product 2 -->
+      <div class="product-card" @fadeIn>
+        <div class="product-image">
+          <img class="main-image" src="/img/sanpham/giuong/Giuong-nem-GNXL017.jpg" alt="Giuong Nem GNXL017">
+        </div>
+        <div class="product-info">
+          <h3>Tilburg Living Chair</h3>
+          <p class="material">Fabric + Metal</p>
+          <div class="color-options">● ● ● + more options</div>
+          <p class="price">Rec. retail price <span class="original-price">$58,890,000 đ</span> From $49,390,000 đ</p>
+        </div>
+      </div>
+      <!-- Product 3 -->
+      <div class="product-card" @fadeIn>
+        <div class="product-image">
+          <img class="main-image" src="/img/sanpham/giuong/Giuong-nem-GNXL018.jpg" alt="Giuong Nem GNXL018">
+        </div>
+        <div class="product-info">
+          <h3>Giuong Nem GNXL018</h3>
+          <p class="material">Fabric + Oak</p>
+          <div class="color-options">● ● ● + more options</div>
+          <p class="price">Rec. retail price <span class="original-price">$42,190,000 đ</span> $249.99</p>
+        </div>
+      </div>
+      <!-- Product 4 -->
+      <div class="product-card" @fadeIn>
+        <div class="product-image">
+          <img class="main-image" src="/img/sanpham/giuong/Giuong-nem-GNXL019.jpg" alt="Giuong Nem GNXL019">
+        </div>
+        <div class="product-info">
+          <h3>Giuong Nem GNXL019</h3>
+          <p class="material">Fabric + Oak</p>
+          <div class="color-options">● ● ● + more options</div>
+          <p class="price">Rec. retail price <span class="original-price">$144,900,000 đ</span> $89.99</p>
+        </div>
+      </div>
+      <!-- Product 5 -->
+      <div class="product-card" @fadeIn>
+        <div class="product-image">
+          <img class="main-image" src="/img/sanpham/giuong/Giuong-nem-GNXL020.jpg" alt="Giuong Nem GNXL020">
+        </div>
+        <div class="product-info">
+          <h3>Giuong Nem GNXL020</h3>
+          <p class="material">Fabric + Oak</p>
+          <div class="color-options">● ● ● + more options</div>
+          <p class="price">Rec. retail price <span class="original-price">$33,790,000 đ</span> $199.99</p>
+        </div>
+      </div>
+    </div>
   </div>
-</div>
+</section>

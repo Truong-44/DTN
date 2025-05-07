@@ -1,27 +1,83 @@
 <header class="header-container">
   <nav class="navbar" [class.scrolled]="isScrolled">
-    <div class="logo">
-      <a routerLink="/">Furniture Store</a>
+    <div class="top-bar">
+      <div class="top-bar-content">
+        <span>Welcome to Furniture Store !</span>
+        <span class="clock">{{ currentTime }}</span>
+        <div class="top-bar-links">
+          <a href="#">Giới thiệu</a>
+          <a href="#">Dự án</a>
+          <a href="#">Tin tức</a>
+          <a href="#">Chia sẻ</a>
+          <a href="#">Liên hệ</a>
+        </div>
+      </div>
     </div>
-    <div class="nav-links">
-      <ul>
-        <li><a routerLink="/">HOME</a></li>
-        <li><a routerLink="/shop">SHOP</a></li>
-        <li><a routerLink="/products">PRODUCT</a></li>
-        <li><a routerLink="/pages">PAGES</a></li>
-        <li><a routerLink="/blog">BLOG</a></li>
-      </ul>
-    </div>
-    <div class="actions">
-      <a href="#" class="icon"><i class="fas fa-search"></i></a>
-      <a href="#" class="icon"><i class="fas fa-user"></i></a>
-      <a routerLink="/cart" class="icon"><i class="fas fa-shopping-cart"></i></a>
+
+    <div class="main-nav">
+      <div class="nav-left">
+        <div class="logo">
+          <a routerLink="/">Furniture Store</a>
+        </div>
+      </div>
+
+      <div class="nav-center">
+        <ul class="nav-links">
+          <li class="dropdown">
+            <a routerLink="/" class="dropdown-toggle">HOME</a>
+            <ul class="dropdown-menu">
+              <li><a routerLink="/home/section1">Section 1</a></li>
+              <li><a routerLink="/home/section2">Section 2</a></li>
+            </ul>
+          </li>
+          <li class="dropdown">
+            <a routerLink="/shop" class="dropdown-toggle">SHOP</a>
+            <ul class="dropdown-menu">
+              <li><a routerLink="/shop/furniture">Furniture</a></li>
+              <li><a routerLink="/shop/lighting">Lighting</a></li>
+              <li><a routerLink="/shop/decor">Decor</a></li>
+            </ul>
+          </li>
+          <li class="dropdown">
+            <a routerLink="/products" class="dropdown-toggle">PRODUCT</a>
+            <ul class="dropdown-menu">
+              <li><a routerLink="/products/new">New Arrivals</a></li>
+              <li><a routerLink="/products/sale">Sale Items</a></li>
+            </ul>
+          </li>
+          <li class="dropdown">
+            <a routerLink="/pages" class="dropdown-toggle">PAGES</a>
+            <ul class="dropdown-menu">
+              <li><a routerLink="/pages/about">About Us</a></li>
+              <li><a routerLink="/pages/contact">Contact</a></li>
+              <li><a routerLink="/pages/faq">FAQ</a></li>
+            </ul>
+          </li>
+          <li class="dropdown">
+            <a routerLink="/blog" class="dropdown-toggle">BLOG</a>
+            <ul class="dropdown-menu">
+              <li><a routerLink="/blog/news">News</a></li>
+              <li><a routerLink="/blog/tips">Tips & Tricks</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+
+      <div class="nav-right">
+        <div class="actions">
+          <a href="#" class="icon"><i class="fas fa-search"></i></a>
+          <a href="#" class="icon"><i class="fas fa-user"></i></a>
+          <a routerLink="/cart" class="icon"><i class="fas fa-shopping-cart"></i></a>
+        </div>
+      </div>
     </div>
   </nav>
+
   <div class="background-section">
     <div class="content">
       <h1>Chào mừng đến với Furniture Store</h1>
       <p>Khám phá các sản phẩm nội thất hiện đại và sang trọng</p>
     </div>
   </div>
+
 </header>
