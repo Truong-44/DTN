@@ -9,5 +9,6 @@ export const routes: Routes = [
   { path: 'products', component: ProductListComponent },
   { path: 'product/:id', component: ProductDetailComponent },
   { path: 'cart', component: CartComponent },
+  { path: 'home', component: HomeComponent },
   { path: '**', redirectTo: '' }
 ];
