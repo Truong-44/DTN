@@ -1,0 +1,63 @@
+package com.example.be.tempotide.controller;
+
+import com.example.be.tempotide.dto.thuonghieudto;
+import com.example.be.tempotide.service.ThuongHieuService;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/thuonghieu")
+public class thuonghieucontroller {
+
+    private static final Logger logger = LoggerFactory.getLogger(thuonghieucontroller.class);
+
+    private final ThuongHieuService thuongHieuService;
+
+    @Autowired
+    public thuonghieucontroller(ThuongHieuService thuongHieuService) {
+        this.thuongHieuService = thuongHieuService;
+    }
+
+    @PostMapping
+    public ResponseEntity<thuonghieudto> createThuongHieu(@Valid @RequestBody thuonghieudto thuongHieuDto) {
+        logger.info("API call: POST /api/thuonghieu");
+        thuonghieudto createdThuongHieu = thuongHieuService.createThuongHieu(thuongHieuDto);
+        return new ResponseEntity<>(createdThuongHieu, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<thuonghieudto> getThuongHieuById(@PathVariable Integer id) {
+        logger.info("API call: GET /api/thuonghieu/{}", id);
+        thuonghieudto thuongHieuDto = thuongHieuService.getThuongHieuById(id);
+        return ResponseEntity.ok(thuongHieuDto);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<thuonghieudto>> getAllThuongHieu() {
+        logger.info("API call: GET /api/thuonghieu");
+        List<thuonghieudto> thuongHieuList = thuongHieuService.getAllThuongHieu();
+        return ResponseEntity.ok(thuongHieuList);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<thuonghieudto> updateThuongHieu(@PathVariable Integer id, @Valid @RequestBody thuonghieudto thuongHieuDto) {
+        logger.info("API call: PUT /api/thuonghieu/{}", id);
+        thuonghieudto updatedThuongHieu = thuongHieuService.updateThuongHieu(id, thuongHieuDto);
+        return ResponseEntity.ok(updatedThuongHieu);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteThuongHieu(@PathVariable Integer id) {
+        logger.info("API call: DELETE /api/thuonghieu/{}", id);
+        thuongHieuService.deleteThuongHieu(id);
+        return ResponseEntity.noContent().build();
+    }
+}

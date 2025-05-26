@@ -1,4 +1,4 @@
-package com.example.be.TempoTide.dto;
+package com.example.be.tempotide.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.DecimalMin;
@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Schema(description = "Data Transfer Object for PhieuNhapHang entity")
-public class PhieuNhapHangDto {
+public class phieunhaphangdto {
 
     @Schema(description = "Unique identifier of the import voucher", example = "1")
     private Integer maPhieuNhap;
