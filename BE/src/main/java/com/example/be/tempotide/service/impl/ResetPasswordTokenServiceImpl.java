@@ -5,7 +5,6 @@ import com.example.be.tempotide.entity.nhanvien;
 import com.example.be.tempotide.entity.resetpasswordtoken;
 import com.example.be.tempotide.repository.nhanvienrepository;
 import com.example.be.tempotide.repository.resetpasswordtokenrepository;
-import com.example.be.tempotide.service.ResetPasswordTokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,15 +17,15 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class ResetPasswordTokenServiceImpl implements ResetPasswordTokenService {
+public class resetpasswordtokenserviceImpl implements com.example.be.tempotide.service.resetpasswordtokenservice {
 
-    private static final Logger logger = LoggerFactory.getLogger(ResetPasswordTokenServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(com.example.be.tempotide.service.impl.resetpasswordtokenserviceImpl.class);
 
     private final resetpasswordtokenrepository resetPasswordTokenRepository;
     private final nhanvienrepository nhanVienRepository;
 
     @Autowired
-    public ResetPasswordTokenServiceImpl(resetpasswordtokenrepository resetPasswordTokenRepository,
+    public resetpasswordtokenserviceImpl(resetpasswordtokenrepository resetPasswordTokenRepository,
                                          nhanvienrepository nhanVienRepository) {
         this.resetPasswordTokenRepository = resetPasswordTokenRepository;
         this.nhanVienRepository = nhanVienRepository;

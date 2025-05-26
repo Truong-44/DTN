@@ -3,7 +3,7 @@ package com.example.be.tempotide.service;
 import com.example.be.tempotide.dto.cauhinhhethongdto;
 import java.util.List;
 
-public interface CauHinhHeThongService {
+public interface cauhinhhethongservice {
     cauhinhhethongdto createCauHinhHeThong(cauhinhhethongdto cauHinhHeThongDto);
     cauhinhhethongdto getCauHinhHeThongById(Integer id);
     List<cauhinhhethongdto> getAllCauHinhHeThong();

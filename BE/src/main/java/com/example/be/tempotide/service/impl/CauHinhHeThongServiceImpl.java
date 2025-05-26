@@ -3,7 +3,6 @@ package com.example.be.tempotide.service.impl;
 import com.example.be.tempotide.dto.cauhinhhethongdto;
 import com.example.be.tempotide.entity.cauhinhhethong;
 import com.example.be.tempotide.repository.cauhinhhethongrepository;
-import com.example.be.tempotide.service.CauHinhHeThongService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,14 +14,14 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class CauHinhHeThongServiceImpl implements CauHinhHeThongService {
+public class cauhinhhethongserviceImpl implements com.example.be.tempotide.service.cauhinhhethongservice {
 
-    private static final Logger logger = LoggerFactory.getLogger(CauHinhHeThongServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(com.example.be.tempotide.service.impl.cauhinhhethongserviceImpl.class);
 
     private final cauhinhhethongrepository cauHinhHeThongRepository;
 
     @Autowired
-    public CauHinhHeThongServiceImpl(cauhinhhethongrepository cauHinhHeThongRepository) {
+    public cauhinhhethongserviceImpl(cauhinhhethongrepository cauHinhHeThongRepository) {
         this.cauHinhHeThongRepository = cauHinhHeThongRepository;
     }
 

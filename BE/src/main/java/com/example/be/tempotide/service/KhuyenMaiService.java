@@ -5,7 +5,7 @@ import com.example.be.tempotide.dto.khuyenmaidto;
 
 import java.util.List;
 
-public interface KhuyenMaiService {
+public interface khuyenmaiservice {
     khuyenmaidto createKhuyenMai(khuyenmaidto khuyenMaiDto);
     khuyenmaidto getKhuyenMaiById(Integer id);
     List<khuyenmaidto> getAllKhuyenMai();

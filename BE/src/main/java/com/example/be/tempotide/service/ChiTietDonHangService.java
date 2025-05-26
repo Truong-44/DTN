@@ -5,7 +5,7 @@ import com.example.be.tempotide.dto.chitietdonhangdto;
 
 import java.util.List;
 
-public interface ChiTietDonHangService {
+public interface chitietdonhangservice {
     chitietdonhangdto createChiTietDonHang(chitietdonhangdto chiTietDonHangDto);
     chitietdonhangdto getChiTietDonHangById(Integer id);
     List<chitietdonhangdto> getAllChiTietDonHang();

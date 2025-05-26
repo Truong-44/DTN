@@ -2,7 +2,6 @@ package com.example.be.tempotide.controller;
 
 
 import com.example.be.tempotide.dto.lichsudonhangdto;
-import com.example.be.tempotide.service.LichSuDonHangService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,10 +18,10 @@ public class lichsudonhangcontroller {
 
     private static final Logger logger = LoggerFactory.getLogger(lichsudonhangcontroller.class);
 
-    private final LichSuDonHangService lichSuDonHangService;
+    private final com.example.be.tempotide.service.lichsudonhangservice lichSuDonHangService;
 
     @Autowired
-    public lichsudonhangcontroller(LichSuDonHangService lichSuDonHangService) {
+    public lichsudonhangcontroller(com.example.be.tempotide.service.lichsudonhangservice lichSuDonHangService) {
         this.lichSuDonHangService = lichSuDonHangService;
     }
 

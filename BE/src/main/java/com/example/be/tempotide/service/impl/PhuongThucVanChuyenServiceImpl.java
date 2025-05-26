@@ -5,7 +5,6 @@ import com.example.be.tempotide.entity.nhanvien;
 import com.example.be.tempotide.entity.phuongthucvanchuyen;
 import com.example.be.tempotide.repository.nhanvienrepository;
 import com.example.be.tempotide.repository.phuongthucvanchuyenrepository;
-import com.example.be.tempotide.service.PhuongThucVanChuyenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,15 +17,15 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class PhuongThucVanChuyenServiceImpl implements PhuongThucVanChuyenService {
+public class phuongthucvanchuyenserviceImpl implements com.example.be.tempotide.service.phuongthucvanchuyenservice {
 
-    private static final Logger logger = LoggerFactory.getLogger(PhuongThucVanChuyenServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(com.example.be.tempotide.service.impl.phuongthucvanchuyenserviceImpl.class);
 
     private final phuongthucvanchuyenrepository phuongThucVanChuyenRepository;
     private final nhanvienrepository nhanVienRepository;
 
     @Autowired
-    public PhuongThucVanChuyenServiceImpl(phuongthucvanchuyenrepository phuongThucVanChuyenRepository,
+    public phuongthucvanchuyenserviceImpl(phuongthucvanchuyenrepository phuongThucVanChuyenRepository,
                                           nhanvienrepository nhanVienRepository) {
         this.phuongThucVanChuyenRepository = phuongThucVanChuyenRepository;
         this.nhanVienRepository = nhanVienRepository;

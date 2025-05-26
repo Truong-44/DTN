@@ -7,7 +7,6 @@ import com.example.be.tempotide.entity.vaitro;
 import com.example.be.tempotide.repository.nguoidung_vaitrorepository;
 import com.example.be.tempotide.repository.nhanvienrepository;
 import com.example.be.tempotide.repository.vaitrorepository;
-import com.example.be.tempotide.service.NguoiDung_VaiTroService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,18 +18,18 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class NguoiDung_VaiTroServiceImpl implements NguoiDung_VaiTroService {
+public class nguoidungvaitroserviceImpl implements com.example.be.tempotide.service.nguoidung_vaitroservice {
 
-    private static final Logger logger = LoggerFactory.getLogger(NguoiDung_VaiTroServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(com.example.be.tempotide.service.impl.nguoidungvaitroserviceImpl.class);
 
     private final nguoidung_vaitrorepository nguoiDung_VaiTroRepository;
     private final nhanvienrepository nhanVienRepository;
     private final vaitrorepository vaiTroRepository;
 
     @Autowired
-    public NguoiDung_VaiTroServiceImpl(nguoidung_vaitrorepository nguoiDung_VaiTroRepository,
-                                       nhanvienrepository nhanVienRepository,
-                                       vaitrorepository vaiTroRepository) {
+    public nguoidungvaitroserviceImpl(nguoidung_vaitrorepository nguoiDung_VaiTroRepository,
+                                      nhanvienrepository nhanVienRepository,
+                                      vaitrorepository vaiTroRepository) {
         this.nguoiDung_VaiTroRepository = nguoiDung_VaiTroRepository;
         this.nhanVienRepository = nhanVienRepository;
         this.vaiTroRepository = vaiTroRepository;

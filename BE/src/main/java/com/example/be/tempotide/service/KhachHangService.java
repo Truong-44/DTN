@@ -4,7 +4,7 @@ import com.example.be.tempotide.dto.khachhangdto;
 
 import java.util.List;
 
-public interface KhachHangService {
+public interface khachhangservice {
     khachhangdto createKhachHang(khachhangdto khachHangDto);
     khachhangdto getKhachHangById(Integer id);
     List<khachhangdto> getAllKhachHang();

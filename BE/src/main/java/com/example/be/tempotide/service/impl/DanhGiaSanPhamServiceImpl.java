@@ -6,7 +6,6 @@ import com.example.be.tempotide.entity.danhgiasanpham;
 import com.example.be.tempotide.repository.danhgiasanphamrepository;
 import com.example.be.tempotide.repository.khachhangrepository;
 import com.example.be.tempotide.repository.sanphamrepository;
-import com.example.be.tempotide.service.DanhGiaSanPhamService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,16 +17,16 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class DanhGiaSanPhamServiceImpl implements DanhGiaSanPhamService {
+public class danhgiasanphamserviceImpl implements com.example.be.tempotide.service.danhgiasanphamservice {
 
-    private static final Logger logger = LoggerFactory.getLogger(DanhGiaSanPhamServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(com.example.be.tempotide.service.impl.danhgiasanphamserviceImpl.class);
 
     private final danhgiasanphamrepository danhGiaSanPhamRepository;
     private final sanphamrepository sanPhamRepository;
     private final khachhangrepository khachHangRepository;
 
     @Autowired
-    public DanhGiaSanPhamServiceImpl(danhgiasanphamrepository danhGiaSanPhamRepository,
+    public danhgiasanphamserviceImpl(danhgiasanphamrepository danhGiaSanPhamRepository,
                                      sanphamrepository sanPhamRepository,
                                      khachhangrepository khachHangRepository) {
         this.danhGiaSanPhamRepository = danhGiaSanPhamRepository;

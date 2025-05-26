@@ -4,7 +4,7 @@ import com.example.be.tempotide.dto.phieunhapkhodto;
 
 import java.util.List;
 
-public interface PhieuNhapKhoService {
+public interface phieunhapkhoservice {
     phieunhapkhodto createPhieuNhapKho(phieunhapkhodto phieuNhapKhoDto);
     phieunhapkhodto getPhieuNhapKhoById(Integer id);
     List<phieunhapkhodto> getAllPhieuNhapKho();

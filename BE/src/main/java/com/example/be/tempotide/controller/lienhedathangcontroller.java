@@ -2,7 +2,6 @@ package com.example.be.tempotide.controller;
 
 
 import com.example.be.tempotide.dto.lienhedathangdto;
-import com.example.be.tempotide.service.LienHeDatHangService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,10 +18,10 @@ public class lienhedathangcontroller {
 
     private static final Logger logger = LoggerFactory.getLogger(lienhedathangcontroller.class);
 
-    private final LienHeDatHangService lienHeDatHangService;
+    private final com.example.be.tempotide.service.lienhedathangservice lienHeDatHangService;
 
     @Autowired
-    public lienhedathangcontroller(LienHeDatHangService lienHeDatHangService) {
+    public lienhedathangcontroller(com.example.be.tempotide.service.lienhedathangservice lienHeDatHangService) {
         this.lienHeDatHangService = lienHeDatHangService;
     }
 

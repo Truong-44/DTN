@@ -5,7 +5,6 @@ import com.example.be.tempotide.entity.khohang;
 import com.example.be.tempotide.entity.nhanvien;
 import com.example.be.tempotide.repository.khohangrepository;
 import com.example.be.tempotide.repository.nhanvienrepository;
-import com.example.be.tempotide.service.KhoHangService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,15 +17,15 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class KhoHangServiceImpl implements KhoHangService {
+public class khohangserviceImpl implements com.example.be.tempotide.service.khohangservice {
 
-    private static final Logger logger = LoggerFactory.getLogger(KhoHangServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(com.example.be.tempotide.service.impl.khohangserviceImpl.class);
 
     private final khohangrepository khoHangRepository;
     private final nhanvienrepository nhanVienRepository;
 
     @Autowired
-    public KhoHangServiceImpl(khohangrepository khoHangRepository,
+    public khohangserviceImpl(khohangrepository khoHangRepository,
                               nhanvienrepository nhanVienRepository) {
         this.khoHangRepository = khoHangRepository;
         this.nhanVienRepository = nhanVienRepository;

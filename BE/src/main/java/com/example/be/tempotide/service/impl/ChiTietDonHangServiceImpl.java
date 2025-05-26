@@ -6,7 +6,6 @@ import com.example.be.tempotide.entity.chitietdonhang;
 import com.example.be.tempotide.repository.chitietdonhangrepository;
 import com.example.be.tempotide.repository.donhangrepository;
 import com.example.be.tempotide.repository.sanphamrepository;
-import com.example.be.tempotide.service.ChiTietDonHangService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,16 +17,16 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class ChiTietDonHangServiceImpl implements ChiTietDonHangService {
+public class chitietdonhangserviceImpl implements com.example.be.tempotide.service.chitietdonhangservice {
 
-    private static final Logger logger = LoggerFactory.getLogger(ChiTietDonHangServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(com.example.be.tempotide.service.impl.chitietdonhangserviceImpl.class);
 
     private final chitietdonhangrepository chiTietDonHangRepository;
     private final donhangrepository donHangRepository;
     private final sanphamrepository sanPhamRepository;
 
     @Autowired
-    public ChiTietDonHangServiceImpl(chitietdonhangrepository chiTietDonHangRepository,
+    public chitietdonhangserviceImpl(chitietdonhangrepository chiTietDonHangRepository,
                                      donhangrepository donHangRepository,
                                      sanphamrepository sanPhamRepository) {
         this.chiTietDonHangRepository = chiTietDonHangRepository;

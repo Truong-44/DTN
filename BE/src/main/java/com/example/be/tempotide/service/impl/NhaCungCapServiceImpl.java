@@ -4,7 +4,6 @@ import com.example.be.tempotide.dto.nhacungcapdto;
 import com.example.be.tempotide.entity.nhacungcap;
 import com.example.be.tempotide.repository.nhacungcaprepository;
 import com.example.be.tempotide.repository.nhanvienrepository;
-import com.example.be.tempotide.service.NhaCungCapService;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,16 +17,16 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class NhaCungCapServiceImpl implements NhaCungCapService {
+public class nhacungcapserviceImpl implements com.example.be.tempotide.service.nhacungcapservice {
 
-    private static final Logger logger = LoggerFactory.getLogger(NhaCungCapServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(com.example.be.tempotide.service.impl.nhacungcapserviceImpl.class);
 
     private final nhacungcaprepository nhaCungCapRepository;
     private final nhanvienrepository nhanVienRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public NhaCungCapServiceImpl(nhacungcaprepository nhaCungCapRepository, nhanvienrepository nhanVienRepository,
+    public nhacungcapserviceImpl(nhacungcaprepository nhaCungCapRepository, nhanvienrepository nhanVienRepository,
                                  PasswordEncoder passwordEncoder) {
         this.nhaCungCapRepository = nhaCungCapRepository;
         this.nhanVienRepository = nhanVienRepository;

@@ -4,7 +4,7 @@ import com.example.be.tempotide.dto.nhanviendto;
 
 import java.util.List;
 
-public interface NhanVienService {
+public interface nhanvienservice {
     nhanviendto createNhanVien(nhanviendto nhanVienDto);
     nhanviendto getNhanVienById(Integer id);
     List<nhanviendto> getAllNhanVien();

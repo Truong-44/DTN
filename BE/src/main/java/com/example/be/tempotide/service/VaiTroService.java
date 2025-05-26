@@ -4,7 +4,7 @@ import com.example.be.tempotide.dto.vaitrodto;
 
 import java.util.List;
 
-public interface VaiTroService {
+public interface vaitroservice {
     vaitrodto createVaiTro(vaitrodto vaiTroDto);
     vaitrodto getVaiTroById(Integer id);
     List<vaitrodto> getAllVaiTro();

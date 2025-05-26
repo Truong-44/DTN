@@ -5,7 +5,6 @@ import com.example.be.tempotide.entity.diachi;
 import com.example.be.tempotide.entity.khachhang;
 import com.example.be.tempotide.repository.diachirepository;
 import com.example.be.tempotide.repository.khachhangrepository;
-import com.example.be.tempotide.service.DiaChiService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,15 +16,15 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class DiaChiServiceImpl implements DiaChiService {
+public class diachiserviceImpl implements com.example.be.tempotide.service.diachiservice {
 
-    private static final Logger logger = LoggerFactory.getLogger(DiaChiServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(com.example.be.tempotide.service.impl.diachiserviceImpl.class);
 
     private final diachirepository diaChiRepository;
     private final khachhangrepository khachHangRepository;
 
     @Autowired
-    public DiaChiServiceImpl(diachirepository diaChiRepository,
+    public diachiserviceImpl(diachirepository diaChiRepository,
                              khachhangrepository khachHangRepository) {
         this.diaChiRepository = diaChiRepository;
         this.khachHangRepository = khachHangRepository;

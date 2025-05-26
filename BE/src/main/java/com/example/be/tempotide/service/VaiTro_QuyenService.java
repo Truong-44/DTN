@@ -4,7 +4,7 @@ import com.example.be.tempotide.dto.vaitro_quyendto;
 
 import java.util.List;
 
-public interface VaiTro_QuyenService {
+public interface vaitro_quyenservice {
     vaitro_quyendto createVaiTro_Quyen(vaitro_quyendto vaiTro_QuyenDto);
     vaitro_quyendto getVaiTro_QuyenById(Integer maVaiTro, Integer maQuyen);
     List<vaitro_quyendto> getAllVaiTro_Quyen();

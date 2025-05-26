@@ -5,7 +5,6 @@ import com.example.be.tempotide.entity.khachhang;
 import com.example.be.tempotide.repository.capbackhachhangrepository;
 import com.example.be.tempotide.repository.khachhangrepository;
 import com.example.be.tempotide.repository.nhanvienrepository;
-import com.example.be.tempotide.service.KhachHangService;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,9 +18,9 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class KhachHangServiceImpl implements KhachHangService {
+public class khachhangserviceImpl implements com.example.be.tempotide.service.khachhangservice {
 
-    private static final Logger logger = LoggerFactory.getLogger(KhachHangServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(com.example.be.tempotide.service.impl.khachhangserviceImpl.class);
 
     private final khachhangrepository khachHangRepository;
     private final nhanvienrepository nhanVienRepository;
@@ -29,7 +28,7 @@ public class KhachHangServiceImpl implements KhachHangService {
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public KhachHangServiceImpl(khachhangrepository khachHangRepository, nhanvienrepository nhanVienRepository,
+    public khachhangserviceImpl(khachhangrepository khachHangRepository, nhanvienrepository nhanVienRepository,
                                 capbackhachhangrepository capBacKhachHangRepository, PasswordEncoder passwordEncoder) {
         this.khachHangRepository = khachHangRepository;
         this.nhanVienRepository = nhanVienRepository;

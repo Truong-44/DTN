@@ -4,7 +4,7 @@ import com.example.be.tempotide.dto.diachidto;
 
 import java.util.List;
 
-public interface DiaChiService {
+public interface diachiservice {
     diachidto createDiaChi(diachidto diaChiDto);
     diachidto getDiaChiById(Integer id);
     List<diachidto> getAllDiaChi();

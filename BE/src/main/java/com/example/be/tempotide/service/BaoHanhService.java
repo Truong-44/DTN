@@ -4,7 +4,7 @@ import com.example.be.tempotide.dto.baohanhdto;
 
 import java.util.List;
 
-public interface BaoHanhService {
+public interface baohanhservice {
     baohanhdto createBaoHanh(baohanhdto baoHanhDto);
     baohanhdto getBaoHanhById(Integer id);
     List<baohanhdto> getAllBaoHanh();

@@ -4,7 +4,7 @@ import com.example.be.tempotide.dto.nhacungcapdto;
 
 import java.util.List;
 
-public interface NhaCungCapService {
+public interface nhacungcapservice {
     nhacungcapdto createNhaCungCap(nhacungcapdto nhaCungCapDto);
     nhacungcapdto getNhaCungCapById(Integer id);
     List<nhacungcapdto> getAllNhaCungCap();

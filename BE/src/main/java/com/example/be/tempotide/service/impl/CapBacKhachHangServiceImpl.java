@@ -5,7 +5,6 @@ import com.example.be.tempotide.entity.capbackhachhang;
 import com.example.be.tempotide.entity.nhanvien;
 import com.example.be.tempotide.repository.capbackhachhangrepository;
 import com.example.be.tempotide.repository.nhanvienrepository;
-import com.example.be.tempotide.service.CapBacKhachHangService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,15 +17,15 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class CapBacKhachHangServiceImpl implements CapBacKhachHangService {
+public class capbackhachhangserviceImpl implements com.example.be.tempotide.service.capbackhachhangservice {
 
-    private static final Logger logger = LoggerFactory.getLogger(CapBacKhachHangServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(com.example.be.tempotide.service.impl.capbackhachhangserviceImpl.class);
 
     private final capbackhachhangrepository capBacKhachHangRepository;
     private final nhanvienrepository nhanVienRepository;
 
     @Autowired
-    public CapBacKhachHangServiceImpl(capbackhachhangrepository capBacKhachHangRepository,
+    public capbackhachhangserviceImpl(capbackhachhangrepository capBacKhachHangRepository,
                                       nhanvienrepository nhanVienRepository) {
         this.capBacKhachHangRepository = capBacKhachHangRepository;
         this.nhanVienRepository = nhanVienRepository;

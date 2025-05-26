@@ -4,7 +4,7 @@ import com.example.be.tempotide.dto.quyendto;
 
 import java.util.List;
 
-public interface QuyenService {
+public interface quyenservice {
     quyendto createQuyen(quyendto quyenDto);
     quyendto getQuyenById(Integer id);
     List<quyendto> getAllQuyen();

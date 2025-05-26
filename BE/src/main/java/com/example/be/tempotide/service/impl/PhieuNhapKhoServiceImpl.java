@@ -9,7 +9,6 @@ import com.example.be.tempotide.repository.khohangrepository;
 import com.example.be.tempotide.repository.nhacungcaprepository;
 import com.example.be.tempotide.repository.nhanvienrepository;
 import com.example.be.tempotide.repository.phieunhapkhorepository;
-import com.example.be.tempotide.service.PhieuNhapKhoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +21,9 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class PhieuNhapKhoServiceImpl implements PhieuNhapKhoService {
+public class phieunhapkhoserviceImpl implements com.example.be.tempotide.service.phieunhapkhoservice {
 
-    private static final Logger logger = LoggerFactory.getLogger(PhieuNhapKhoServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(com.example.be.tempotide.service.impl.phieunhapkhoserviceImpl.class);
 
     private final phieunhapkhorepository phieuNhapKhoRepository;
     private final khohangrepository khoHangRepository;
@@ -32,7 +31,7 @@ public class PhieuNhapKhoServiceImpl implements PhieuNhapKhoService {
     private final nhanvienrepository nhanVienRepository;
 
     @Autowired
-    public PhieuNhapKhoServiceImpl(phieunhapkhorepository phieuNhapKhoRepository,
+    public phieunhapkhoserviceImpl(phieunhapkhorepository phieuNhapKhoRepository,
                                    khohangrepository khoHangRepository,
                                    nhacungcaprepository nhaCungCapRepository,
                                    nhanvienrepository nhanVienRepository) {

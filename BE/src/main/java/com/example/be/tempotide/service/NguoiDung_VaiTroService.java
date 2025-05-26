@@ -4,7 +4,7 @@ import com.example.be.tempotide.dto.nguoidung_vaitrodto;
 
 import java.util.List;
 
-public interface NguoiDung_VaiTroService {
+public interface nguoidung_vaitroservice {
     nguoidung_vaitrodto createNguoiDung_VaiTro(nguoidung_vaitrodto nguoiDung_VaiTroDto);
     nguoidung_vaitrodto getNguoiDung_VaiTroById(Integer maNguoiDung, Integer maVaiTro);
     List<nguoidung_vaitrodto> getAllNguoiDung_VaiTro();

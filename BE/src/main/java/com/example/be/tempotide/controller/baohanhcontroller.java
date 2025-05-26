@@ -1,7 +1,6 @@
 package com.example.be.tempotide.controller;
 
 import com.example.be.tempotide.dto.baohanhdto;
-import com.example.be.tempotide.service.BaoHanhService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,10 +17,10 @@ public class baohanhcontroller {
 
     private static final Logger logger = LoggerFactory.getLogger(baohanhcontroller.class);
 
-    private final BaoHanhService baoHanhService;
+    private final com.example.be.tempotide.service.baohanhservice baoHanhService;
 
     @Autowired
-    public baohanhcontroller(BaoHanhService baoHanhService) {
+    public baohanhcontroller(com.example.be.tempotide.service.baohanhservice baoHanhService) {
         this.baoHanhService = baoHanhService;
     }
 
