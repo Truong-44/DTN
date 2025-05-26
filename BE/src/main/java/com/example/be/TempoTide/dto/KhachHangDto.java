@@ -73,4 +73,5 @@ public class KhachHangDto {
 
     @Schema(description = "ID of the employee who last updated this record", example = "3")
     private Integer nguoiCapNhatId;
+
 }

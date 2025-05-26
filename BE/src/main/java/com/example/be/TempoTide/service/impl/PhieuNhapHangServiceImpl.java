@@ -5,6 +5,7 @@ import com.example.be.TempoTide.entity.PhieuNhapHang;
 import com.example.be.TempoTide.repository.NhaCungCapRepository;
 import com.example.be.TempoTide.repository.NhanVienRepository;
 import com.example.be.TempoTide.repository.PhieuNhapHangRepository;
+import com.example.be.TempoTide.service.PhieuNhapHangService;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

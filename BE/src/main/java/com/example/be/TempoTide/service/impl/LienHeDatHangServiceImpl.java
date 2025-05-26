@@ -2,14 +2,8 @@ package com.example.be.TempoTide.service.impl;
 
 
 import com.example.be.TempoTide.dto.LienHeDatHangDto;
-import com.example.be.TempoTide.entity.DonHang;
-import com.example.be.TempoTide.entity.LienHeDatHang;
-import com.example.be.TempoTide.entity.NhanVien;
-import com.example.be.TempoTide.entity.SanPham;
-import com.example.be.TempoTide.repository.DonHangRepository;
-import com.example.be.TempoTide.repository.LienHeDatHangRepository;
-import com.example.be.TempoTide.repository.NhanVienRepository;
-import com.example.be.TempoTide.repository.SanPhamRepository;
+import com.example.be.TempoTide.entity.*;
+import com.example.be.TempoTide.repository.*;
 import com.example.be.TempoTide.service.LienHeDatHangService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
