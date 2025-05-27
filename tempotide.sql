@@ -1,5 +1,6 @@
 ﻿-- tạo cơ sở dữ liệu
 CREATE DATABASE tempotide;
+drop database tempotide
 USE tempotide;
 GO
 
