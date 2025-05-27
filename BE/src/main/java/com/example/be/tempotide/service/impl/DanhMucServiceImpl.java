@@ -4,7 +4,6 @@ import com.example.be.tempotide.dto.danhmucdto;
 import com.example.be.tempotide.entity.danhmuc;
 import com.example.be.tempotide.repository.danhmucrepository;
 import com.example.be.tempotide.repository.nhanvienrepository;
-import com.example.be.tempotide.service.DanhMucService;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,15 +16,15 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class DanhMucServiceImpl implements DanhMucService {
+public class danhmucserviceImpl implements com.example.be.tempotide.service.danhmucservice {
 
-    private static final Logger logger = LoggerFactory.getLogger(DanhMucServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(com.example.be.tempotide.service.impl.danhmucserviceImpl.class);
 
     private final danhmucrepository danhMucRepository;
     private final nhanvienrepository nhanVienRepository;
 
     @Autowired
-    public DanhMucServiceImpl(danhmucrepository danhMucRepository, nhanvienrepository nhanVienRepository) {
+    public danhmucserviceImpl(danhmucrepository danhMucRepository, nhanvienrepository nhanVienRepository) {
         this.danhMucRepository = danhMucRepository;
         this.nhanVienRepository = nhanVienRepository;
     }

@@ -1,7 +1,6 @@
 package com.example.be.tempotide.controller;
 
 import com.example.be.tempotide.dto.diachidto;
-import com.example.be.tempotide.service.DiaChiService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,10 +17,10 @@ public class diachicontroller {
 
     private static final Logger logger = LoggerFactory.getLogger(diachicontroller.class);
 
-    private final DiaChiService diaChiService;
+    private final com.example.be.tempotide.service.diachiservice diaChiService;
 
     @Autowired
-    public diachicontroller(DiaChiService diaChiService) {
+    public diachicontroller(com.example.be.tempotide.service.diachiservice diaChiService) {
         this.diaChiService = diaChiService;
     }
 

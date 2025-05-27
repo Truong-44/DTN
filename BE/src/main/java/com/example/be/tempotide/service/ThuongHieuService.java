@@ -4,7 +4,7 @@ import com.example.be.tempotide.dto.thuonghieudto;
 
 import java.util.List;
 
-public interface ThuongHieuService {
+public interface thuonghieuservice {
     thuonghieudto createThuongHieu(thuonghieudto thuongHieuDto);
     thuonghieudto getThuongHieuById(Integer id);
     List<thuonghieudto> getAllThuongHieu();

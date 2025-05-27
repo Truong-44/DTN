@@ -5,7 +5,6 @@ import com.example.be.tempotide.dto.giohangdto;
 import com.example.be.tempotide.entity.giohang;
 import com.example.be.tempotide.repository.giohangrepository;
 import com.example.be.tempotide.repository.khachhangrepository;
-import com.example.be.tempotide.service.GioHangService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,15 +17,15 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class GioHangServiceImpl implements GioHangService {
+public class giohangserviceImpl implements com.example.be.tempotide.service.giohangservice {
 
-    private static final Logger logger = LoggerFactory.getLogger(GioHangServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(com.example.be.tempotide.service.impl.giohangserviceImpl.class);
 
     private final giohangrepository gioHangRepository;
     private final khachhangrepository khachHangRepository;
 
     @Autowired
-    public GioHangServiceImpl(giohangrepository gioHangRepository, khachhangrepository khachHangRepository) {
+    public giohangserviceImpl(giohangrepository gioHangRepository, khachhangrepository khachHangRepository) {
         this.gioHangRepository = gioHangRepository;
         this.khachHangRepository = khachHangRepository;
     }

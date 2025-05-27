@@ -5,7 +5,6 @@ import com.example.be.tempotide.dto.thanhtoandto;
 import com.example.be.tempotide.entity.thanhtoan;
 import com.example.be.tempotide.repository.donhangrepository;
 import com.example.be.tempotide.repository.thanhtoanrepository;
-import com.example.be.tempotide.service.ThanhToanService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,15 +17,15 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class ThanhToanServiceImpl implements ThanhToanService {
+public class thanhtoanserviceImpl implements com.example.be.tempotide.service.thanhtoanservice {
 
-    private static final Logger logger = LoggerFactory.getLogger(ThanhToanServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(com.example.be.tempotide.service.impl.thanhtoanserviceImpl.class);
 
     private final thanhtoanrepository thanhToanRepository;
     private final donhangrepository donHangRepository;
 
     @Autowired
-    public ThanhToanServiceImpl(thanhtoanrepository thanhToanRepository, donhangrepository donHangRepository) {
+    public thanhtoanserviceImpl(thanhtoanrepository thanhToanRepository, donhangrepository donHangRepository) {
         this.thanhToanRepository = thanhToanRepository;
         this.donHangRepository = donHangRepository;
     }

@@ -4,7 +4,7 @@ import com.example.be.tempotide.dto.danhmucdto;
 
 import java.util.List;
 
-public interface DanhMucService {
+public interface danhmucservice {
     danhmucdto createDanhMuc(danhmucdto danhMucDto);
     danhmucdto getDanhMucById(Integer id);
     List<danhmucdto> getAllDanhMuc();

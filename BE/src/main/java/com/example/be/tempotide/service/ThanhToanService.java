@@ -5,7 +5,7 @@ import com.example.be.tempotide.dto.thanhtoandto;
 
 import java.util.List;
 
-public interface ThanhToanService {
+public interface thanhtoanservice {
     thanhtoandto createThanhToan(thanhtoandto thanhToanDto);
     thanhtoandto getThanhToanById(Integer id);
     List<thanhtoandto> getAllThanhToan();

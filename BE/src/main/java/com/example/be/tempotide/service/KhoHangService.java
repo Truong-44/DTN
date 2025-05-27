@@ -4,7 +4,7 @@ import com.example.be.tempotide.dto.khohangdto;
 
 import java.util.List;
 
-public interface KhoHangService {
+public interface khohangservice {
     khohangdto createKhoHang(khohangdto khoHangDto);
     khohangdto getKhoHangById(Integer id);
     List<khohangdto> getAllKhoHang();

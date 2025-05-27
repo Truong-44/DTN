@@ -3,7 +3,6 @@ package com.example.be.tempotide.service.impl;
 import com.example.be.tempotide.dto.nhanviendto;
 import com.example.be.tempotide.entity.nhanvien;
 import com.example.be.tempotide.repository.nhanvienrepository;
-import com.example.be.tempotide.service.NhanVienService;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,15 +16,15 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class NhanVienServiceImpl implements NhanVienService {
+public class nhanvienserviceImpl implements com.example.be.tempotide.service.nhanvienservice {
 
-    private static final Logger logger = LoggerFactory.getLogger(NhanVienServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(com.example.be.tempotide.service.impl.nhanvienserviceImpl.class);
 
     private final nhanvienrepository nhanVienRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public NhanVienServiceImpl(nhanvienrepository nhanVienRepository, PasswordEncoder passwordEncoder) {
+    public nhanvienserviceImpl(nhanvienrepository nhanVienRepository, PasswordEncoder passwordEncoder) {
         this.nhanVienRepository = nhanVienRepository;
         this.passwordEncoder = passwordEncoder;
     }

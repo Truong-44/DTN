@@ -1,8 +1,7 @@
 package com.example.be.tempotide.controller;
 
-
 import com.example.be.tempotide.dto.chitietdonhangdto;
-import com.example.be.tempotide.service.ChiTietDonHangService;
+import com.example.be.tempotide.service.chitietdonhangservice;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,45 +18,45 @@ public class chitietdonhangcontroller {
 
     private static final Logger logger = LoggerFactory.getLogger(chitietdonhangcontroller.class);
 
-    private final ChiTietDonHangService chiTietDonHangService;
+    private final chitietdonhangservice chitietdonhangservice;
 
     @Autowired
-    public chitietdonhangcontroller(ChiTietDonHangService chiTietDonHangService) {
-        this.chiTietDonHangService = chiTietDonHangService;
+    public chitietdonhangcontroller(chitietdonhangservice chitietdonhangservice) {
+        this.chitietdonhangservice = chitietdonhangservice;
     }
 
     @PostMapping
-    public ResponseEntity<chitietdonhangdto> createChiTietDonHang(@Valid @RequestBody chitietdonhangdto chiTietDonHangDto) {
+    public ResponseEntity<chitietdonhangdto> createchitietdonhang(@Valid @RequestBody chitietdonhangdto chitietdonhangdto) {
         logger.info("API call: POST /api/chitietdonhang");
-        chitietdonhangdto createdChiTietDonHang = chiTietDonHangService.createChiTietDonHang(chiTietDonHangDto);
-        return new ResponseEntity<>(createdChiTietDonHang, HttpStatus.CREATED);
+        chitietdonhangdto createdchitietdonhang = chitietdonhangservice.createchitietdonhang(chitietdonhangdto);
+        return new ResponseEntity<>(createdchitietdonhang, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<chitietdonhangdto> getChiTietDonHangById(@PathVariable Integer id) {
+    public ResponseEntity<chitietdonhangdto> getchitietdonhangbyid(@PathVariable Integer id) {
         logger.info("API call: GET /api/chitietdonhang/{}", id);
-        chitietdonhangdto chiTietDonHangDto = chiTietDonHangService.getChiTietDonHangById(id);
-        return ResponseEntity.ok(chiTietDonHangDto);
+        chitietdonhangdto chitietdonhangdto = chitietdonhangservice.getchitietdonhangbyid(id);
+        return ResponseEntity.ok(chitietdonhangdto);
     }
 
     @GetMapping
-    public ResponseEntity<List<chitietdonhangdto>> getAllChiTietDonHang() {
+    public ResponseEntity<List<chitietdonhangdto>> getallchitietdonhang() {
         logger.info("API call: GET /api/chitietdonhang");
-        List<chitietdonhangdto> chiTietDonHangList = chiTietDonHangService.getAllChiTietDonHang();
-        return ResponseEntity.ok(chiTietDonHangList);
+        List<chitietdonhangdto> chitietdonhanglist = chitietdonhangservice.getallchitietdonhang();
+        return ResponseEntity.ok(chitietdonhanglist);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<chitietdonhangdto> updateChiTietDonHang(@PathVariable Integer id, @Valid @RequestBody chitietdonhangdto chiTietDonHangDto) {
+    public ResponseEntity<chitietdonhangdto> updatechitietdonhang(@PathVariable Integer id, @Valid @RequestBody chitietdonhangdto chitietdonhangdto) {
         logger.info("API call: PUT /api/chitietdonhang/{}", id);
-        chitietdonhangdto updatedChiTietDonHang = chiTietDonHangService.updateChiTietDonHang(id, chiTietDonHangDto);
-        return ResponseEntity.ok(updatedChiTietDonHang);
+        chitietdonhangdto updatedchitietdonhang = chitietdonhangservice.updatechitietdonhang(id, chitietdonhangdto);
+        return ResponseEntity.ok(updatedchitietdonhang);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteChiTietDonHang(@PathVariable Integer id) {
+    public ResponseEntity<Void> deletechitietdonhang(@PathVariable Integer id) {
         logger.info("API call: DELETE /api/chitietdonhang/{}", id);
-        chiTietDonHangService.deleteChiTietDonHang(id);
+        chitietdonhangservice.deletechitietdonhang(id);
         return ResponseEntity.noContent().build();
     }
 }

@@ -1,7 +1,6 @@
 package com.example.be.tempotide.controller;
 
 import com.example.be.tempotide.dto.nhacungcapdto;
-import com.example.be.tempotide.service.NhaCungCapService;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -19,10 +18,10 @@ public class nhacungcapcontroller {
 
     private static final Logger logger = LoggerFactory.getLogger(nhacungcapcontroller.class);
 
-    private final NhaCungCapService nhaCungCapService;
+    private final com.example.be.tempotide.service.nhacungcapservice nhaCungCapService;
 
     @Autowired
-    public nhacungcapcontroller(NhaCungCapService nhaCungCapService) {
+    public nhacungcapcontroller(com.example.be.tempotide.service.nhacungcapservice nhaCungCapService) {
         this.nhaCungCapService = nhaCungCapService;
     }
 

@@ -1,7 +1,6 @@
 package com.example.be.tempotide.controller;
 
 import com.example.be.tempotide.dto.resetpasswordtokendto;
-import com.example.be.tempotide.service.ResetPasswordTokenService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,10 +17,10 @@ public class resetpasswordtokencontroller {
 
     private static final Logger logger = LoggerFactory.getLogger(resetpasswordtokencontroller.class);
 
-    private final ResetPasswordTokenService resetPasswordTokenService;
+    private final com.example.be.tempotide.service.resetpasswordtokenservice resetPasswordTokenService;
 
     @Autowired
-    public resetpasswordtokencontroller(ResetPasswordTokenService resetPasswordTokenService) {
+    public resetpasswordtokencontroller(com.example.be.tempotide.service.resetpasswordtokenservice resetPasswordTokenService) {
         this.resetPasswordTokenService = resetPasswordTokenService;
     }
 

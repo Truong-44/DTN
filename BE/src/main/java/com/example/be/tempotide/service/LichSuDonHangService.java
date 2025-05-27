@@ -5,7 +5,7 @@ import com.example.be.tempotide.dto.lichsudonhangdto;
 
 import java.util.List;
 
-public interface LichSuDonHangService {
+public interface lichsudonhangservice {
     lichsudonhangdto createLichSuDonHang(lichsudonhangdto lichSuDonHangDto);
     lichsudonhangdto getLichSuDonHangById(Integer id);
     List<lichsudonhangdto> getAllLichSuDonHang();

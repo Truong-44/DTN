@@ -5,7 +5,6 @@ import com.example.be.tempotide.entity.donhang;
 import com.example.be.tempotide.repository.donhangrepository;
 import com.example.be.tempotide.repository.khachhangrepository;
 import com.example.be.tempotide.repository.nhanvienrepository;
-import com.example.be.tempotide.service.DonHangService;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,16 +17,16 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class DonHangServiceImpl implements DonHangService {
+public class donhangserviceImpl implements com.example.be.tempotide.service.donhangservice {
 
-    private static final Logger logger = LoggerFactory.getLogger(DonHangServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(com.example.be.tempotide.service.impl.donhangserviceImpl.class);
 
     private final donhangrepository donHangRepository;
     private final khachhangrepository khachHangRepository;
     private final nhanvienrepository nhanVienRepository;
 
     @Autowired
-    public DonHangServiceImpl(donhangrepository donHangRepository, khachhangrepository khachHangRepository,
+    public donhangserviceImpl(donhangrepository donHangRepository, khachhangrepository khachHangRepository,
                               nhanvienrepository nhanVienRepository) {
         this.donHangRepository = donHangRepository;
         this.khachHangRepository = khachHangRepository;

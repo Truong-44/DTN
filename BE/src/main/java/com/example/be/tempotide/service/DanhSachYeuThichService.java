@@ -4,7 +4,7 @@ import com.example.be.tempotide.dto.danhsachyeuthichdto;
 
 import java.util.List;
 
-public interface DanhSachYeuThichService {
+public interface danhsachyeuthichservice {
     danhsachyeuthichdto createDanhSachYeuThich(danhsachyeuthichdto danhSachYeuThichDto);
     danhsachyeuthichdto getDanhSachYeuThichById(Integer id);
     List<danhsachyeuthichdto> getAllDanhSachYeuThich();

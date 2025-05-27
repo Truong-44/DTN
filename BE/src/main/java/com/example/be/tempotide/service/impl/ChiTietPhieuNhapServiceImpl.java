@@ -6,7 +6,6 @@ import com.example.be.tempotide.entity.chitietphieunhap;
 import com.example.be.tempotide.repository.chitietphieunhaprepository;
 import com.example.be.tempotide.repository.phieunhaphangrepository;
 import com.example.be.tempotide.repository.sanphamrepository;
-import com.example.be.tempotide.service.ChiTietPhieuNhapService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,16 +17,16 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class ChiTietPhieuNhapServiceImpl implements ChiTietPhieuNhapService {
+public class chitietphieunhapserviceImpl implements com.example.be.tempotide.service.chitietphieunhapservice {
 
-    private static final Logger logger = LoggerFactory.getLogger(ChiTietPhieuNhapServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(com.example.be.tempotide.service.impl.chitietphieunhapserviceImpl.class);
 
     private final chitietphieunhaprepository chiTietPhieuNhapRepository;
     private final phieunhaphangrepository phieuNhapHangRepository;
     private final sanphamrepository sanPhamRepository;
 
     @Autowired
-    public ChiTietPhieuNhapServiceImpl(chitietphieunhaprepository chiTietPhieuNhapRepository,
+    public chitietphieunhapserviceImpl(chitietphieunhaprepository chiTietPhieuNhapRepository,
                                        phieunhaphangrepository phieuNhapHangRepository,
                                        sanphamrepository sanPhamRepository) {
         this.chiTietPhieuNhapRepository = chiTietPhieuNhapRepository;

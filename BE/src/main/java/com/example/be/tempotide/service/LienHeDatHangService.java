@@ -5,7 +5,7 @@ import com.example.be.tempotide.dto.lienhedathangdto;
 
 import java.util.List;
 
-public interface LienHeDatHangService {
+public interface lienhedathangservice {
     lienhedathangdto createLienHeDatHang(lienhedathangdto lienHeDatHangDto);
     lienhedathangdto getLienHeDatHangById(Integer id);
     List<lienhedathangdto> getAllLienHeDatHang();

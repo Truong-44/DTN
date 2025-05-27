@@ -4,7 +4,7 @@ import com.example.be.tempotide.dto.donhangdto;
 
 import java.util.List;
 
-public interface DonHangService {
+public interface donhangservice {
     donhangdto createDonHang(donhangdto donHangDto);
     donhangdto getDonHangById(Integer id);
     List<donhangdto> getAllDonHang();

@@ -1,7 +1,6 @@
 package com.example.be.tempotide.controller;
 
 import com.example.be.tempotide.dto.vaitrodto;
-import com.example.be.tempotide.service.VaiTroService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,10 +17,10 @@ public class vaitrocontroller {
 
     private static final Logger logger = LoggerFactory.getLogger(vaitrocontroller.class);
 
-    private final VaiTroService vaiTroService;
+    private final com.example.be.tempotide.service.vaitroservice vaiTroService;
 
     @Autowired
-    public vaitrocontroller(VaiTroService vaiTroService) {
+    public vaitrocontroller(com.example.be.tempotide.service.vaitroservice vaiTroService) {
         this.vaiTroService = vaiTroService;
     }
 

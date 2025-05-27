@@ -4,8 +4,10 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
-@Table(name = "ChiTietSanPham")
+@Table(name = "chitietsanpham")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,23 +16,33 @@ public class chitietsanpham {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "MaChiTietSanPham")
-    private Integer maChiTietSanPham;
+    @Column(name = "machitetsanpham")
+    private Integer machitetsanpham;
 
-    @NotNull(message = "MaSanPham is required")
-    @Column(name = "MaSanPham", nullable = false)
-    private Integer maSanPham;
+    @NotNull(message = "masanpham is required")
+    @Column(name = "masanpham", nullable = false)
+    private Integer masanpham;
 
-    @Column(name = "SoLuongTon")
-    private Integer soLuongTon;
+    @Column(name = "soluongton")
+    private Integer soluongton;
 
-    @Column(name = "GiaBan")
-    private Double giaBan;
+    @Column(name = "giaban")
+    private Double giaban;
 
-    @Column(name = "TrangThai", columnDefinition = "BIT DEFAULT 1")
-    private Boolean trangThai;
+    @Column(name = "ngaytao")
+    private LocalDateTime ngaytao;
+
+    @Column(name = "trangthai", columnDefinition = "BIT DEFAULT 1")
+    private Boolean trangthai;
+
+    @Column(name = "nguoitao")
+    private Integer nguoitao;
 
     @ManyToOne
-    @JoinColumn(name = "MaSanPham", insertable = false, updatable = false)
-    private sanpham sanPham;
+    @JoinColumn(name = "masanpham", insertable = false, updatable = false)
+    private sanpham sanpham;
+
+    @ManyToOne
+    @JoinColumn(name = "nguoitao", insertable = false, updatable = false)
+    private nhanvien nhanvien;
 }

@@ -5,7 +5,7 @@ import com.example.be.tempotide.dto.giohangdto;
 
 import java.util.List;
 
-public interface GioHangService {
+public interface giohangservice {
     giohangdto createGioHang(giohangdto gioHangDto);
     giohangdto getGioHangById(Integer id);
     List<giohangdto> getAllGioHang();

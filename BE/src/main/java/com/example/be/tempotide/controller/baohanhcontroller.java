@@ -1,7 +1,7 @@
 package com.example.be.tempotide.controller;
 
 import com.example.be.tempotide.dto.baohanhdto;
-import com.example.be.tempotide.service.BaoHanhService;
+import com.example.be.tempotide.service.baohanhservice;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,45 +18,45 @@ public class baohanhcontroller {
 
     private static final Logger logger = LoggerFactory.getLogger(baohanhcontroller.class);
 
-    private final BaoHanhService baoHanhService;
+    private final baohanhservice baohanhservice;
 
     @Autowired
-    public baohanhcontroller(BaoHanhService baoHanhService) {
-        this.baoHanhService = baoHanhService;
+    public baohanhcontroller(baohanhservice baohanhservice) {
+        this.baohanhservice = baohanhservice;
     }
 
     @PostMapping
-    public ResponseEntity<baohanhdto> createBaoHanh(@Valid @RequestBody baohanhdto baoHanhDto) {
+    public ResponseEntity<baohanhdto> createbaohanh(@Valid @RequestBody baohanhdto baohanhdto) {
         logger.info("API call: POST /api/baohanh");
-        baohanhdto createdBaoHanh = baoHanhService.createBaoHanh(baoHanhDto);
-        return new ResponseEntity<>(createdBaoHanh, HttpStatus.CREATED);
+        baohanhdto createdbaohanh = baohanhservice.createbaohanh(baohanhdto);
+        return new ResponseEntity<>(createdbaohanh, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<baohanhdto> getBaoHanhById(@PathVariable Integer id) {
+    public ResponseEntity<baohanhdto> getbaohanhbyid(@PathVariable Integer id) {
         logger.info("API call: GET /api/baohanh/{}", id);
-        baohanhdto baoHanhDto = baoHanhService.getBaoHanhById(id);
-        return ResponseEntity.ok(baoHanhDto);
+        baohanhdto baohanhdto = baohanhservice.getbaohanhbyid(id);
+        return ResponseEntity.ok(baohanhdto);
     }
 
     @GetMapping
-    public ResponseEntity<List<baohanhdto>> getAllBaoHanh() {
+    public ResponseEntity<List<baohanhdto>> getallbaohanh() {
         logger.info("API call: GET /api/baohanh");
-        List<baohanhdto> baoHanhList = baoHanhService.getAllBaoHanh();
-        return ResponseEntity.ok(baoHanhList);
+        List<baohanhdto> baohanhlist = baohanhservice.getallbaohanh();
+        return ResponseEntity.ok(baohanhlist);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<baohanhdto> updateBaoHanh(@PathVariable Integer id, @Valid @RequestBody baohanhdto baoHanhDto) {
+    public ResponseEntity<baohanhdto> updatebaohanh(@PathVariable Integer id, @Valid @RequestBody baohanhdto baohanhdto) {
         logger.info("API call: PUT /api/baohanh/{}", id);
-        baohanhdto updatedBaoHanh = baoHanhService.updateBaoHanh(id, baoHanhDto);
-        return ResponseEntity.ok(updatedBaoHanh);
+        baohanhdto updatedbaohanh = baohanhservice.updatebaohanh(id, baohanhdto);
+        return ResponseEntity.ok(updatedbaohanh);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBaoHanh(@PathVariable Integer id) {
+    public ResponseEntity<Void> deletebaohanh(@PathVariable Integer id) {
         logger.info("API call: DELETE /api/baohanh/{}", id);
-        baoHanhService.deleteBaoHanh(id);
+        baohanhservice.deletebaohanh(id);
         return ResponseEntity.noContent().build();
     }
 }

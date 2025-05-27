@@ -4,7 +4,7 @@ import com.example.be.tempotide.dto.sanphamdto;
 
 import java.util.List;
 
-public interface SanPhamService {
+public interface sanphamservice {
     sanphamdto createSanPham(sanphamdto sanPhamDto);
     sanphamdto getSanPhamById(Integer id);
     List<sanphamdto> getAllSanPham();

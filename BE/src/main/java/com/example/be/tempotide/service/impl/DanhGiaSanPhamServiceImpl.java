@@ -1,135 +1,170 @@
 package com.example.be.tempotide.service.impl;
 
-
 import com.example.be.tempotide.dto.danhgiasanphamdto;
 import com.example.be.tempotide.entity.danhgiasanpham;
+import com.example.be.tempotide.entity.sanpham;
+import com.example.be.tempotide.entity.khachhang;
+import com.example.be.tempotide.entity.nhanvien;
 import com.example.be.tempotide.repository.danhgiasanphamrepository;
-import com.example.be.tempotide.repository.khachhangrepository;
 import com.example.be.tempotide.repository.sanphamrepository;
-import com.example.be.tempotide.service.DanhGiaSanPhamService;
+import com.example.be.tempotide.repository.khachhangrepository;
+import com.example.be.tempotide.repository.nhanvienrepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class DanhGiaSanPhamServiceImpl implements DanhGiaSanPhamService {
+public class danhgiasanphamserviceimpl implements com.example.be.tempotide.service.danhgiasanphamservice {
 
-    private static final Logger logger = LoggerFactory.getLogger(DanhGiaSanPhamServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(danhgiasanphamserviceimpl.class);
 
-    private final danhgiasanphamrepository danhGiaSanPhamRepository;
-    private final sanphamrepository sanPhamRepository;
-    private final khachhangrepository khachHangRepository;
+    private final danhgiasanphamrepository danhgiasanphamrepository;
+    private final sanphamrepository sanphamrepository;
+    private final khachhangrepository khachhangrepository;
+    private final nhanvienrepository nhanvienrepository;
 
     @Autowired
-    public DanhGiaSanPhamServiceImpl(danhgiasanphamrepository danhGiaSanPhamRepository,
-                                     sanphamrepository sanPhamRepository,
-                                     khachhangrepository khachHangRepository) {
-        this.danhGiaSanPhamRepository = danhGiaSanPhamRepository;
-        this.sanPhamRepository = sanPhamRepository;
-        this.khachHangRepository = khachHangRepository;
+    public danhgiasanphamserviceimpl(danhgiasanphamrepository danhgiasanphamrepository,
+                                     sanphamrepository sanphamrepository,
+                                     khachhangrepository khachhangrepository,
+                                     nhanvienrepository nhanvienrepository) {
+        this.danhgiasanphamrepository = danhgiasanphamrepository;
+        this.sanphamrepository = sanphamrepository;
+        this.khachhangrepository = khachhangrepository;
+        this.nhanvienrepository = nhanvienrepository;
     }
 
     @Override
-    public danhgiasanphamdto createDanhGiaSanPham(danhgiasanphamdto danhGiaSanPhamDto) {
-        logger.info("Creating new DanhGiaSanPham for product: {}", danhGiaSanPhamDto.getMaSanPham());
-        danhgiasanpham danhGiaSanPham = mapToEntity(danhGiaSanPhamDto);
-        danhGiaSanPham.setSanPham(sanPhamRepository.findById(danhGiaSanPhamDto.getMaSanPham())
+    public danhgiasanphamdto createdanhgiasanpham(danhgiasanphamdto danhgiasanphamdto) {
+        logger.info("Creating new danhgiasanpham for masanpham: {}", danhgiasanphamdto.getmasanpham());
+        danhgiasanpham danhgiasanpham = maptoentity(danhgiasanphamdto);
+
+        danhgiasanpham.setsanpham(sanphamrepository.findById(danhgiasanphamdto.getmasanpham())
                 .orElseThrow(() -> {
-                    logger.error("SanPham not found with id: {}", danhGiaSanPhamDto.getMaSanPham());
-                    return new RuntimeException("SanPham not found");
+                    logger.error("sanpham not found with id: {}", danhgiasanphamdto.getmasanpham());
+                    return new RuntimeException("sanpham not found");
                 }));
-        danhGiaSanPham.setKhachHang(khachHangRepository.findById(danhGiaSanPhamDto.getMaKhachHang())
+        danhgiasanpham.setkhachhang(khachhangrepository.findById(danhgiasanphamdto.getmakhachhang())
                 .orElseThrow(() -> {
-                    logger.error("KhachHang not found with id: {}", danhGiaSanPhamDto.getMaKhachHang());
-                    return new RuntimeException("KhachHang not found");
+                    logger.error("khachhang not found with id: {}", danhgiasanphamdto.getmakhachhang());
+                    return new RuntimeException("khachhang not found");
                 }));
-        danhGiaSanPham = danhGiaSanPhamRepository.save(danhGiaSanPham);
-        logger.info("DanhGiaSanPham created with id: {}", danhGiaSanPham.getMaDanhGia());
-        return mapToDto(danhGiaSanPham);
+
+        if (danhgiasanphamdto.getnguoitao() != null) {
+            nhanvien nhanvien = nhanvienrepository.findById(danhgiasanphamdto.getnguoitao())
+                    .orElseThrow(() -> {
+                        logger.error("nhanvien not found with id: {}", danhgiasanphamdto.getnguoitao());
+                        return new RuntimeException("nhanvien not found");
+                    });
+            danhgiasanpham.setnguoitao_nhanvien(nhanvien);
+        }
+
+        danhgiasanpham.setngaydanhgia(LocalDateTime.now());
+        danhgiasanpham = danhgiasanphamrepository.save(danhgiasanpham);
+        logger.info("danhgiasanpham created with id: {}", danhgiasanpham.getmadanhgia());
+        return maptodto(danhgiasanpham);
     }
 
     @Override
-    public danhgiasanphamdto getDanhGiaSanPhamById(Integer id) {
-        logger.info("Fetching DanhGiaSanPham with id: {}", id);
-        danhgiasanpham danhGiaSanPham = danhGiaSanPhamRepository.findById(id)
+    public danhgiasanphamdto getdanhgiasanphambyid(Integer id) {
+        logger.info("Fetching danhgiasanpham with id: {}", id);
+        danhgiasanpham danhgiasanpham = danhgiasanphamrepository.findById(id)
                 .orElseThrow(() -> {
-                    logger.error("DanhGiaSanPham not found with id: {}", id);
-                    return new RuntimeException("DanhGiaSanPham not found with id: " + id);
+                    logger.error("danhgiasanpham not found with id: {}", id);
+                    return new RuntimeException("danhgiasanpham not found with id: " + id);
                 });
-        return mapToDto(danhGiaSanPham);
+        return maptodto(danhgiasanpham);
     }
 
     @Override
-    public List<danhgiasanphamdto> getAllDanhGiaSanPham() {
-        logger.info("Fetching all DanhGiaSanPham");
-        return danhGiaSanPhamRepository.findAll().stream()
-                .map(this::mapToDto)
+    public List<danhgiasanphamdto> getalldanhgiasanpham() {
+        logger.info("Fetching all danhgiasanpham");
+        return danhgiasanphamrepository.findAll().stream()
+                .map(this::maptodto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public danhgiasanphamdto updateDanhGiaSanPham(Integer id, danhgiasanphamdto danhGiaSanPhamDto) {
-        logger.info("Updating DanhGiaSanPham with id: {}", id);
-        danhgiasanpham danhGiaSanPham = danhGiaSanPhamRepository.findById(id)
+    public danhgiasanphamdto updatedanhgiasanpham(Integer id, danhgiasanphamdto danhgiasanphamdto) {
+        logger.info("Updating danhgiasanpham with id: {}", id);
+        danhgiasanpham danhgiasanpham = danhgiasanphamrepository.findById(id)
                 .orElseThrow(() -> {
-                    logger.error("DanhGiaSanPham not found with id: {}", id);
-                    return new RuntimeException("DanhGiaSanPham not found with id: " + id);
+                    logger.error("danhgiasanpham not found with id: {}", id);
+                    return new RuntimeException("danhgiasanpham not found with id: " + id);
                 });
 
-        danhGiaSanPham.setSanPham(sanPhamRepository.findById(danhGiaSanPhamDto.getMaSanPham())
+        danhgiasanpham.setsanpham(sanphamrepository.findById(danhgiasanphamdto.getmasanpham())
                 .orElseThrow(() -> {
-                    logger.error("SanPham not found with id: {}", danhGiaSanPhamDto.getMaSanPham());
-                    return new RuntimeException("SanPham not found");
+                    logger.error("sanpham not found with id: {}", danhgiasanphamdto.getmasanpham());
+                    return new RuntimeException("sanpham not found");
                 }));
-        danhGiaSanPham.setKhachHang(khachHangRepository.findById(danhGiaSanPhamDto.getMaKhachHang())
+        danhgiasanpham.setkhachhang(khachhangrepository.findById(danhgiasanphamdto.getmakhachhang())
                 .orElseThrow(() -> {
-                    logger.error("KhachHang not found with id: {}", danhGiaSanPhamDto.getMaKhachHang());
-                    return new RuntimeException("KhachHang not found");
+                    logger.error("khachhang not found with id: {}", danhgiasanphamdto.getmakhachhang());
+                    return new RuntimeException("khachhang not found");
                 }));
-        danhGiaSanPham.setDiemDanhGia(danhGiaSanPhamDto.getDiemDanhGia());
-        danhGiaSanPham.setBinhLuan(danhGiaSanPhamDto.getBinhLuan());
-        danhGiaSanPham.setNgayDanhGia(danhGiaSanPhamDto.getNgayDanhGia());
+        danhgiasanpham.setdiemdanhgia(danhgiasanphamdto.getdiemdanhgia());
+        danhgiasanpham.setbinhluan(danhgiasanphamdto.getbinhluan());
+        danhgiasanpham.sethinhanhdanhgia(danhgiasanphamdto.gethinhanhdanhgia());
+        danhgiasanpham.setngaydanhgia(danhgiasanphamdto.getngaydanhgia());
+        danhgiasanpham.settrangthai(danhgiasanphamdto.gettrangthai());
 
-        danhGiaSanPham = danhGiaSanPhamRepository.save(danhGiaSanPham);
-        logger.info("DanhGiaSanPham updated with id: {}", danhGiaSanPham.getMaDanhGia());
-        return mapToDto(danhGiaSanPham);
+        if (danhgiasanphamdto.getnguoitao() != null) {
+            nhanvien nhanvien = nhanvienrepository.findById(danhgiasanphamdto.getnguoitao())
+                    .orElseThrow(() -> {
+                        logger.error("nhanvien not found with id: {}", danhgiasanphamdto.getnguoitao());
+                        return new RuntimeException("nhanvien not found");
+                    });
+            danhgiasanpham.setnguoitao_nhanvien(nhanvien);
+        }
+
+        danhgiasanpham = danhgiasanphamrepository.save(danhgiasanpham);
+        logger.info("danhgiasanpham updated with id: {}", danhgiasanpham.getmadanhgia());
+        return maptodto(danhgiasanpham);
     }
 
     @Override
-    public void deleteDanhGiaSanPham(Integer id) {
-        logger.info("Deleting DanhGiaSanPham with id: {}", id);
-        danhgiasanpham danhGiaSanPham = danhGiaSanPhamRepository.findById(id)
+    public void deletedanhgiasanpham(Integer id) {
+        logger.info("Deleting danhgiasanpham with id: {}", id);
+        danhgiasanpham danhgiasanpham = danhgiasanphamrepository.findById(id)
                 .orElseThrow(() -> {
-                    logger.error("DanhGiaSanPham not found with id: {}", id);
-                    return new RuntimeException("DanhGiaSanPham not found with id: " + id);
+                    logger.error("danhgiasanpham not found with id: {}", id);
+                    return new RuntimeException("danhgiasanpham not found with id: " + id);
                 });
-        danhGiaSanPhamRepository.delete(danhGiaSanPham);
-        logger.info("DanhGiaSanPham deleted with id: {}", id);
+        danhgiasanphamrepository.delete(danhgiasanpham);
+        logger.info("danhgiasanpham deleted with id: {}", id);
     }
 
-    private danhgiasanphamdto mapToDto(danhgiasanpham danhGiaSanPham) {
+    private danhgiasanphamdto maptodto(danhgiasanpham danhgiasanpham) {
         return danhgiasanphamdto.builder()
-                .maDanhGia(danhGiaSanPham.getMaDanhGia())
-                .maSanPham(danhGiaSanPham.getSanPham().getMaSanPham())
-                .maKhachHang(danhGiaSanPham.getKhachHang().getMaKhachHang())
-                .diemDanhGia(danhGiaSanPham.getDiemDanhGia())
-                .binhLuan(danhGiaSanPham.getBinhLuan())
-                .ngayDanhGia(danhGiaSanPham.getNgayDanhGia())
+                .madanhgia(danhgiasanpham.getmadanhgia())
+                .masanpham(danhgiasanpham.getsanpham().getmasanpham())
+                .makhachhang(danhgiasanpham.getkhachhang().getmakhachhang())
+                .diemdanhgia(danhgiasanpham.getdiemdanhgia())
+                .binhluan(danhgiasanpham.getbinhluan())
+                .hinhanhdanhgia(danhgiasanpham.gethinhanhdanhgia())
+                .ngaydanhgia(danhgiasanpham.getngaydanhgia())
+                .trangthai(danhgiasanpham.gettrangthai())
+                .nguoitao(danhgiasanpham.getnguoitao())
                 .build();
     }
 
-    private danhgiasanpham mapToEntity(danhgiasanphamdto danhGiaSanPhamDto) {
+    private danhgiasanpham maptoentity(danhgiasanphamdto danhgiasanphamdto) {
         return danhgiasanpham.builder()
-                .maDanhGia(danhGiaSanPhamDto.getMaDanhGia())
-                .diemDanhGia(danhGiaSanPhamDto.getDiemDanhGia())
-                .binhLuan(danhGiaSanPhamDto.getBinhLuan())
-                .ngayDanhGia(danhGiaSanPhamDto.getNgayDanhGia())
+                .madanhgia(danhgiasanphamdto.getmadanhgia())
+                .diemdanhgia(danhgiasanphamdto.getdiemdanhgia())
+                .binhluan(danhgiasanphamdto.getbinhluan())
+                .hinhanhdanhgia(danhgiasanphamdto.gethinhanhdanhgia())
+                .ngaydanhgia(danhgiasanphamdto.getngaydanhgia())
+                .trangthai(danhgiasanphamdto.gettrangthai())
+                .nguoitao(danhgiasanphamdto.getnguoitao())
                 .build();
     }
 }

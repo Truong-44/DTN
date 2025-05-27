@@ -2,7 +2,6 @@ package com.example.be.tempotide.controller;
 
 
 import com.example.be.tempotide.dto.phieunhaphangdto;
-import com.example.be.tempotide.service.PhieuNhapHangService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,10 +18,10 @@ public class phieunhaphangcontroller {
 
     private static final Logger logger = LoggerFactory.getLogger(phieunhaphangcontroller.class);
 
-    private final PhieuNhapHangService phieuNhapHangService;
+    private final com.example.be.tempotide.service.phieunhaphangservice phieuNhapHangService;
 
     @Autowired
-    public phieunhaphangcontroller(PhieuNhapHangService phieuNhapHangService) {
+    public phieunhaphangcontroller(com.example.be.tempotide.service.phieunhaphangservice phieuNhapHangService) {
         this.phieuNhapHangService = phieuNhapHangService;
     }
 

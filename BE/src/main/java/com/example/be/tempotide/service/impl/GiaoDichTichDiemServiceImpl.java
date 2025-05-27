@@ -5,7 +5,6 @@ import com.example.be.tempotide.entity.giaodichtichdiem;
 import com.example.be.tempotide.repository.giaodichtichdiemrepository;
 import com.example.be.tempotide.repository.khachhangrepository;
 import com.example.be.tempotide.repository.nhanvienrepository;
-import com.example.be.tempotide.service.GiaoDichTichDiemService;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,16 +17,16 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class GiaoDichTichDiemServiceImpl implements GiaoDichTichDiemService {
+public class giaodichtichdiemserviceImpl implements com.example.be.tempotide.service.giaodichtichdiemservice {
 
-    private static final Logger logger = LoggerFactory.getLogger(GiaoDichTichDiemServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(com.example.be.tempotide.service.impl.giaodichtichdiemserviceImpl.class);
 
     private final giaodichtichdiemrepository giaoDichTichDiemRepository;
     private final khachhangrepository khachHangRepository;
     private final nhanvienrepository nhanVienRepository;
 
     @Autowired
-    public GiaoDichTichDiemServiceImpl(giaodichtichdiemrepository giaoDichTichDiemRepository,
+    public giaodichtichdiemserviceImpl(giaodichtichdiemrepository giaoDichTichDiemRepository,
                                        khachhangrepository khachHangRepository, nhanvienrepository nhanVienRepository) {
         this.giaoDichTichDiemRepository = giaoDichTichDiemRepository;
         this.khachHangRepository = khachHangRepository;

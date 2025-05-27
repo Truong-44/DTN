@@ -3,125 +3,151 @@ package com.example.be.tempotide.service.impl;
 import com.example.be.tempotide.dto.chitietsanphamdto;
 import com.example.be.tempotide.entity.chitietsanpham;
 import com.example.be.tempotide.entity.sanpham;
+import com.example.be.tempotide.entity.nhanvien;
 import com.example.be.tempotide.repository.chitietsanphamrepository;
 import com.example.be.tempotide.repository.sanphamrepository;
-import com.example.be.tempotide.service.ChiTietSanPhamService;
+import com.example.be.tempotide.repository.nhanvienrepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class ChiTietSanPhamServiceImpl implements ChiTietSanPhamService {
+public class chitietsanphamserviceimpl implements com.example.be.tempotide.service.chitietsanphamservice {
 
-    private static final Logger logger = LoggerFactory.getLogger(ChiTietSanPhamServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(chitietsanphamserviceimpl.class);
 
-    private final chitietsanphamrepository chiTietSanPhamRepository;
-    private final sanphamrepository sanPhamRepository;
+    private final chitietsanphamrepository chitietsanphamrepository;
+    private final sanphamrepository sanphamrepository;
+    private final nhanvienrepository nhanvienrepository;
 
     @Autowired
-    public ChiTietSanPhamServiceImpl(chitietsanphamrepository chiTietSanPhamRepository,
-                                     sanphamrepository sanPhamRepository) {
-        this.chiTietSanPhamRepository = chiTietSanPhamRepository;
-        this.sanPhamRepository = sanPhamRepository;
+    public chitietsanphamserviceimpl(chitietsanphamrepository chitietsanphamrepository,
+                                     sanphamrepository sanphamrepository,
+                                     nhanvienrepository nhanvienrepository) {
+        this.chitietsanphamrepository = chitietsanphamrepository;
+        this.sanphamrepository = sanphamrepository;
+        this.nhanvienrepository = nhanvienrepository;
     }
 
     @Override
-    public chitietsanphamdto createChiTietSanPham(chitietsanphamdto chiTietSanPhamDto) {
-        logger.info("Creating new ChiTietSanPham for MaSanPham: {}", chiTietSanPhamDto.getMaSanPham());
-        chitietsanpham chiTietSanPham = mapToEntity(chiTietSanPhamDto);
+    public chitietsanphamdto createchitietsanpham(chitietsanphamdto chitietsanphamdto) {
+        logger.info("Creating new chitietsanpham for masanpham: {}", chitietsanphamdto.getmasanpham());
+        chitietsanpham chitietsanpham = maptoentity(chitietsanphamdto);
 
-        sanpham sanPham = sanPhamRepository.findById(chiTietSanPhamDto.getMaSanPham())
+        chitietsanpham.setsanpham(sanphamrepository.findById(chitietsanphamdto.getmasanpham())
                 .orElseThrow(() -> {
-                    logger.error("SanPham not found with id: {}", chiTietSanPhamDto.getMaSanPham());
-                    return new RuntimeException("SanPham not found");
-                });
-        chiTietSanPham.setSanPham(sanPham);
+                    logger.error("sanpham not found with id: {}", chitietsanphamdto.getmasanpham());
+                    return new RuntimeException("sanpham not found");
+                }));
 
-        chiTietSanPham = chiTietSanPhamRepository.save(chiTietSanPham);
-        logger.info("ChiTietSanPham created with id: {}", chiTietSanPham.getMaChiTietSanPham());
-        return mapToDto(chiTietSanPham);
+        if (chitietsanphamdto.getnguoitao() != null) {
+            nhanvien nhanvien = nhanvienrepository.findById(chitietsanphamdto.getnguoitao())
+                    .orElseThrow(() -> {
+                        logger.error("nhanvien not found with id: {}", chitietsanphamdto.getnguoitao());
+                        return new RuntimeException("nhanvien not found");
+                    });
+            chitietsanpham.setnhanvien(nhanvien);
+        }
+
+        chitietsanpham.setngaytao(LocalDateTime.now());
+        chitietsanpham = chitietsanphamrepository.save(chitietsanpham);
+        logger.info("chitietsanpham created with id: {}", chitietsanpham.getmachitetsanpham());
+        return maptodto(chitietsanpham);
     }
 
     @Override
-    public chitietsanphamdto getChiTietSanPhamById(Integer id) {
-        logger.info("Fetching ChiTietSanPham with id: {}", id);
-        chitietsanpham chiTietSanPham = chiTietSanPhamRepository.findById(id)
+    public chitietsanphamdto getchitietsanphambyid(Integer id) {
+        logger.info("Fetching chitietsanpham with id: {}", id);
+        chitietsanpham chitietsanpham = chitietsanphamrepository.findById(id)
                 .orElseThrow(() -> {
-                    logger.error("ChiTietSanPham not found with id: {}", id);
-                    return new RuntimeException("ChiTietSanPham not found with id: " + id);
+                    logger.error("chitietsanpham not found with id: {}", id);
+                    return new RuntimeException("chitietsanpham not found with id: " + id);
                 });
-        return mapToDto(chiTietSanPham);
+        return maptodto(chitietsanpham);
     }
 
     @Override
-    public List<chitietsanphamdto> getAllChiTietSanPham() {
-        logger.info("Fetching all ChiTietSanPham");
-        return chiTietSanPhamRepository.findAll().stream()
-                .map(this::mapToDto)
+    public List<chitietsanphamdto> getallchitietsanpham() {
+        logger.info("Fetching all chitietsanpham");
+        return chitietsanphamrepository.findAll().stream()
+                .map(this::maptodto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public chitietsanphamdto updateChiTietSanPham(Integer id, chitietsanphamdto chiTietSanPhamDto) {
-        logger.info("Updating ChiTietSanPham with id: {}", id);
-        chitietsanpham chiTietSanPham = chiTietSanPhamRepository.findById(id)
+    public chitietsanphamdto updatechitietsanpham(Integer id, chitietsanphamdto chitietsanphamdto) {
+        logger.info("Updating chitietsanpham with id: {}", id);
+        chitietsanpham chitietsanpham = chitietsanphamrepository.findById(id)
                 .orElseThrow(() -> {
-                    logger.error("ChiTietSanPham not found with id: {}", id);
-                    return new RuntimeException("ChiTietSanPham not found with id: " + id);
+                    logger.error("chitietsanpham not found with id: {}", id);
+                    return new RuntimeException("chitietsanpham not found with id: " + id);
                 });
 
-        chiTietSanPham.setMaSanPham(chiTietSanPhamDto.getMaSanPham());
-        chiTietSanPham.setSoLuongTon(chiTietSanPhamDto.getSoLuongTon());
-        chiTietSanPham.setGiaBan(chiTietSanPhamDto.getGiaBan());
-        chiTietSanPham.setTrangThai(chiTietSanPhamDto.getTrangThai());
+        chitietsanpham.setmasanpham(chitietsanphamdto.getmasanpham());
+        chitietsanpham.setsoluongton(chitietsanphamdto.getsoluongton());
+        chitietsanpham.setgiaban(chitietsanphamdto.getgiaban());
+        chitietsanpham.settrangthai(chitietsanphamdto.gettrangthai());
 
-        sanpham sanPham = sanPhamRepository.findById(chiTietSanPhamDto.getMaSanPham())
+        chitietsanpham.setsanpham(sanphamrepository.findById(chitietsanphamdto.getmasanpham())
                 .orElseThrow(() -> {
-                    logger.error("SanPham not found with id: {}", chiTietSanPhamDto.getMaSanPham());
-                    return new RuntimeException("SanPham not found");
-                });
-        chiTietSanPham.setSanPham(sanPham);
+                    logger.error("sanpham not found with id: {}", chitietsanphamdto.getmasanpham());
+                    return new RuntimeException("sanpham not found");
+                }));
 
-        chiTietSanPham = chiTietSanPhamRepository.save(chiTietSanPham);
-        logger.info("ChiTietSanPham updated with id: {}", chiTietSanPham.getMaChiTietSanPham());
-        return mapToDto(chiTietSanPham);
+        if (chitietsanphamdto.getnguoitao() != null) {
+            nhanvien nhanvien = nhanvienrepository.findById(chitietsanphamdto.getnguoitao())
+                    .orElseThrow(() -> {
+                        logger.error("nhanvien not found with id: {}", chitietsanphamdto.getnguoitao());
+                        return new RuntimeException("nhanvien not found");
+                    });
+            chitietsanpham.setnhanvien(nhanvien);
+        }
+
+        chitietsanpham = chitietsanphamrepository.save(chitietsanpham);
+        logger.info("chitietsanpham updated with id: {}", chitietsanpham.getmachitetsanpham());
+        return maptodto(chitietsanpham);
     }
 
     @Override
-    public void deleteChiTietSanPham(Integer id) {
-        logger.info("Deleting ChiTietSanPham with id: {}", id);
-        chitietsanpham chiTietSanPham = chiTietSanPhamRepository.findById(id)
+    public void deletechitietsanpham(Integer id) {
+        logger.info("Deleting chitietsanpham with id: {}", id);
+        chitietsanpham chitietsanpham = chitietsanphamrepository.findById(id)
                 .orElseThrow(() -> {
-                    logger.error("ChiTietSanPham not found with id: {}", id);
-                    return new RuntimeException("ChiTietSanPham not found with id: " + id);
+                    logger.error("chitietsanpham not found with id: {}", id);
+                    return new RuntimeException("chitietsanpham not found with id: " + id);
                 });
-        chiTietSanPhamRepository.delete(chiTietSanPham);
-        logger.info("ChiTietSanPham deleted with id: {}", id);
+        chitietsanphamrepository.delete(chitietsanpham);
+        logger.info("chitietsanpham deleted with id: {}", id);
     }
 
-    private chitietsanphamdto mapToDto(chitietsanpham chiTietSanPham) {
+    private chitietsanphamdto maptodto(chitietsanpham chitietsanpham) {
         return chitietsanphamdto.builder()
-                .maChiTietSanPham(chiTietSanPham.getMaChiTietSanPham())
-                .maSanPham(chiTietSanPham.getMaSanPham())
-                .soLuongTon(chiTietSanPham.getSoLuongTon())
-                .giaBan(chiTietSanPham.getGiaBan())
-                .trangThai(chiTietSanPham.getTrangThai())
+                .machitetsanpham(chitietsanpham.getmachitetsanpham())
+                .masanpham(chitietsanpham.getmasanpham())
+                .soluongton(chitietsanpham.getsoluongton())
+                .giaban(chitietsanpham.getgiaban())
+                .ngaytao(chitietsanpham.getngaytao())
+                .trangthai(chitietsanpham.gettrangthai())
+                .nguoitao(chitietsanpham.getnguoitao())
                 .build();
     }
 
-    private chitietsanpham mapToEntity(chitietsanphamdto chiTietSanPhamDto) {
+    private chitietsanpham maptoentity(chitietsanphamdto chitietsanphamdto) {
         return chitietsanpham.builder()
-                .maChiTietSanPham(chiTietSanPhamDto.getMaChiTietSanPham())
-                .maSanPham(chiTietSanPhamDto.getMaSanPham())
-                .soLuongTon(chiTietSanPhamDto.getSoLuongTon())
-                .giaBan(chiTietSanPhamDto.getGiaBan())
-                .trangThai(chiTietSanPhamDto.getTrangThai())
+                .machitetsanpham(chitietsanphamdto.getmachitetsanpham())
+                .masanpham(chitietsanphamdto.getmasanpham())
+                .soluongton(chitietsanphamdto.getsoluongton())
+                .giaban(chitietsanphamdto.getgiaban())
+                .ngaytao(chitietsanphamdto.getngaytao())
+                .trangthai(chitietsanphamdto.gettrangthai())
+                .nguoitao(chitietsanphamdto.getnguoitao())
                 .build();
     }
 }

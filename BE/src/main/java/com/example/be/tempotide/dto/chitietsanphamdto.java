@@ -4,26 +4,34 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Schema(description = "Data Transfer Object for ChiTietSanPham entity")
+@Schema(description = "Data Transfer Object for chitietsanpham entity")
 public class chitietsanphamdto {
 
     @Schema(description = "Unique identifier of the product detail", example = "1")
-    private Integer maChiTietSanPham;
+    private Integer machitetsanpham;
 
-    @NotNull(message = "MaSanPham is required")
+    @NotNull(message = "masanpham is required")
     @Schema(description = "Product ID", example = "1")
-    private Integer maSanPham;
+    private Integer masanpham;
 
     @Schema(description = "Available quantity", example = "100")
-    private Integer soLuongTon;
+    private Integer soluongton;
 
     @Schema(description = "Selling price", example = "199.99")
-    private Double giaBan;
+    private Double giaban;
+
+    @Schema(description = "Creation date", example = "2025-05-26T22:49:00")
+    private LocalDateTime ngaytao;
 
     @Schema(description = "Status of the product detail", example = "true")
-    private Boolean trangThai;
+    private Boolean trangthai;
+
+    @Schema(description = "Creator ID", example = "1")
+    private Integer nguoitao;
 }

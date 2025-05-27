@@ -5,7 +5,7 @@ import com.example.be.tempotide.dto.phiendangnhapdto;
 
 import java.util.List;
 
-public interface PhienDangNhapService {
+public interface phiendangnhapservice {
     phiendangnhapdto createPhienDangNhap(phiendangnhapdto phienDangNhapDto);
     phiendangnhapdto getPhienDangNhapById(Integer id);
     List<phiendangnhapdto> getAllPhienDangNhap();

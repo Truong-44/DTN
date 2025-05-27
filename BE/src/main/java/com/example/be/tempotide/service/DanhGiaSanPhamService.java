@@ -5,7 +5,7 @@ import com.example.be.tempotide.dto.danhgiasanphamdto;
 
 import java.util.List;
 
-public interface DanhGiaSanPhamService {
+public interface danhgiasanphamservice {
     danhgiasanphamdto createDanhGiaSanPham(danhgiasanphamdto danhGiaSanPhamDto);
     danhgiasanphamdto getDanhGiaSanPhamById(Integer id);
     List<danhgiasanphamdto> getAllDanhGiaSanPham();

@@ -4,10 +4,10 @@ import com.example.be.tempotide.dto.chitietsanphamdto;
 
 import java.util.List;
 
-public interface ChiTietSanPhamService {
-    chitietsanphamdto createChiTietSanPham(chitietsanphamdto chiTietSanPhamDto);
-    chitietsanphamdto getChiTietSanPhamById(Integer id);
-    List<chitietsanphamdto> getAllChiTietSanPham();
-    chitietsanphamdto updateChiTietSanPham(Integer id, chitietsanphamdto chiTietSanPhamDto);
-    void deleteChiTietSanPham(Integer id);
+public interface chitietsanphamservice {
+    chitietsanphamdto createchitietsanpham(chitietsanphamdto chitietsanphamdto);
+    chitietsanphamdto getchitietsanphambyid(Integer id);
+    List<chitietsanphamdto> getallchitietsanpham();
+    chitietsanphamdto updatechitietsanpham(Integer id, chitietsanphamdto chitietsanphamdto);
+    void deletechitietsanpham(Integer id);
 }

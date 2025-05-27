@@ -4,7 +4,6 @@ import com.example.be.tempotide.dto.khuyenmaidto;
 import com.example.be.tempotide.entity.khuyenmai;
 import com.example.be.tempotide.repository.khuyenmairepository;
 import com.example.be.tempotide.repository.nhanvienrepository;
-import com.example.be.tempotide.service.KhuyenMaiService;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,15 +16,15 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class KhuyenMaiServiceImpl implements KhuyenMaiService {
+public class khuyenmaiserviceImpl implements com.example.be.tempotide.service.khuyenmaiservice {
 
-    private static final Logger logger = LoggerFactory.getLogger(KhuyenMaiServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(com.example.be.tempotide.service.impl.khuyenmaiserviceImpl.class);
 
     private final khuyenmairepository khuyenMaiRepository;
     private final nhanvienrepository nhanVienRepository;
 
     @Autowired
-    public KhuyenMaiServiceImpl(khuyenmairepository khuyenMaiRepository, nhanvienrepository nhanVienRepository) {
+    public khuyenmaiserviceImpl(khuyenmairepository khuyenMaiRepository, nhanvienrepository nhanVienRepository) {
         this.khuyenMaiRepository = khuyenMaiRepository;
         this.nhanVienRepository = nhanVienRepository;
     }

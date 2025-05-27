@@ -4,9 +4,10 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "ChiTietDonHang")
+@Table(name = "chitietdonhang")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,24 +16,54 @@ public class chitietdonhang {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "MaChiTietDonHang")
-    private Integer maChiTietDonHang;
+    @Column(name = "machitietdonhang")
+    private Integer machitietdonhang;
 
     @ManyToOne
-    @JoinColumn(name = "MaDonHang", referencedColumnName = "MaDonHang", nullable = false)
-    private donhang donHang;
+    @JoinColumn(name = "madonhang", referencedColumnName = "madonhang", nullable = false)
+    private donhang donhang;
 
     @ManyToOne
-    @JoinColumn(name = "MaSanPham", referencedColumnName = "MaSanPham", nullable = false)
-    private sanpham sanPham;
+    @JoinColumn(name = "machitetsanpham", referencedColumnName = "masanpham", nullable = false)
+    private sanpham sanpham;
 
-    @NotNull(message = "SoLuong is required")
-    @Min(value = 1, message = "SoLuong must be at least 1")
-    @Column(name = "SoLuong", nullable = false)
-    private Integer soLuong;
+    @NotNull(message = "soluong is required")
+    @Min(value = 1, message = "soluong must be at least 1")
+    @Column(name = "soluong", nullable = false)
+    private Integer soluong;
 
-    @NotNull(message = "DonGia is required")
-    @DecimalMin(value = "0.0", inclusive = true, message = "DonGia must be non-negative")
-    @Column(name = "DonGia", nullable = false)
-    private BigDecimal donGia;
+    @NotNull(message = "dongia is required")
+    @DecimalMin(value = "0.0", inclusive = true, message = "dongia must be non-negative")
+    @Column(name = "dongia", nullable = false)
+    private BigDecimal dongia;
+
+    @Column(name = "giamgia")
+    @DecimalMin(value = "0.0", inclusive = true, message = "giamgia must be non-negative")
+    private BigDecimal giamgia;
+
+    @Column(name = "ladattruoc", columnDefinition = "BIT DEFAULT 0")
+    private Boolean ladattruoc;
+
+    @Column(name = "ngaytao")
+    private LocalDateTime ngaytao;
+
+    @Column(name = "ngaycapnhat")
+    private LocalDateTime ngaycapnhat;
+
+    @Column(name = "trangthai", columnDefinition = "BIT DEFAULT 1")
+    private Boolean trangthai;
+
+    @Column(name = "nguoitao")
+    private Integer nguoitao;
+
+    @Column(name = "nguoicapnhat")
+    private Integer nguoicapnhat;
+
+    @ManyToOne
+    @JoinColumn(name = "nguoitao", insertable = false, updatable = false)
+    private nhanvien nguoitao_nhanvien;
+
+    @ManyToOne
+    @JoinColumn(name = "nguoicapnhat", insertable = false, updatable = false)
+    private nhanvien nguoicapnhat_nhanvien;
 }

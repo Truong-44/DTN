@@ -4,7 +4,6 @@ package com.example.be.tempotide.service.impl;
 import com.example.be.tempotide.dto.lienhedathangdto;
 import com.example.be.tempotide.entity.*;
 import com.example.be.tempotide.repository.*;
-import com.example.be.tempotide.service.LienHeDatHangService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +16,9 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class LienHeDatHangServiceImpl implements LienHeDatHangService {
+public class lienhedathangserviceImpl implements com.example.be.tempotide.service.lienhedathangservice {
 
-    private static final Logger logger = LoggerFactory.getLogger(LienHeDatHangServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(com.example.be.tempotide.service.impl.lienhedathangserviceImpl.class);
 
     private final lienhedathangrepository lienHeDatHangRepository;
     private final sanphamrepository sanPhamRepository;
@@ -28,7 +27,7 @@ public class LienHeDatHangServiceImpl implements LienHeDatHangService {
     private final nhanvienrepository nhanVienRepository;
 
     @Autowired
-    public LienHeDatHangServiceImpl(lienhedathangrepository lienHeDatHangRepository,
+    public lienhedathangserviceImpl(lienhedathangrepository lienHeDatHangRepository,
                                     sanphamrepository sanPhamRepository,
                                     chitietsanphamrepository chiTietSanPhamRepository,
                                     donhangrepository donHangRepository,

@@ -1,7 +1,7 @@
 package com.example.be.tempotide.controller;
 
 import com.example.be.tempotide.dto.chitietsanphamdto;
-import com.example.be.tempotide.service.ChiTietSanPhamService;
+import com.example.be.tempotide.service.chitietsanphamservice;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,45 +18,45 @@ public class chitietsanphamcontroller {
 
     private static final Logger logger = LoggerFactory.getLogger(chitietsanphamcontroller.class);
 
-    private final ChiTietSanPhamService chiTietSanPhamService;
+    private final chitietsanphamservice chitietsanphamservice;
 
     @Autowired
-    public chitietsanphamcontroller(ChiTietSanPhamService chiTietSanPhamService) {
-        this.chiTietSanPhamService = chiTietSanPhamService;
+    public chitietsanphamcontroller(chitietsanphamservice chitietsanphamservice) {
+        this.chitietsanphamservice = chitietsanphamservice;
     }
 
     @PostMapping
-    public ResponseEntity<chitietsanphamdto> createChiTietSanPham(@Valid @RequestBody chitietsanphamdto chiTietSanPhamDto) {
+    public ResponseEntity<chitietsanphamdto> createchitietsanpham(@Valid @RequestBody chitietsanphamdto chitietsanphamdto) {
         logger.info("API call: POST /api/chitietsanpham");
-        chitietsanphamdto createdChiTietSanPham = chiTietSanPhamService.createChiTietSanPham(chiTietSanPhamDto);
-        return new ResponseEntity<>(createdChiTietSanPham, HttpStatus.CREATED);
+        chitietsanphamdto createdchitietsanpham = chitietsanphamservice.createchitietsanpham(chitietsanphamdto);
+        return new ResponseEntity<>(createdchitietsanpham, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<chitietsanphamdto> getChiTietSanPhamById(@PathVariable Integer id) {
+    public ResponseEntity<chitietsanphamdto> getchitietsanphambyid(@PathVariable Integer id) {
         logger.info("API call: GET /api/chitietsanpham/{}", id);
-        chitietsanphamdto chiTietSanPhamDto = chiTietSanPhamService.getChiTietSanPhamById(id);
-        return ResponseEntity.ok(chiTietSanPhamDto);
+        chitietsanphamdto chitietsanphamdto = chitietsanphamservice.getchitietsanphambyid(id);
+        return ResponseEntity.ok(chitietsanphamdto);
     }
 
     @GetMapping
-    public ResponseEntity<List<chitietsanphamdto>> getAllChiTietSanPham() {
+    public ResponseEntity<List<chitietsanphamdto>> getallchitietsanpham() {
         logger.info("API call: GET /api/chitietsanpham");
-        List<chitietsanphamdto> chiTietSanPhamList = chiTietSanPhamService.getAllChiTietSanPham();
-        return ResponseEntity.ok(chiTietSanPhamList);
+        List<chitietsanphamdto> chitietsanphamlist = chitietsanphamservice.getallchitietsanpham();
+        return ResponseEntity.ok(chitietsanphamlist);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<chitietsanphamdto> updateChiTietSanPham(@PathVariable Integer id, @Valid @RequestBody chitietsanphamdto chiTietSanPhamDto) {
+    public ResponseEntity<chitietsanphamdto> updatechitietsanpham(@PathVariable Integer id, @Valid @RequestBody chitietsanphamdto chitietsanphamdto) {
         logger.info("API call: PUT /api/chitietsanpham/{}", id);
-        chitietsanphamdto updatedChiTietSanPham = chiTietSanPhamService.updateChiTietSanPham(id, chiTietSanPhamDto);
-        return ResponseEntity.ok(updatedChiTietSanPham);
+        chitietsanphamdto updatedchitietsanpham = chitietsanphamservice.updatechitietsanpham(id, chitietsanphamdto);
+        return ResponseEntity.ok(updatedchitietsanpham);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteChiTietSanPham(@PathVariable Integer id) {
+    public ResponseEntity<Void> deletechitietsanpham(@PathVariable Integer id) {
         logger.info("API call: DELETE /api/chitietsanpham/{}", id);
-        chiTietSanPhamService.deleteChiTietSanPham(id);
+        chitietsanphamservice.deletechitietsanpham(id);
         return ResponseEntity.noContent().build();
     }
 }

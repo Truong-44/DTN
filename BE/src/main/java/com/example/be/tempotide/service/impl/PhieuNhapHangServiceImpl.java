@@ -5,7 +5,6 @@ import com.example.be.tempotide.entity.phieuxuatkho;
 import com.example.be.tempotide.repository.nhacungcaprepository;
 import com.example.be.tempotide.repository.nhanvienrepository;
 import com.example.be.tempotide.repository.phieunhaphangrepository;
-import com.example.be.tempotide.service.PhieuNhapHangService;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,16 +17,16 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class PhieuNhapHangServiceImpl implements PhieuNhapHangService {
+public class phieunhaphangserviceImpl implements com.example.be.tempotide.service.phieunhaphangservice {
 
-    private static final Logger logger = LoggerFactory.getLogger(PhieuNhapHangServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(com.example.be.tempotide.service.impl.phieunhaphangserviceImpl.class);
 
     private final phieunhaphangrepository phieuNhapHangRepository;
     private final nhacungcaprepository nhaCungCapRepository;
     private final nhanvienrepository nhanVienRepository;
 
     @Autowired
-    public PhieuNhapHangServiceImpl(phieunhaphangrepository phieuNhapHangRepository,
+    public phieunhaphangserviceImpl(phieunhaphangrepository phieuNhapHangRepository,
                                     nhacungcaprepository nhaCungCapRepository,
                                     nhanvienrepository nhanVienRepository) {
         this.phieuNhapHangRepository = phieuNhapHangRepository;

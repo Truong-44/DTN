@@ -5,7 +5,6 @@ import com.example.be.tempotide.entity.nhanvien;
 import com.example.be.tempotide.entity.quyen;
 import com.example.be.tempotide.repository.nhanvienrepository;
 import com.example.be.tempotide.repository.quyenrepository;
-import com.example.be.tempotide.service.QuyenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,15 +17,15 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class QuyenServiceImpl implements QuyenService {
+public class quyenserviceImpl implements com.example.be.tempotide.service.quyenservice {
 
-    private static final Logger logger = LoggerFactory.getLogger(QuyenServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(com.example.be.tempotide.service.impl.quyenserviceImpl.class);
 
     private final quyenrepository quyenRepository;
     private final nhanvienrepository nhanVienRepository;
 
     @Autowired
-    public QuyenServiceImpl(quyenrepository quyenRepository, nhanvienrepository nhanVienRepository) {
+    public quyenserviceImpl(quyenrepository quyenRepository, nhanvienrepository nhanVienRepository) {
         this.quyenRepository = quyenRepository;
         this.nhanVienRepository = nhanVienRepository;
     }

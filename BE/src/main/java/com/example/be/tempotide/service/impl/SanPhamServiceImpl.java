@@ -6,7 +6,6 @@ import com.example.be.tempotide.repository.danhmucrepository;
 import com.example.be.tempotide.repository.nhanvienrepository;
 import com.example.be.tempotide.repository.sanphamrepository;
 import com.example.be.tempotide.repository.thuonghieurepository;
-import com.example.be.tempotide.service.SanPhamService;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,9 +18,9 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class SanPhamServiceImpl implements SanPhamService {
+public class sanphamserviceImpl implements com.example.be.tempotide.service.sanphamservice {
 
-    private static final Logger logger = LoggerFactory.getLogger(SanPhamServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(com.example.be.tempotide.service.impl.sanphamserviceImpl.class);
 
     private final sanphamrepository sanPhamRepository;
     private final danhmucrepository danhMucRepository;
@@ -29,7 +28,7 @@ public class SanPhamServiceImpl implements SanPhamService {
     private final nhanvienrepository nhanVienRepository;
 
     @Autowired
-    public SanPhamServiceImpl(sanphamrepository sanPhamRepository, danhmucrepository danhMucRepository,
+    public sanphamserviceImpl(sanphamrepository sanPhamRepository, danhmucrepository danhMucRepository,
                               thuonghieurepository thuongHieuRepository, nhanvienrepository nhanVienRepository) {
         this.sanPhamRepository = sanPhamRepository;
         this.danhMucRepository = danhMucRepository;

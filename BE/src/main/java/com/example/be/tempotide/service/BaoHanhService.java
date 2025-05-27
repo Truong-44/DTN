@@ -4,10 +4,10 @@ import com.example.be.tempotide.dto.baohanhdto;
 
 import java.util.List;
 
-public interface BaoHanhService {
-    baohanhdto createBaoHanh(baohanhdto baoHanhDto);
-    baohanhdto getBaoHanhById(Integer id);
-    List<baohanhdto> getAllBaoHanh();
-    baohanhdto updateBaoHanh(Integer id, baohanhdto baoHanhDto);
-    void deleteBaoHanh(Integer id);
+public interface baohanhservice {
+    baohanhdto createbaohanh(baohanhdto baohanhdto);
+    baohanhdto getbaohanhbyid(Integer id);
+    List<baohanhdto> getallbaohanh();
+    baohanhdto updatebaohanh(Integer id, baohanhdto baohanhdto);
+    void deletebaohanh(Integer id);
 }

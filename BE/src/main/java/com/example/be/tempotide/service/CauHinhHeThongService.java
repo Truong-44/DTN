@@ -1,12 +1,13 @@
 package com.example.be.tempotide.service;
 
 import com.example.be.tempotide.dto.cauhinhhethongdto;
+
 import java.util.List;
 
-public interface CauHinhHeThongService {
-    cauhinhhethongdto createCauHinhHeThong(cauhinhhethongdto cauHinhHeThongDto);
-    cauhinhhethongdto getCauHinhHeThongById(Integer id);
-    List<cauhinhhethongdto> getAllCauHinhHeThong();
-    cauhinhhethongdto updateCauHinhHeThong(Integer id, cauhinhhethongdto cauHinhHeThongDto);
-    void deleteCauHinhHeThong(Integer id);
+public interface cauhinhhethongservice {
+    cauhinhhethongdto createcauhinhhethong(cauhinhhethongdto cauhinhhethongdto);
+    cauhinhhethongdto getcauhinhhethongbyid(Integer id);
+    List<cauhinhhethongdto> getallcauhinhhethong();
+    cauhinhhethongdto updatecauhinhhethong(Integer id, cauhinhhethongdto cauhinhhethongdto);
+    void deletecauhinhhethong(Integer id);
 }

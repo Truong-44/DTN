@@ -1,7 +1,6 @@
 package com.example.be.tempotide.controller;
 
 import com.example.be.tempotide.dto.khohangdto;
-import com.example.be.tempotide.service.KhoHangService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,10 +17,10 @@ public class khohangcontroller {
 
     private static final Logger logger = LoggerFactory.getLogger(khohangcontroller.class);
 
-    private final KhoHangService khoHangService;
+    private final com.example.be.tempotide.service.khohangservice khoHangService;
 
     @Autowired
-    public khohangcontroller(KhoHangService khoHangService) {
+    public khohangcontroller(com.example.be.tempotide.service.khohangservice khoHangService) {
         this.khoHangService = khoHangService;
     }
 

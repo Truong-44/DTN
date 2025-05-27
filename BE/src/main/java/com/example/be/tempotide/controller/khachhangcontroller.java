@@ -1,7 +1,6 @@
 package com.example.be.tempotide.controller;
 
 import com.example.be.tempotide.dto.khachhangdto;
-import com.example.be.tempotide.service.KhachHangService;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -19,10 +18,10 @@ public class khachhangcontroller {
 
     private static final Logger logger = LoggerFactory.getLogger(khachhangcontroller.class);
 
-    private final KhachHangService khachHangService;
+    private final com.example.be.tempotide.service.khachhangservice khachHangService;
 
     @Autowired
-    public khachhangcontroller(KhachHangService khachHangService) {
+    public khachhangcontroller(com.example.be.tempotide.service.khachhangservice khachHangService) {
         this.khachHangService = khachHangService;
     }
 

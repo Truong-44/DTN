@@ -8,7 +8,6 @@ import com.example.be.tempotide.entity.nhanvien;
 import com.example.be.tempotide.repository.donhangrepository;
 import com.example.be.tempotide.repository.lichsudonhangrepository;
 import com.example.be.tempotide.repository.nhanvienrepository;
-import com.example.be.tempotide.service.LichSuDonHangService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,16 +20,16 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class LichSuDonHangServiceImpl implements LichSuDonHangService {
+public class lichsudonhangserviceImpl implements com.example.be.tempotide.service.lichsudonhangservice {
 
-    private static final Logger logger = LoggerFactory.getLogger(LichSuDonHangServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(com.example.be.tempotide.service.impl.lichsudonhangserviceImpl.class);
 
     private final lichsudonhangrepository lichSuDonHangRepository;
     private final donhangrepository donHangRepository;
     private final nhanvienrepository nhanVienRepository;
 
     @Autowired
-    public LichSuDonHangServiceImpl(lichsudonhangrepository lichSuDonHangRepository,
+    public lichsudonhangserviceImpl(lichsudonhangrepository lichSuDonHangRepository,
                                     donhangrepository donHangRepository,
                                     nhanvienrepository nhanVienRepository) {
         this.lichSuDonHangRepository = lichSuDonHangRepository;
