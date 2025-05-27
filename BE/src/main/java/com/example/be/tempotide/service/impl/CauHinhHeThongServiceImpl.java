@@ -2,105 +2,136 @@ package com.example.be.tempotide.service.impl;
 
 import com.example.be.tempotide.dto.cauhinhhethongdto;
 import com.example.be.tempotide.entity.cauhinhhethong;
+import com.example.be.tempotide.entity.nhanvien;
 import com.example.be.tempotide.repository.cauhinhhethongrepository;
+import com.example.be.tempotide.repository.nhanvienrepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class cauhinhhethongserviceImpl implements com.example.be.tempotide.service.cauhinhhethongservice {
+public class cauhinhhethongserviceimpl implements com.example.be.tempotide.service.cauhinhhethongservice {
 
-    private static final Logger logger = LoggerFactory.getLogger(com.example.be.tempotide.service.impl.cauhinhhethongserviceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(cauhinhhethongserviceimpl.class);
 
-    private final cauhinhhethongrepository cauHinhHeThongRepository;
+    private final cauhinhhethongrepository cauhinhhethongrepository;
+    private final nhanvienrepository nhanvienrepository;
 
     @Autowired
-    public cauhinhhethongserviceImpl(cauhinhhethongrepository cauHinhHeThongRepository) {
-        this.cauHinhHeThongRepository = cauHinhHeThongRepository;
+    public cauhinhhethongserviceimpl(cauhinhhethongrepository cauhinhhethongrepository,
+                                     nhanvienrepository nhanvienrepository) {
+        this.cauhinhhethongrepository = cauhinhhethongrepository;
+        this.nhanvienrepository = nhanvienrepository;
     }
 
     @Override
-    public cauhinhhethongdto createCauHinhHeThong(cauhinhhethongdto cauHinhHeThongDto) {
-        logger.info("Creating new CauHinhHeThong for TenCauHinh: {}", cauHinhHeThongDto.getTenCauHinh());
-        cauhinhhethong cauHinhHeThong = mapToEntity(cauHinhHeThongDto);
-        cauHinhHeThong = cauHinhHeThongRepository.save(cauHinhHeThong);
-        logger.info("CauHinhHeThong created with id: {}", cauHinhHeThong.getMaCauHinh());
-        return mapToDto(cauHinhHeThong);
+    public cauhinhhethongdto createcauhinhhethong(cauhinhhethongdto cauhinhhethongdto) {
+        logger.info("Creating new cauhinhhethong for tencauhinh: {}", cauhinhhethongdto.gettencauhinh());
+        cauhinhhethong cauhinhhethong = maptoentity(cauhinhhethongdto);
+
+        if (cauhinhhethongdto.getnguoitao() != null) {
+            nhanvien nhanvien = nhanvienrepository.findById(cauhinhhethongdto.getnguoitao())
+                    .orElseThrow(() -> {
+                        logger.error("nhanvien not found with id: {}", cauhinhhethongdto.getnguoitao());
+                        return new RuntimeException("nhanvien not found");
+                    });
+            cauhinhhethong.setnhanvien(nhanvien);
+        }
+
+        cauhinhhethong.setngaytao(LocalDateTime.now());
+        cauhinhhethong = cauhinhhethongrepository.save(cauhinhhethong);
+        logger.info("cauhinhhethong created with id: {}", cauhinhhethong.getmacauhinh());
+        return maptodto(cauhinhhethong);
     }
 
     @Override
-    public cauhinhhethongdto getCauHinhHeThongById(Integer id) {
-        logger.info("Fetching CauHinhHeThong with id: {}", id);
-        cauhinhhethong cauHinhHeThong = cauHinhHeThongRepository.findById(id)
+    public cauhinhhethongdto getcauhinhhethongbyid(Integer id) {
+        logger.info("Fetching cauhinhhethong with id: {}", id);
+        cauhinhhethong cauhinhhethong = cauhinhhethongrepository.findById(id)
                 .orElseThrow(() -> {
-                    logger.error("CauHinhHeThong not found with id: {}", id);
-                    return new RuntimeException("CauHinhHeThong not found with id: " + id);
+                    logger.error("cauhinhhethong not found with id: {}", id);
+                    return new RuntimeException("cauhinhhethong not found with id: " + id);
                 });
-        return mapToDto(cauHinhHeThong);
+        return maptodto(cauhinhhethong);
     }
 
     @Override
-    public List<cauhinhhethongdto> getAllCauHinhHeThong() {
-        logger.info("Fetching all CauHinhHeThong");
-        return cauHinhHeThongRepository.findAll().stream()
-                .map(this::mapToDto)
+    public List<cauhinhhethongdto> getallcauhinhhethong() {
+        logger.info("Fetching all cauhinhhethong");
+        return cauhinhhethongrepository.findAll().stream()
+                .map(this::maptodto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public cauhinhhethongdto updateCauHinhHeThong(Integer id, cauhinhhethongdto cauHinhHeThongDto) {
-        logger.info("Updating CauHinhHeThong with id: {}", id);
-        cauhinhhethong cauHinhHeThong = cauHinhHeThongRepository.findById(id)
+    public cauhinhhethongdto updatecauhinhhethong(Integer id, cauhinhhethongdto cauhinhhethongdto) {
+        logger.info("Updating cauhinhhethong with id: {}", id);
+        cauhinhhethong cauhinhhethong = cauhinhhethongrepository.findById(id)
                 .orElseThrow(() -> {
-                    logger.error("CauHinhHeThong not found with id: {}", id);
-                    return new RuntimeException("CauHinhHeThong not found with id: " + id);
+                    logger.error("cauhinhhethong not found with id: {}", id);
+                    return new RuntimeException("cauhinhhethong not found with id: " + id);
                 });
 
-        cauHinhHeThong.setTenCauHinh(cauHinhHeThongDto.getTenCauHinh());
-        cauHinhHeThong.setGiaTri(cauHinhHeThongDto.getGiaTri());
-        cauHinhHeThong.setMoTa(cauHinhHeThongDto.getMoTa());
-        cauHinhHeThong.setTrangThai(cauHinhHeThongDto.getTrangThai());
+        cauhinhhethong.settencauhinh(cauhinhhethongdto.gettencauhinh());
+        cauhinhhethong.setgiatri(cauhinhhethongdto.getgiatri());
+        cauhinhhethong.setmota(cauhinhhethongdto.getmota());
+        cauhinhhethong.setngaytao(cauhinhhethongdto.getngaytao());
+        cauhinhhethong.settrangthai(cauhinhhethongdto.gettrangthai());
 
-        cauHinhHeThong = cauHinhHeThongRepository.save(cauHinhHeThong);
-        logger.info("CauHinhHeThong updated with id: {}", cauHinhHeThong.getMaCauHinh());
-        return mapToDto(cauHinhHeThong);
+        if (cauhinhhethongdto.getnguoitao() != null) {
+            nhanvien nhanvien = nhanvienrepository.findById(cauhinhhethongdto.getnguoitao())
+                    .orElseThrow(() -> {
+                        logger.error("nhanvien not found with id: {}", cauhinhhethongdto.getnguoitao());
+                        return new RuntimeException("nhanvien not found");
+                    });
+            cauhinhhethong.setnhanvien(nhanvien);
+        }
+
+        cauhinhhethong = cauhinhhethongrepository.save(cauhinhhethong);
+        logger.info("cauhinhhethong updated with id: {}", cauhinhhethong.getmacauhinh());
+        return maptodto(cauhinhhethong);
     }
 
     @Override
-    public void deleteCauHinhHeThong(Integer id) {
-        logger.info("Deleting CauHinhHeThong with id: {}", id);
-        cauhinhhethong cauHinhHeThong = cauHinhHeThongRepository.findById(id)
+    public void deletecauhinhhethong(Integer id) {
+        logger.info("Deleting cauhinhhethong with id: {}", id);
+        cauhinhhethong cauhinhhethong = cauhinhhethongrepository.findById(id)
                 .orElseThrow(() -> {
-                    logger.error("CauHinhHeThong not found with id: {}", id);
-                    return new RuntimeException("CauHinhHeThong not found with id: " + id);
+                    logger.error("cauhinhhethong not found with id: {}", id);
+                    return new RuntimeException("cauhinhhethong not found with id: " + id);
                 });
-        cauHinhHeThongRepository.delete(cauHinhHeThong);
-        logger.info("CauHinhHeThong deleted with id: {}", id);
+        cauhinhhethongrepository.delete(cauhinhhethong);
+        logger.info("cauhinhhethong deleted with id: {}", id);
     }
 
-    private cauhinhhethongdto mapToDto(cauhinhhethong cauHinhHeThong) {
+    private cauhinhhethongdto maptodto(cauhinhhethong cauhinhhethong) {
         return cauhinhhethongdto.builder()
-                .maCauHinh(cauHinhHeThong.getMaCauHinh())
-                .tenCauHinh(cauHinhHeThong.getTenCauHinh())
-                .giaTri(cauHinhHeThong.getGiaTri())
-                .moTa(cauHinhHeThong.getMoTa())
-                .trangThai(cauHinhHeThong.getTrangThai())
+                .macauhinh(cauhinhhethong.getmacauhinh())
+                .tencauhinh(cauhinhhethong.gettencauhinh())
+                .giatri(cauhinhhethong.getgiatri())
+                .mota(cauhinhhethong.getmota())
+                .ngaytao(cauhinhhethong.getngaytao())
+                .trangthai(cauhinhhethong.gettrangthai())
+                .nguoitao(cauhinhhethong.getnguoitao())
                 .build();
     }
 
-    private cauhinhhethong mapToEntity(cauhinhhethongdto cauHinhHeThongDto) {
+    private cauhinhhethong maptoentity(cauhinhhethongdto cauhinhhethongdto) {
         return cauhinhhethong.builder()
-                .maCauHinh(cauHinhHeThongDto.getMaCauHinh())
-                .tenCauHinh(cauHinhHeThongDto.getTenCauHinh())
-                .giaTri(cauHinhHeThongDto.getGiaTri())
-                .moTa(cauHinhHeThongDto.getMoTa())
-                .trangThai(cauHinhHeThongDto.getTrangThai())
+                .macauhinh(cauhinhhethongdto.getmacauhinh())
+                .tencauhinh(cauhinhhethongdto.gettencauhinh())
+                .giatri(cauhinhhethongdto.getgiatri())
+                .mota(cauhinhhethongdto.getmota())
+                .ngaytao(cauhinhhethongdto.getngaytao())
+                .trangthai(cauhinhhethongdto.gettrangthai())
+                .nguoitao(cauhinhhethongdto.getnguoitao())
                 .build();
     }
 }

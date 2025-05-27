@@ -16,31 +16,36 @@ public class baohanh {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "MaBaoHanh")
-    private Integer maBaoHanh;
+    @Column(name = "mabaohanh")
+    private Integer mabaohanh;
 
-    @NotNull(message = "MaSanPham is required")
-    @Column(name = "MaSanPham", nullable = false)
-    private Integer maSanPham;
+    @NotNull(message = "masanpham is required")
+    @Column(name = "masanpham", nullable = false)
+    private Integer masanpham;
 
-    @NotNull(message = "ThoiHanBaoHanh is required")
-    @Column(name = "ThoiHanBaoHanh", nullable = false)
-    private Integer thoiHanBaoHanh;
+    @NotNull(message = "thoigianbaohanh is required")
+    @Column(name = "thoigianbaohanh", nullable = false)
+    @Min(value = 1, message = "thoigianbaohanh must be greater than 0")
+    private Integer thoigianbaohanh;
 
-    @Column(name = "NgayBatDau")
-    private LocalDateTime ngayBatDau;
+    @Size(max = 500, message = "dieukienbaohanh must not exceed 500 characters")
+    @Column(name = "dieukienbaohanh")
+    private String dieukienbaohanh;
 
-    @Column(name = "NgayKetThuc")
-    private LocalDateTime ngayKetThuc;
+    @Column(name = "ngaytao")
+    private LocalDateTime ngaytao;
 
-    @Size(max = 500, message = "DieuKienBaoHanh must not exceed 500 characters")
-    @Column(name = "DieuKienBaoHanh")
-    private String dieuKienBaoHanh;
+    @Column(name = "trangthai", columnDefinition = "BIT DEFAULT 1")
+    private Boolean trangthai;
 
-    @Column(name = "TrangThai", columnDefinition = "BIT DEFAULT 1")
-    private Boolean trangThai;
+    @Column(name = "nguoitao")
+    private Integer nguoitao;
 
     @ManyToOne
-    @JoinColumn(name = "MaSanPham", insertable = false, updatable = false)
-    private sanpham sanPham;
+    @JoinColumn(name = "masanpham", insertable = false, updatable = false)
+    private sanpham sanpham;
+
+    @ManyToOne
+    @JoinColumn(name = "nguoitao", insertable = false, updatable = false)
+    private nhanvien nhanvien;
 }

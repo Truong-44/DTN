@@ -1,6 +1,7 @@
 package com.example.be.tempotide.controller;
 
 import com.example.be.tempotide.dto.cauhinhhethongdto;
+import com.example.be.tempotide.service.cauhinhhethongservice;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,45 +18,45 @@ public class cauhinhhethongcontroller {
 
     private static final Logger logger = LoggerFactory.getLogger(cauhinhhethongcontroller.class);
 
-    private final com.example.be.tempotide.service.cauhinhhethongservice cauHinhHeThongService;
+    private final cauhinhhethongservice cauhinhhethongservice;
 
     @Autowired
-    public cauhinhhethongcontroller(com.example.be.tempotide.service.cauhinhhethongservice cauHinhHeThongService) {
-        this.cauHinhHeThongService = cauHinhHeThongService;
+    public cauhinhhethongcontroller(cauhinhhethongservice cauhinhhethongservice) {
+        this.cauhinhhethongservice = cauhinhhethongservice;
     }
 
     @PostMapping
-    public ResponseEntity<cauhinhhethongdto> createCauHinhHeThong(@Valid @RequestBody cauhinhhethongdto cauHinhHeThongDto) {
+    public ResponseEntity<cauhinhhethongdto> createcauhinhhethong(@Valid @RequestBody cauhinhhethongdto cauhinhhethongdto) {
         logger.info("API call: POST /api/cauhinhhethong");
-        cauhinhhethongdto createdCauHinhHeThong = cauHinhHeThongService.createCauHinhHeThong(cauHinhHeThongDto);
-        return new ResponseEntity<>(createdCauHinhHeThong, HttpStatus.CREATED);
+        cauhinhhethongdto createdcauhinhhethong = cauhinhhethongservice.createcauhinhhethong(cauhinhhethongdto);
+        return new ResponseEntity<>(createdcauhinhhethong, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<cauhinhhethongdto> getCauHinhHeThongById(@PathVariable Integer id) {
+    public ResponseEntity<cauhinhhethongdto> getcauhinhhethongbyid(@PathVariable Integer id) {
         logger.info("API call: GET /api/cauhinhhethong/{}", id);
-        cauhinhhethongdto cauHinhHeThongDto = cauHinhHeThongService.getCauHinhHeThongById(id);
-        return ResponseEntity.ok(cauHinhHeThongDto);
+        cauhinhhethongdto cauhinhhethongdto = cauhinhhethongservice.getcauhinhhethongbyid(id);
+        return ResponseEntity.ok(cauhinhhethongdto);
     }
 
     @GetMapping
-    public ResponseEntity<List<cauhinhhethongdto>> getAllCauHinhHeThong() {
+    public ResponseEntity<List<cauhinhhethongdto>> getallcauhinhhethong() {
         logger.info("API call: GET /api/cauhinhhethong");
-        List<cauhinhhethongdto> cauHinhHeThongList = cauHinhHeThongService.getAllCauHinhHeThong();
-        return ResponseEntity.ok(cauHinhHeThongList);
+        List<cauhinhhethongdto> cauhinhhethonglist = cauhinhhethongservice.getallcauhinhhethong();
+        return ResponseEntity.ok(cauhinhhethonglist);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<cauhinhhethongdto> updateCauHinhHeThong(@PathVariable Integer id, @Valid @RequestBody cauhinhhethongdto cauHinhHeThongDto) {
+    public ResponseEntity<cauhinhhethongdto> updatecauhinhhethong(@PathVariable Integer id, @Valid @RequestBody cauhinhhethongdto cauhinhhethongdto) {
         logger.info("API call: PUT /api/cauhinhhethong/{}", id);
-        cauhinhhethongdto updatedCauHinhHeThong = cauHinhHeThongService.updateCauHinhHeThong(id, cauHinhHeThongDto);
-        return ResponseEntity.ok(updatedCauHinhHeThong);
+        cauhinhhethongdto updatedcauhinhhethong = cauhinhhethongservice.updatecauhinhhethong(id, cauhinhhethongdto);
+        return ResponseEntity.ok(updatedcauhinhhethong);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCauHinhHeThong(@PathVariable Integer id) {
+    public ResponseEntity<Void> deletecauhinhhethong(@PathVariable Integer id) {
         logger.info("API call: DELETE /api/cauhinhhethong/{}", id);
-        cauHinhHeThongService.deleteCauHinhHeThong(id);
+        cauhinhhethongservice.deletecauhinhhethong(id);
         return ResponseEntity.noContent().build();
     }
 }

@@ -17,121 +17,121 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-public class capbackhachhangserviceImpl implements com.example.be.tempotide.service.capbackhachhangservice {
+public class capbackhachhangserviceimpl implements com.example.be.tempotide.service.capbackhachhangservice {
 
-    private static final Logger logger = LoggerFactory.getLogger(com.example.be.tempotide.service.impl.capbackhachhangserviceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(capbackhachhangserviceimpl.class);
 
-    private final capbackhachhangrepository capBacKhachHangRepository;
-    private final nhanvienrepository nhanVienRepository;
+    private final capbackhachhangrepository capbackhachhangrepository;
+    private final nhanvienrepository nhanvienrepository;
 
     @Autowired
-    public capbackhachhangserviceImpl(capbackhachhangrepository capBacKhachHangRepository,
-                                      nhanvienrepository nhanVienRepository) {
-        this.capBacKhachHangRepository = capBacKhachHangRepository;
-        this.nhanVienRepository = nhanVienRepository;
+    public capbackhachhangserviceimpl(capbackhachhangrepository capbackhachhangrepository,
+                                      nhanvienrepository nhanvienrepository) {
+        this.capbackhachhangrepository = capbackhachhangrepository;
+        this.nhanvienrepository = nhanvienrepository;
     }
 
     @Override
-    public capbackhachhangdto createCapBacKhachHang(capbackhachhangdto capBacKhachHangDto) {
-        logger.info("Creating new CapBacKhachHang for TenCapBac: {}", capBacKhachHangDto.getTenCapBac());
-        capbackhachhang capBacKhachHang = mapToEntity(capBacKhachHangDto);
+    public capbackhachhangdto createcapbackhachhang(capbackhachhangdto capbackhachhangdto) {
+        logger.info("Creating new capbackhachhang for tencapbac: {}", capbackhachhangdto.gettencapbac());
+        capbackhachhang capbackhachhang = maptoentity(capbackhachhangdto);
 
-        if (capBacKhachHangDto.getNguoiTao() != null) {
-            nhanvien nguoiTao = nhanVienRepository.findById(capBacKhachHangDto.getNguoiTao())
+        if (capbackhachhangdto.getnguoitao() != null) {
+            nhanvien nhanvien = nhanvienrepository.findById(capbackhachhangdto.getnguoitao())
                     .orElseThrow(() -> {
-                        logger.error("NguoiTao not found with id: {}", capBacKhachHangDto.getNguoiTao());
-                        return new RuntimeException("NguoiTao not found");
+                        logger.error("nhanvien not found with id: {}", capbackhachhangdto.getnguoitao());
+                        return new RuntimeException("nhanvien not found");
                     });
-            capBacKhachHang.setNguoiTaoNhanvien(nguoiTao);
+            capbackhachhang.setnhanvien(nhanvien);
         }
 
-        capBacKhachHang.setNgayTao(LocalDateTime.now());
-        capBacKhachHang = capBacKhachHangRepository.save(capBacKhachHang);
-        logger.info("CapBacKhachHang created with id: {}", capBacKhachHang.getMaCapBac());
-        return mapToDto(capBacKhachHang);
+        capbackhachhang.setngaytao(LocalDateTime.now());
+        capbackhachhang = capbackhachhangrepository.save(capbackhachhang);
+        logger.info("capbackhachhang created with id: {}", capbackhachhang.getmacapbac());
+        return maptodto(capbackhachhang);
     }
 
     @Override
-    public capbackhachhangdto getCapBacKhachHangById(Integer id) {
-        logger.info("Fetching CapBacKhachHang with id: {}", id);
-        capbackhachhang capBacKhachHang = capBacKhachHangRepository.findById(id)
+    public capbackhachhangdto getcapbackhachhangbyid(Integer id) {
+        logger.info("Fetching capbackhachhang with id: {}", id);
+        capbackhachhang capbackhachhang = capbackhachhangrepository.findById(id)
                 .orElseThrow(() -> {
-                    logger.error("CapBacKhachHang not found with id: {}", id);
-                    return new RuntimeException("CapBacKhachHang not found with id: " + id);
+                    logger.error("capbackhachhang not found with id: {}", id);
+                    return new RuntimeException("capbackhachhang not found with id: " + id);
                 });
-        return mapToDto(capBacKhachHang);
+        return maptodto(capbackhachhang);
     }
 
     @Override
-    public List<capbackhachhangdto> getAllCapBacKhachHang() {
-        logger.info("Fetching all CapBacKhachHang");
-        return capBacKhachHangRepository.findAll().stream()
-                .map(this::mapToDto)
+    public List<capbackhachhangdto> getallcapbackhachhang() {
+        logger.info("Fetching all capbackhachhang");
+        return capbackhachhangrepository.findAll().stream()
+                .map(this::maptodto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public capbackhachhangdto updateCapBacKhachHang(Integer id, capbackhachhangdto capBacKhachHangDto) {
-        logger.info("Updating CapBacKhachHang with id: {}", id);
-        capbackhachhang capBacKhachHang = capBacKhachHangRepository.findById(id)
+    public capbackhachhangdto updatecapbackhachhang(Integer id, capbackhachhangdto capbackhachhangdto) {
+        logger.info("Updating capbackhachhang with id: {}", id);
+        capbackhachhang capbackhachhang = capbackhachhangrepository.findById(id)
                 .orElseThrow(() -> {
-                    logger.error("CapBacKhachHang not found with id: {}", id);
-                    return new RuntimeException("CapBacKhachHang not found with id: " + id);
+                    logger.error("capbackhachhang not found with id: {}", id);
+                    return new RuntimeException("capbackhachhang not found with id: " + id);
                 });
 
-        capBacKhachHang.setTenCapBac(capBacKhachHangDto.getTenCapBac());
-        capBacKhachHang.setDiemToiThieu(capBacKhachHangDto.getDiemToiThieu());
-        capBacKhachHang.setGiamGiaMacDinh(capBacKhachHangDto.getGiamGiaMacDinh());
-        capBacKhachHang.setNgayTao(capBacKhachHangDto.getNgayTao());
-        capBacKhachHang.setTrangThai(capBacKhachHangDto.getTrangThai());
+        capbackhachhang.settencapbac(capbackhachhangdto.gettencapbac());
+        capbackhachhang.setdiemtoithieu(capbackhachhangdto.getdiemtoithieu());
+        capbackhachhang.setgiamgiamacdinh(capbackhachhangdto.getgiamgiamacdinh());
+        capbackhachhang.setngaytao(capbackhachhangdto.getngaytao());
+        capbackhachhang.settrangthai(capbackhachhangdto.gettrangthai());
 
-        if (capBacKhachHangDto.getNguoiTao() != null) {
-            nhanvien nguoiTao = nhanVienRepository.findById(capBacKhachHangDto.getNguoiTao())
+        if (capbackhachhangdto.getnguoitao() != null) {
+            nhanvien nhanvien = nhanvienrepository.findById(capbackhachhangdto.getnguoitao())
                     .orElseThrow(() -> {
-                        logger.error("NguoiTao not found with id: {}", capBacKhachHangDto.getNguoiTao());
-                        return new RuntimeException("NguoiTao not found");
+                        logger.error("nhanvien not found with id: {}", capbackhachhangdto.getnguoitao());
+                        return new RuntimeException("nhanvien not found");
                     });
-            capBacKhachHang.setNguoiTaoNhanvien(nguoiTao);
+            capbackhachhang.setnhanvien(nhanvien);
         }
 
-        capBacKhachHang = capBacKhachHangRepository.save(capBacKhachHang);
-        logger.info("CapBacKhachHang updated with id: {}", capBacKhachHang.getMaCapBac());
-        return mapToDto(capBacKhachHang);
+        capbackhachhang = capbackhachhangrepository.save(capbackhachhang);
+        logger.info("capbackhachhang updated with id: {}", capbackhachhang.getmacapbac());
+        return maptodto(capbackhachhang);
     }
 
     @Override
-    public void deleteCapBacKhachHang(Integer id) {
-        logger.info("Deleting CapBacKhachHang with id: {}", id);
-        capbackhachhang capBacKhachHang = capBacKhachHangRepository.findById(id)
+    public void deletecapbackhachhang(Integer id) {
+        logger.info("Deleting capbackhachhang with id: {}", id);
+        capbackhachhang capbackhachhang = capbackhachhangrepository.findById(id)
                 .orElseThrow(() -> {
-                    logger.error("CapBacKhachHang not found with id: {}", id);
-                    return new RuntimeException("CapBacKhachHang not found with id: " + id);
+                    logger.error("capbackhachhang not found with id: {}", id);
+                    return new RuntimeException("capbackhachhang not found with id: " + id);
                 });
-        capBacKhachHangRepository.delete(capBacKhachHang);
-        logger.info("CapBacKhachHang deleted with id: {}", id);
+        capbackhachhangrepository.delete(capbackhachhang);
+        logger.info("capbackhachhang deleted with id: {}", id);
     }
 
-    private capbackhachhangdto mapToDto(capbackhachhang capBacKhachHang) {
+    private capbackhachhangdto maptodto(capbackhachhang capbackhachhang) {
         return capbackhachhangdto.builder()
-                .maCapBac(capBacKhachHang.getMaCapBac())
-                .tenCapBac(capBacKhachHang.getTenCapBac())
-                .diemToiThieu(capBacKhachHang.getDiemToiThieu())
-                .giamGiaMacDinh(capBacKhachHang.getGiamGiaMacDinh())
-                .ngayTao(capBacKhachHang.getNgayTao())
-                .trangThai(capBacKhachHang.getTrangThai())
-                .nguoiTao(capBacKhachHang.getNguoiTao())
+                .macapbac(capbackhachhang.getmacapbac())
+                .tencapbac(capbackhachhang.gettencapbac())
+                .diemtoithieu(capbackhachhang.getdiemtoithieu())
+                .giamgiamacdinh(capbackhachhang.getgiamgiamacdinh())
+                .ngaytao(capbackhachhang.getngaytao())
+                .trangthai(capbackhachhang.gettrangthai())
+                .nguoitao(capbackhachhang.getnguoitao())
                 .build();
     }
 
-    private capbackhachhang mapToEntity(capbackhachhangdto capBacKhachHangDto) {
+    private capbackhachhang maptoentity(capbackhachhangdto capbackhachhangdto) {
         return capbackhachhang.builder()
-                .maCapBac(capBacKhachHangDto.getMaCapBac())
-                .tenCapBac(capBacKhachHangDto.getTenCapBac())
-                .diemToiThieu(capBacKhachHangDto.getDiemToiThieu())
-                .giamGiaMacDinh(capBacKhachHangDto.getGiamGiaMacDinh())
-                .ngayTao(capBacKhachHangDto.getNgayTao())
-                .trangThai(capBacKhachHangDto.getTrangThai())
-                .nguoiTao(capBacKhachHangDto.getNguoiTao())
+                .macapbac(capbackhachhangdto.getmacapbac())
+                .tencapbac(capbackhachhangdto.gettencapbac())
+                .diemtoithieu(capbackhachhangdto.getdiemtoithieu())
+                .giamgiamacdinh(capbackhachhangdto.getgiamgiamacdinh())
+                .ngaytao(capbackhachhangdto.getngaytao())
+                .trangthai(capbackhachhangdto.gettrangthai())
+                .nguoitao(capbackhachhangdto.getnguoitao())
                 .build();
     }
 }

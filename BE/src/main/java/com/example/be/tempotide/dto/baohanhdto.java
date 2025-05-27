@@ -10,30 +10,31 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Schema(description = "Data Transfer Object for BaoHanh entity")
+@Schema(description = "Data Transfer Object for baohanh entity")
 public class baohanhdto {
 
     @Schema(description = "Unique identifier of the warranty", example = "1")
-    private Integer maBaoHanh;
+    private Integer mabaohanh;
 
-    @NotNull(message = "MaSanPham is required")
+    @NotNull(message = "masanpham is required")
     @Schema(description = "Product ID", example = "1")
-    private Integer maSanPham;
+    private Integer masanpham;
 
-    @NotNull(message = "ThoiHanBaoHanh is required")
+    @NotNull(message = "thoigianbaohanh is required")
+    @Min(value = 1, message = "thoigianbaohanh must be greater than 0")
     @Schema(description = "Warranty duration in months", example = "12")
-    private Integer thoiHanBaoHanh;
+    private Integer thoigianbaohanh;
 
-    @Schema(description = "Start date of the warranty", example = "2025-05-25T11:17:00")
-    private LocalDateTime ngayBatDau;
-
-    @Schema(description = "End date of the warranty", example = "2026-05-25T11:17:00")
-    private LocalDateTime ngayKetThuc;
-
-    @Size(max = 500, message = "DieuKienBaoHanh must not exceed 500 characters")
+    @Size(max = 500, message = "dieukienbaohanh must not exceed 500 characters")
     @Schema(description = "Warranty conditions", example = "Bảo hành 1 đổi 1 trong 12 tháng nếu lỗi do nhà sản xuất")
-    private String dieuKienBaoHanh;
+    private String dieukienbaohanh;
+
+    @Schema(description = "Creation date of the warranty", example = "2025-05-25T11:17:00")
+    private LocalDateTime ngaytao;
 
     @Schema(description = "Status of the warranty", example = "true")
-    private Boolean trangThai;
+    private Boolean trangthai;
+
+    @Schema(description = "ID of the creator", example = "1")
+    private Integer nguoitao;
 }

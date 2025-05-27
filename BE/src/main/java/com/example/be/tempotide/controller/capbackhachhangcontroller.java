@@ -1,6 +1,7 @@
 package com.example.be.tempotide.controller;
 
 import com.example.be.tempotide.dto.capbackhachhangdto;
+import com.example.be.tempotide.service.capbackhachhangservice;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,45 +18,45 @@ public class capbackhachhangcontroller {
 
     private static final Logger logger = LoggerFactory.getLogger(capbackhachhangcontroller.class);
 
-    private final com.example.be.tempotide.service.capbackhachhangservice capBacKhachHangService;
+    private final capbackhachhangservice capbackhachhangservice;
 
     @Autowired
-    public capbackhachhangcontroller(com.example.be.tempotide.service.capbackhachhangservice capBacKhachHangService) {
-        this.capBacKhachHangService = capBacKhachHangService;
+    public capbackhachhangcontroller(capbackhachhangservice capbackhachhangservice) {
+        this.capbackhachhangservice = capbackhachhangservice;
     }
 
     @PostMapping
-    public ResponseEntity<capbackhachhangdto> createCapBacKhachHang(@Valid @RequestBody capbackhachhangdto capBacKhachHangDto) {
+    public ResponseEntity<capbackhachhangdto> createcapbackhachhang(@Valid @RequestBody capbackhachhangdto capbackhachhangdto) {
         logger.info("API call: POST /api/capbackhachhang");
-        capbackhachhangdto createdCapBacKhachHang = capBacKhachHangService.createCapBacKhachHang(capBacKhachHangDto);
-        return new ResponseEntity<>(createdCapBacKhachHang, HttpStatus.CREATED);
+        capbackhachhangdto createdcapbackhachhang = capbackhachhangservice.createcapbackhachhang(capbackhachhangdto);
+        return new ResponseEntity<>(createdcapbackhachhang, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<capbackhachhangdto> getCapBacKhachHangById(@PathVariable Integer id) {
+    public ResponseEntity<capbackhachhangdto> getcapbackhachhangbyid(@PathVariable Integer id) {
         logger.info("API call: GET /api/capbackhachhang/{}", id);
-        capbackhachhangdto capBacKhachHangDto = capBacKhachHangService.getCapBacKhachHangById(id);
-        return ResponseEntity.ok(capBacKhachHangDto);
+        capbackhachhangdto capbackhachhangdto = capbackhachhangservice.getcapbackhachhangbyid(id);
+        return ResponseEntity.ok(capbackhachhangdto);
     }
 
     @GetMapping
-    public ResponseEntity<List<capbackhachhangdto>> getAllCapBacKhachHang() {
+    public ResponseEntity<List<capbackhachhangdto>> getallcapbackhachhang() {
         logger.info("API call: GET /api/capbackhachhang");
-        List<capbackhachhangdto> capBacKhachHangList = capBacKhachHangService.getAllCapBacKhachHang();
-        return ResponseEntity.ok(capBacKhachHangList);
+        List<capbackhachhangdto> capbackhachhanglist = capbackhachhangservice.getallcapbackhachhang();
+        return ResponseEntity.ok(capbackhachhanglist);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<capbackhachhangdto> updateCapBacKhachHang(@PathVariable Integer id, @Valid @RequestBody capbackhachhangdto capBacKhachHangDto) {
+    public ResponseEntity<capbackhachhangdto> updatecapbackhachhang(@PathVariable Integer id, @Valid @RequestBody capbackhachhangdto capbackhachhangdto) {
         logger.info("API call: PUT /api/capbackhachhang/{}", id);
-        capbackhachhangdto updatedCapBacKhachHang = capBacKhachHangService.updateCapBacKhachHang(id, capBacKhachHangDto);
-        return ResponseEntity.ok(updatedCapBacKhachHang);
+        capbackhachhangdto updatedcapbackhachhang = capbackhachhangservice.updatecapbackhachhang(id, capbackhachhangdto);
+        return ResponseEntity.ok(updatedcapbackhachhang);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCapBacKhachHang(@PathVariable Integer id) {
+    public ResponseEntity<Void> deletecapbackhachhang(@PathVariable Integer id) {
         logger.info("API call: DELETE /api/capbackhachhang/{}", id);
-        capBacKhachHangService.deleteCapBacKhachHang(id);
+        capbackhachhangservice.deletecapbackhachhang(id);
         return ResponseEntity.noContent().build();
     }
 }

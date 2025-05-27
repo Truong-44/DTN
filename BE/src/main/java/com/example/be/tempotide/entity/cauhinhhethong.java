@@ -4,8 +4,10 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
-@Table(name = "CauHinhHeThong")
+@Table(name = "cauhinhhethong")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,23 +16,33 @@ public class cauhinhhethong {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "MaCauHinh")
-    private Integer maCauHinh;
+    @Column(name = "macauhinh")
+    private Integer macauhinh;
 
-    @NotBlank(message = "TenCauHinh is required")
-    @Size(max = 100, message = "TenCauHinh must not exceed 100 characters")
-    @Column(name = "TenCauHinh", nullable = false)
-    private String tenCauHinh;
+    @NotBlank(message = "tencauhinh is required")
+    @Size(max = 100, message = "tencauhinh must not exceed 100 characters")
+    @Column(name = "tencauhinh", nullable = false)
+    private String tencauhinh;
 
-    @NotBlank(message = "GiaTri is required")
-    @Size(max = 500, message = "GiaTri must not exceed 500 characters")
-    @Column(name = "GiaTri", nullable = false)
-    private String giaTri;
+    @NotBlank(message = "giatri is required")
+    @Size(max = 500, message = "giatri must not exceed 500 characters")
+    @Column(name = "giatri", nullable = false)
+    private String giatri;
 
-    @Column(name = "MoTa")
-    @Size(max = 1000, message = "MoTa must not exceed 1000 characters")
-    private String moTa;
+    @Column(name = "mota")
+    @Size(max = 200, message = "mota must not exceed 200 characters")
+    private String mota;
 
-    @Column(name = "TrangThai", columnDefinition = "BIT DEFAULT 1")
-    private Boolean trangThai;
+    @Column(name = "ngaytao")
+    private LocalDateTime ngaytao;
+
+    @Column(name = "trangthai", columnDefinition = "BIT DEFAULT 1")
+    private Boolean trangthai;
+
+    @Column(name = "nguoitao")
+    private Integer nguoitao;
+
+    @ManyToOne
+    @JoinColumn(name = "nguoitao", insertable = false, updatable = false)
+    private nhanvien nhanvien;
 }
