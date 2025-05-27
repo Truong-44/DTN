@@ -1,10 +1,12 @@
-﻿-- tạo cơ sở dữ liệu
+﻿-- Tạo cơ sở dữ liệu
 CREATE DATABASE tempotide;
-drop database tempotide
+GO
+
 USE tempotide;
 GO
 
--- bảng nhanvien
+-- ======================== Định nghĩa các bảng ========================
+-- Bảng nhanvien
 CREATE TABLE nhanvien (
     manhanvien INT PRIMARY KEY IDENTITY(1,1),
     ho NVARCHAR(50) NOT NULL,
@@ -27,7 +29,7 @@ CREATE TABLE nhanvien (
     FOREIGN KEY (nguoicapnhat) REFERENCES nhanvien(manhanvien)
 );
 
--- bảng vaitro
+-- Bảng vaitro
 CREATE TABLE vaitro (
     mavaitro INT PRIMARY KEY IDENTITY(1,1),
     tenvaitro NVARCHAR(50) NOT NULL UNIQUE,
@@ -39,7 +41,7 @@ CREATE TABLE vaitro (
     FOREIGN KEY (nguoitao) REFERENCES nhanvien(manhanvien)
 );
 
--- bảng quyen
+-- Bảng quyen
 CREATE TABLE quyen (
     maquyen INT PRIMARY KEY IDENTITY(1,1),
     tenquyen NVARCHAR(50) NOT NULL UNIQUE,
@@ -52,7 +54,7 @@ CREATE TABLE quyen (
     FOREIGN KEY (nguoitao) REFERENCES nhanvien(manhanvien)
 );
 
--- bảng vaitro_quyen
+-- Bảng vaitro_quyen
 CREATE TABLE vaitro_quyen (
     mavaitro_quyen INT PRIMARY KEY IDENTITY(1,1),
     mavaitro INT NOT NULL,
@@ -66,7 +68,7 @@ CREATE TABLE vaitro_quyen (
     FOREIGN KEY (nguoitao) REFERENCES nhanvien(manhanvien)
 );
 
--- bảng nguoidung_vaitro
+-- Bảng nguoidung_vaitro
 CREATE TABLE nguoidung_vaitro (
     manguoidung_vaitro INT PRIMARY KEY IDENTITY(1,1),
     manhanvien INT NOT NULL,
@@ -80,7 +82,7 @@ CREATE TABLE nguoidung_vaitro (
     FOREIGN KEY (nguoitao) REFERENCES nhanvien(manhanvien)
 );
 
--- bảng danhmuc
+-- Bảng danhmuc
 CREATE TABLE danhmuc (
     madanhmuc INT PRIMARY KEY IDENTITY(1,1),
     tendanhmuc NVARCHAR(50) NOT NULL,
@@ -95,7 +97,7 @@ CREATE TABLE danhmuc (
     FOREIGN KEY (nguoitao) REFERENCES nhanvien(manhanvien)
 );
 
--- bảng nhacungcap
+-- Bảng nhacungcap
 CREATE TABLE nhacungcap (
     manhacungcap INT PRIMARY KEY IDENTITY(1,1),
     tennhacungcap NVARCHAR(100) NOT NULL,
@@ -113,7 +115,7 @@ CREATE TABLE nhacungcap (
     FOREIGN KEY (nguoitao) REFERENCES nhanvien(manhanvien)
 );
 
--- bảng thuonghieu
+-- Bảng thuonghieu
 CREATE TABLE thuonghieu (
     mathuonghieu INT PRIMARY KEY IDENTITY(1,1),
     tenthuonghieu NVARCHAR(100) NOT NULL,
@@ -128,7 +130,7 @@ CREATE TABLE thuonghieu (
     CONSTRAINT uq_tenthuonghieu UNIQUE (tenthuonghieu)
 );
 
--- bảng capbackhachhang
+-- Bảng capbackhachhang
 CREATE TABLE capbackhachhang (
     macapbac INT PRIMARY KEY IDENTITY(1,1),
     tencapbac NVARCHAR(50) NOT NULL,
@@ -141,7 +143,7 @@ CREATE TABLE capbackhachhang (
     CONSTRAINT uq_tencapbac UNIQUE (tencapbac)
 );
 
--- bảng khachhang
+-- Bảng khachhang
 CREATE TABLE khachhang (
     makhachhang INT PRIMARY KEY IDENTITY(1,1),
     ho NVARCHAR(50) NOT NULL,
@@ -166,7 +168,7 @@ CREATE TABLE khachhang (
     FOREIGN KEY (macapbac) REFERENCES capbackhachhang(macapbac)
 );
 
--- bảng sanpham
+-- Bảng sanpham
 CREATE TABLE sanpham (
     masanpham INT PRIMARY KEY IDENTITY(1,1),
     tensanpham NVARCHAR(100) NOT NULL,
@@ -192,7 +194,7 @@ CREATE TABLE sanpham (
     FOREIGN KEY (nguoiduyet) REFERENCES nhanvien(manhanvien)
 );
 
--- bảng thuoctinhsanpham
+-- Bảng thuoctinhsanpham
 CREATE TABLE thuoctinhsanpham (
     mathuoctinh INT PRIMARY KEY IDENTITY(1,1),
     tenthuoctinh NVARCHAR(50) NOT NULL UNIQUE,
@@ -204,7 +206,7 @@ CREATE TABLE thuoctinhsanpham (
     FOREIGN KEY (nguoitao) REFERENCES nhanvien(manhanvien)
 );
 
--- bảng baohanh
+-- Bảng baohanh
 CREATE TABLE baohanh (
     mabaohanh INT PRIMARY KEY IDENTITY(1,1),
     masanpham INT NOT NULL,
@@ -217,7 +219,7 @@ CREATE TABLE baohanh (
     FOREIGN KEY (nguoitao) REFERENCES nhanvien(manhanvien)
 );
 
--- bảng chitietsanpham
+-- Bảng chitietsanpham
 CREATE TABLE chitietsanpham (
     machitietsanpham INT PRIMARY KEY IDENTITY(1,1),
     masanpham INT NOT NULL,
@@ -240,7 +242,7 @@ CREATE TABLE chitietsanpham (
     FOREIGN KEY (nguoicapnhat) REFERENCES nhanvien(manhanvien)
 );
 
--- bảng khohang
+-- Bảng khohang
 CREATE TABLE khohang (
     makhohang INT PRIMARY KEY IDENTITY(1,1),
     machitietsanpham INT NOT NULL,
@@ -255,7 +257,7 @@ CREATE TABLE khohang (
     FOREIGN KEY (nguoicapnhat) REFERENCES nhanvien(manhanvien)
 );
 
--- bảng phuongthucvanchuyen
+-- Bảng phuongthucvanchuyen
 CREATE TABLE phuongthucvanchuyen (
     maphuongthucvanchuyen INT PRIMARY KEY IDENTITY(1,1),
     tenphuongthuc NVARCHAR(50) NOT NULL,
@@ -269,7 +271,7 @@ CREATE TABLE phuongthucvanchuyen (
     FOREIGN KEY (nguoitao) REFERENCES nhanvien(manhanvien)
 );
 
--- bảng diachi
+-- Bảng diachi
 CREATE TABLE diachi (
     madiachi INT PRIMARY KEY IDENTITY(1,1),
     makhachhang INT NOT NULL,
@@ -288,7 +290,7 @@ CREATE TABLE diachi (
     FOREIGN KEY (nguoitao) REFERENCES nhanvien(manhanvien)
 );
 
--- bảng khuyenmai
+-- Bảng khuyenmai
 CREATE TABLE khuyenmai (
     makhuyenmai INT PRIMARY KEY IDENTITY(1,1),
     tenkhuyenmai NVARCHAR(100) NOT NULL,
@@ -306,7 +308,7 @@ CREATE TABLE khuyenmai (
     FOREIGN KEY (nguoitao) REFERENCES nhanvien(manhanvien)
 );
 
--- bảng donhang
+-- Bảng donhang
 CREATE TABLE donhang (
     madonhang INT PRIMARY KEY IDENTITY(1,1),
     makhachhang INT NULL,
@@ -333,7 +335,7 @@ CREATE TABLE donhang (
     FOREIGN KEY (nguoicapnhat) REFERENCES nhanvien(manhanvien)
 );
 
--- bảng giaodichtichdiem
+-- Bảng giaodichtichdiem
 CREATE TABLE giaodichtichdiem (
     magiaodich INT PRIMARY KEY IDENTITY(1,1),
     makhachhang INT NOT NULL,
@@ -348,7 +350,7 @@ CREATE TABLE giaodichtichdiem (
     FOREIGN KEY (nguoitao) REFERENCES nhanvien(manhanvien)
 );
 
--- bảng lichsudonhang
+-- Bảng lichsudonhang
 CREATE TABLE lichsudonhang (
     malichsu INT PRIMARY KEY IDENTITY(1,1),
     madonhang INT NOT NULL,
@@ -363,7 +365,7 @@ CREATE TABLE lichsudonhang (
         AND trangthaimoi IN (N'chờ xử lý', N'đang xử lý', N'đã giao', N'hoàn thành', N'đã hủy', N'đặt trước'))
 );
 
--- bảng chitietdonhang
+-- Bảng chitietdonhang
 CREATE TABLE chitietdonhang (
     machitietdonhang INT PRIMARY KEY IDENTITY(1,1),
     madonhang INT NOT NULL,
@@ -383,7 +385,7 @@ CREATE TABLE chitietdonhang (
     FOREIGN KEY (nguoicapnhat) REFERENCES nhanvien(manhanvien)
 );
 
--- bảng lienhedathang
+-- Bảng lienhedathang
 CREATE TABLE lienhedathang (
     malienhe INT PRIMARY KEY IDENTITY(1,1),
     hoten NVARCHAR(100) NOT NULL,
@@ -405,7 +407,7 @@ CREATE TABLE lienhedathang (
     FOREIGN KEY (nguoitao) REFERENCES nhanvien(manhanvien)
 );
 
--- bảng phieunhapkho
+-- Bảng phieunhapkho
 CREATE TABLE phieunhapkho (
     maphieunhapkho INT PRIMARY KEY IDENTITY(1,1),
     manhacungcap INT NOT NULL,
@@ -419,7 +421,7 @@ CREATE TABLE phieunhapkho (
     FOREIGN KEY (nguoitao) REFERENCES nhanvien(manhanvien)
 );
 
--- bảng phieuxuatkho
+-- Bảng phieuxuatkho
 CREATE TABLE phieuxuatkho (
     maphieuxuatkho INT PRIMARY KEY IDENTITY(1,1),
     madonhang INT NOT NULL,
@@ -433,7 +435,7 @@ CREATE TABLE phieuxuatkho (
     FOREIGN KEY (nguoitao) REFERENCES nhanvien(manhanvien)
 );
 
--- bảng danhgiasanpham
+-- Bảng danhgiasanpham
 CREATE TABLE danhgiasanpham (
     madanhgia INT PRIMARY KEY IDENTITY(1,1),
     masanpham INT NOT NULL,
@@ -449,7 +451,7 @@ CREATE TABLE danhgiasanpham (
     FOREIGN KEY (nguoitao) REFERENCES nhanvien(manhanvien)
 );
 
--- bảng phiendangnhap
+-- Bảng phiendangnhap
 CREATE TABLE phiendangnhap (
     maphien INT PRIMARY KEY IDENTITY(1,1),
     manhanvien INT NULL,
@@ -465,7 +467,7 @@ CREATE TABLE phiendangnhap (
     CONSTRAINT chk_phiendangnhap CHECK ((manhanvien IS NOT NULL AND makhachhang IS NULL) OR (manhanvien IS NULL AND makhachhang IS NOT NULL))
 );
 
--- bảng resetpasswordtoken
+-- Bảng resetpasswordtoken
 CREATE TABLE resetpasswordtoken (
     matoken INT PRIMARY KEY IDENTITY(1,1),
     manhanvien INT NULL,
@@ -482,7 +484,7 @@ CREATE TABLE resetpasswordtoken (
     CONSTRAINT chk_resetpasswordtoken CHECK ((manhanvien IS NOT NULL AND makhachhang IS NULL) OR (manhanvien IS NULL AND makhachhang IS NOT NULL))
 );
 
--- bảng thanhtoan
+-- Bảng thanhtoan
 CREATE TABLE thanhtoan (
     mathanhtoan INT PRIMARY KEY IDENTITY(1,1),
     madonhang INT NOT NULL,
@@ -500,7 +502,7 @@ CREATE TABLE thanhtoan (
     FOREIGN KEY (nguoicapnhat) REFERENCES nhanvien(manhanvien)
 );
 
--- bảng hinhanhsanpham
+-- Bảng hinhanhsanpham
 CREATE TABLE hinhanhsanpham (
     mahinhanh INT PRIMARY KEY IDENTITY(1,1),
     machitietsanpham INT NOT NULL,
@@ -515,7 +517,7 @@ CREATE TABLE hinhanhsanpham (
     FOREIGN KEY (nguoitao) REFERENCES nhanvien(manhanvien)
 );
 
--- bảng danhsachyeuthich
+-- Bảng danhsachyeuthich
 CREATE TABLE danhsachyeuthich (
     madanhsachyeuthich INT PRIMARY KEY IDENTITY(1,1),
     makhachhang INT NOT NULL,
@@ -529,7 +531,7 @@ CREATE TABLE danhsachyeuthich (
     FOREIGN KEY (nguoitao) REFERENCES nhanvien(manhanvien)
 );
 
--- bảng cauhinhhethong
+-- Bảng cauhinhhethong
 CREATE TABLE cauhinhhethong (
     macauhinh INT PRIMARY KEY IDENTITY(1,1),
     tencauhinh NVARCHAR(100) NOT NULL,
@@ -542,7 +544,7 @@ CREATE TABLE cauhinhhethong (
     CONSTRAINT uq_tencauhinh UNIQUE (tencauhinh)
 );
 
--- bảng baocaobanhang
+-- Bảng baocaobanhang
 CREATE TABLE baocaobanhang (
     mabaocao INT PRIMARY KEY IDENTITY(1,1),
     thoigianbatdau DATETIME NOT NULL,
@@ -556,7 +558,7 @@ CREATE TABLE baocaobanhang (
     FOREIGN KEY (nguoitao) REFERENCES nhanvien(manhanvien)
 );
 
--- thêm chỉ mục
+-- Thêm chỉ mục
 CREATE INDEX idx_khachhang_email ON khachhang(email);
 CREATE INDEX idx_sanpham_tensanpham ON sanpham(tensanpham);
 CREATE INDEX idx_donhang_makhachhang ON donhang(makhachhang);
@@ -571,134 +573,169 @@ CREATE INDEX idx_danhsachyeuthich_makhachhang ON danhsachyeuthich(makhachhang);
 CREATE INDEX idx_chitietsanpham_masanpham ON chitietsanpham(masanpham);
 CREATE INDEX idx_donhang_manhanvienxuly ON donhang(manhanvienxuly);
 
--- chèn dữ liệu vào bảng nhanvien
+-- ======================== Chèn dữ liệu mẫu ========================
 INSERT INTO nhanvien (ho, ten, email, sodienthoai, ngaytuyendung, matkhau, nguoitao, nguoicapnhat)
 VALUES (N'Nguyễn', N'Văn A', 'nva@example.com', '0123456789', '2025-01-01', 'hashed_password_123', NULL, NULL);
 
--- chèn dữ liệu vào bảng vaitro
 INSERT INTO vaitro (tenvaitro, mota, nguoitao)
 VALUES (N'admin', N'Quản trị viên hệ thống', 1);
 
--- chèn dữ liệu vào bảng quyen
 INSERT INTO quyen (tenquyen, mota, bang, nguoitao)
 VALUES (N'view_product', N'Quyền xem sản phẩm', 'sanpham', 1);
 
--- chèn dữ liệu vào bảng vaitro_quyen
 INSERT INTO vaitro_quyen (mavaitro, maquyen, nguoitao)
 VALUES (1, 1, 1);
 
--- chèn dữ liệu vào bảng nguoidung_vaitro
 INSERT INTO nguoidung_vaitro (manhanvien, mavaitro, nguoitao)
 VALUES (1, 1, 1);
 
--- chèn dữ liệu vào bảng danhmuc
 INSERT INTO danhmuc (tendanhmuc, mota, nguoitao)
-VALUES (N'đồng hồ nam', N'Danh mục đồng hồ dành cho nam', 1);
+VALUES (N'Đồng hồ nam', N'Danh mục đồng hồ dành cho nam', 1);
 
--- chèn dữ liệu vào bảng nhacungcap
 INSERT INTO nhacungcap (tennhacungcap, nguoilienhe, sodienthoai, email, diachi, nguoitao)
 VALUES (N'Công ty ABC', N'Trần Văn B', '0987654321', 'abc@example.com', N'123 Đường Láng, Hà Nội', 1);
 
--- chèn dữ liệu vào bảng thuonghieu
 INSERT INTO thuonghieu (tenthuonghieu, mota, nguoitao, nguoicapnhat)
 VALUES (N'Rolex', N'Thương hiệu đồng hồ cao cấp', 1, 1);
 
--- chèn dữ liệu vào bảng capbackhachhang
 INSERT INTO capbackhachhang (tencapbac, diemtoithieu, giamgiamacdinh, nguoitao)
-VALUES (N'vàng', 1000, 10.00, 1);
+VALUES (N'Vàng', 1000, 10.00, 1);
 
--- chèn dữ liệu vào bảng khachhang
 INSERT INTO khachhang (ho, ten, email, sodienthoai, ngaysinh, matkhau, macapbac, nguoitao, nguoicapnhat)
 VALUES (N'Lê', N'Thị C', 'ltc@example.com', '0912345678', '1990-05-15', 'hashed_password_456', 1, 1, 1);
 
--- chèn dữ liệu vào bảng sanpham
 INSERT INTO sanpham (tensanpham, mota, gianiemyet, giabanmacdinh, madanhmuc, manhacungcap, mathuonghieu, nguoitao, nguoicapnhat, nguoiduyet)
 VALUES (N'Đồng hồ Rolex Submariner', N'Đồng hồ cao cấp cho nam', 200000000.00, 180000000.00, 1, 1, 1, 1, 1, 1);
 
--- chèn dữ liệu vào bảng thuoctinhsanpham
 INSERT INTO thuoctinhsanpham (tenthuoctinh, mota, loaigiatri, nguoitao)
-VALUES (N'màu sắc', N'Màu sắc của sản phẩm', N'văn bản', 1);
+VALUES (N'Màu sắc', N'Màu sắc của sản phẩm', N'Văn bản', 1);
 
--- chèn dữ liệu vào bảng baohanh
 INSERT INTO baohanh (masanpham, thoigianbaohanh, dieukienbaohanh, nguoitao)
 VALUES (1, 24, N'Bảo hành chính hãng 2 năm', 1);
 
--- chèn dữ liệu vào bảng chitietsanpham
 INSERT INTO chitietsanpham (masanpham, mathuoctinh, giatri, gia, soluongton, sku, mabaohanh, nguoitao, nguoicapnhat)
 VALUES (1, 1, N'Đen', 180000000.00, 10, 'ROLEX-SUB-BLACK-001', 1, 1, 1);
 
--- chèn dữ liệu vào bảng khohang
 INSERT INTO khohang (machitietsanpham, soluong, vitrikho, ngaynhapkho, nguoicapnhat)
 VALUES (1, 10, 'Kệ A1', '2025-05-01', 1);
 
--- chèn dữ liệu vào bảng phuongthucvanchuyen
 INSERT INTO phuongthucvanchuyen (tenphuongthuc, chiphi, thoigiandukien, nguoitao)
 VALUES (N'Giao hàng nhanh', 50000.00, N'1-2 ngày', 1);
 
--- chèn dữ liệu vào bảng diachi
 INSERT INTO diachi (makhachhang, diachichitiet, thanhpho, quocgia, nguoitao)
 VALUES (1, N'456 Đường Nguyễn Trãi', N'Hà Nội', N'Việt Nam', 1);
 
--- chèn dữ liệu vào bảng khuyenmai
 INSERT INTO khuyenmai (tenkhuyenmai, mota, phantramgiamgia, ngaybatdau, ngayketthuc, nguoitao)
 VALUES (N'Giảm giá mùa hè', N'Giảm giá 10% cho đồng hồ', 10.00, '2025-06-01', '2025-06-30', 1);
 
--- chèn dữ liệu vào bảng donhang
 INSERT INTO donhang (makhachhang, manhanvienxuly, tongtien, maphuongthucvanchuyen, madiachigiaohang, trangthaidonhang, makhuyenmai, nguoitao, nguoicapnhat)
 VALUES (1, 1, 180000000.00, 1, 1, N'chờ xử lý', 1, 1, 1);
 
--- chèn dữ liệu vào bảng giaodichtichdiem
 INSERT INTO giaodichtichdiem (makhachhang, sodiem, loaigiaodich, madonhang, nguoitao)
 VALUES (1, 100, N'tích', 1, 1);
 
--- chèn dữ liệu vào bảng lichsudonhang
 INSERT INTO lichsudonhang (madonhang, trangthaicu, trangthaimoi, lydo, nguoicapnhat)
 VALUES (1, N'chờ xử lý', N'đang xử lý', N'Bắt đầu xử lý đơn hàng', 1);
 
--- chèn dữ liệu vào bảng chitietdonhang
 INSERT INTO chitietdonhang (madonhang, machitietsanpham, soluong, dongia, nguoitao, nguoicapnhat)
 VALUES (1, 1, 1, 180000000.00, 1, 1);
 
--- chèn dữ liệu vào bảng lienhedathang
 INSERT INTO lienhedathang (hoten, sodienthoai, email, masanpham, machitietsanpham, soluong, nguoitao)
 VALUES (N'Trần Văn D', '0934567890', 'tvd@example.com', 1, 1, 1, 1);
 
--- chèn dữ liệu vào bảng phieunhapkho
 INSERT INTO phieunhapkho (manhacungcap, tonggiatri, nguoitao)
 VALUES (1, 2000000000.00, 1);
 
--- chèn dữ liệu vào bảng phieuxuatkho
 INSERT INTO phieuxuatkho (madonhang, tonggiatri, nguoitao)
 VALUES (1, 180000000.00, 1);
 
--- chèn dữ liệu vào bảng danhgiasanpham
 INSERT INTO danhgiasanpham (masanpham, makhachhang, diemdanhgia, binhluan, nguoitao)
 VALUES (1, 1, 5, N'Sản phẩm tuyệt vời!', 1);
 
--- chèn dữ liệu vào bảng phiendangnhap
 INSERT INTO phiendangnhap (makhachhang, token, ngayhethan, nguoitao)
 VALUES (1, 'sample_token_123', '2025-06-01', 1);
 
--- chèn dữ liệu vào bảng resetpasswordtoken
 INSERT INTO resetpasswordtoken (makhachhang, token, ngayhethan, nguoitao)
-VALUES (1, 'reset_token_456', '2025-05-27', 1);
+VALUES (1, 'reset_token_456', '2025-05-27 16:32:00', 1);
 
--- chèn dữ liệu vào bảng thanhtoan
 INSERT INTO thanhtoan (madonhang, phuongthucthanhtoan, sotien, trangthaithanhtoan, nguoitao, nguoicapnhat)
 VALUES (1, N'thẻ tín dụng', 180000000.00, N'hoàn thành', 1, 1);
 
--- chèn dữ liệu vào bảng hinhanhsanpham
 INSERT INTO hinhanhsanpham (machitietsanpham, duongdanhinhanh, lahinhchinh, nguoitao)
 VALUES (1, '/images/rolex_sub_black.jpg', 1, 1);
 
--- chèn dữ liệu vào bảng danhsachyeuthich
 INSERT INTO danhsachyeuthich (makhachhang, masanpham, nguoitao)
 VALUES (1, 1, 1);
 
--- chèn dữ liệu vào bảng cauhinhhethong
 INSERT INTO cauhinhhethong (tencauhinh, giatri, mota, nguoitao)
 VALUES (N'max_order_value', '1000000000', N'Giá trị đơn hàng tối đa', 1);
 
--- chèn dữ liệu vào bảng baocaobanhang
 INSERT INTO baocaobanhang (thoigianbatdau, thoigianketthuc, tongdoanhthu, sodonhang, nguoitao)
 VALUES ('2025-05-01', '2025-05-31', 180000000.00, 1, 1);
+
+-- ======================== Định nghĩa các trigger ========================
+-- Trigger tự động cập nhật ngaycapnhat cho nhanvien
+CREATE TRIGGER trg_update_ngaycapnhat_nhanvien
+ON nhanvien
+AFTER UPDATE
+AS
+BEGIN
+    UPDATE nhanvien
+    SET ngaycapnhat = GETDATE()
+    FROM nhanvien n
+    INNER JOIN inserted i ON n.manhanvien = i.manhanvien;
+END;
+GO
+
+-- Trigger tự động cập nhật ngaycapnhat cho sanpham
+CREATE TRIGGER trg_update_ngaycapnhat_sanpham
+ON sanpham
+AFTER UPDATE
+AS
+BEGIN
+    UPDATE sanpham
+    SET ngaycapnhat = GETDATE()
+    FROM sanpham s
+    INNER JOIN inserted i ON s.masanpham = i.masanpham;
+END;
+GO
+
+-- Trigger tự động cập nhật ngaycapnhat cho chitietsanpham
+CREATE TRIGGER trg_update_ngaycapnhat_chitietsanpham
+ON chitietsanpham
+AFTER UPDATE
+AS
+BEGIN
+    UPDATE chitietsanpham
+    SET ngaycapnhat = GETDATE()
+    FROM chitietsanpham c
+    INNER JOIN inserted i ON c.machitietsanpham = i.machitietsanpham;
+END;
+GO
+
+-- Trigger tự động cập nhật ngaycapnhat cho donhang
+CREATE TRIGGER trg_update_ngaycapnhat_donhang
+ON donhang
+AFTER UPDATE
+AS
+BEGIN
+    UPDATE donhang
+    SET ngaycapnhat = GETDATE()
+    FROM donhang d
+    INNER JOIN inserted i ON d.madonhang = i.madonhang;
+END;
+GO
+
+-- Trigger đồng bộ số lượng tồn kho
+CREATE TRIGGER trg_sync_soluongton_khohang
+ON khohang
+AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+    UPDATE c
+    SET c.soluongton = ISNULL((SELECT SUM(k.soluong) FROM khohang k WHERE k.machitietsanpham = c.machitietsanpham AND k.trangthai = 1), 0)
+    FROM chitietsanpham c
+    INNER JOIN inserted i ON c.machitietsanpham = i.machitietsanpham
+    WHERE c.trangthai = 1;
+END;
+GO
