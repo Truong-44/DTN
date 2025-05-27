@@ -1,4 +1,4 @@
 package com.example.be.tempotide.config;
 
-public class CorsConfig {
+public class MapStructConfig {
 }
