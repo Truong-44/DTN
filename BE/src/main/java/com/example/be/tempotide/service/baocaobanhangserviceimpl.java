@@ -1,9 +1,5 @@
-package com.example.be.tempotide.service.impl;
+package com.example.be.tempotide.service;
 
-import com.example.be.tempotide.dto.baocaobanhangdto;
-import com.example.be.tempotide.entity.baocaobanhang;
-import com.example.be.tempotide.repository.baocaobanhangrepository;
-import com.example.be.tempotide.service.baocaobanhangservice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
