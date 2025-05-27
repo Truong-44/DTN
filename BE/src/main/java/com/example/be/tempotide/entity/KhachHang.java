@@ -4,17 +4,16 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "nhanvien")
+@Table(name = "khachhang")
 @Getter
 @Setter
-public class NhanVien {
+public class KhachHang {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer manhanvien;
+    private Integer makhachhang;
 
     @Column(name = "ho", nullable = false, length = 50)
     private String ho;
@@ -25,11 +24,11 @@ public class NhanVien {
     @Column(name = "email", nullable = false, length = 100, unique = true)
     private String email;
 
-    @Column(name = "sodienthoai", length = 15)
+    @Column(name = "sodienthoai", length = 10)
     private String sodienthoai;
 
-    @Column(name = "ngaytuyendung", nullable = false)
-    private LocalDate ngaytuyendung;
+    @Column(name = "diachi", length = 200)
+    private String diachi;
 
     @Column(name = "matkhau", nullable = false, length = 255)
     private String matkhau;
