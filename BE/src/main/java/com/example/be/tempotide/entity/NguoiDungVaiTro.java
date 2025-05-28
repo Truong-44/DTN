@@ -4,16 +4,29 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "nguoidung_vaitro")
 @Getter
 @Setter
 public class NguoiDungVaiTro {
-    @EmbeddedId
-    private NguoiDungVaiTroId id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "manguoidung_vaitro")
+    private Integer manguoidungVaitro;
 
     @ManyToOne
-    @MapsId("mavaitro")
-    @JoinColumn(name = "mavaitro")
-    private VaiTro vaiTro;
+    @JoinColumn(name = "manhanvien", nullable = false)
+    private NhanVien manhanvien;
+
+    @ManyToOne
+    @JoinColumn(name = "mavaitro", nullable = false)
+    private VaiTro mavaitro;
+
+    @Column(name = "ngaytao", nullable = false, updatable = false)
+    private LocalDateTime ngaytao;
+
+    @Column(name = "trangthai")
+    private Boolean trangthai;
 }

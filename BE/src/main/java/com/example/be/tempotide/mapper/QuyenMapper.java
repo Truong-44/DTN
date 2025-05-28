@@ -7,7 +7,7 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface QuyenMapper {
-    @Mapping(target = "nguoitao", source = "nguoitao.manhanvien")
+    @Mapping(source = "nguoitao.manhanvien", target = "nguoitao")
     QuyenDTO toDTO(Quyen quyen);
 
     @Mapping(target = "nguoitao", ignore = true)

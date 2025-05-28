@@ -1,10 +1,10 @@
 package com.example.be.tempotide.service.impl;
 
-import com.example.be.tempotide.dto.VaiTroDTO;
+import com.example.be.tempotide.dto.NguoiDungVaiTroDTO;
 import com.example.be.tempotide.entity.NguoiDungVaiTro;
+import com.example.be.tempotide.entity.NhanVien;
 import com.example.be.tempotide.entity.VaiTro;
-import com.example.be.tempotide.mapper.VaiTroMapper;
-import com.example.be.tempotide.repository.KhachHangRepository;
+import com.example.be.tempotide.mapper.NguoiDungVaiTroMapper;
 import com.example.be.tempotide.repository.NguoiDungVaiTroRepository;
 import com.example.be.tempotide.repository.NhanVienRepository;
 import com.example.be.tempotide.repository.VaiTroRepository;
@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,77 +21,85 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class NguoiDungVaiTroServiceImpl implements NguoiDungVaiTroService {
     private final NguoiDungVaiTroRepository nguoiDungVaiTroRepository;
-    private final VaiTroRepository vaiTroRepository;
+    private final NguoiDungVaiTroMapper nguoiDungVaiTroMapper;
     private final NhanVienRepository nhanVienRepository;
-    private final KhachHangRepository khachHangRepository;
-    private final VaiTroMapper vaiTroMapper;
+    private final VaiTroRepository vaiTroRepository;
 
     @Override
-    public List<VaiTroDTO> getRolesByUserIdAndType(Integer userId, String userType) {
-        validateUserType(userType);
-        validateUserExists(userId, userType);
-
-        return nguoiDungVaiTroRepository.findByIdManguoidungAndIdLoainguoidung(userId, userType)
+    public List<NguoiDungVaiTroDTO> getAllNguoiDungVaiTros() {
+        return nguoiDungVaiTroRepository.findAll()
                 .stream()
-                .map(NguoiDungVaiTro::getVaiTro)
-                .map(vaiTroMapper::toDTO)
+                .map(nguoiDungVaiTroMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
-    @Transactional
-    public void assignRoleToUser(NguoiDungVaiTroRequestDTO requestDTO) {
-        validateUserType(requestDTO.getLoainguoidung());
-        validateUserExists(requestDTO.getManguoidung(), requestDTO.getLoainguoidung());
-
-        VaiTro vaiTro = vaiTroRepository.findById(requestDTO.getMavaitro())
-                .orElseThrow(() -> new RuntimeException("Role not found with ID: " + requestDTO.getMavaitro()));
-
-        if (nguoiDungVaiTroRepository.existsByIdManguoidungAndIdMavaitroAndIdLoainguoidung(
-                requestDTO.getManguoidung(), requestDTO.getMavaitro(), requestDTO.getLoainguoidung())) {
-            throw new RuntimeException("Role already assigned to user");
-        }
-
-        NguoiDungVaiTro nguoiDungVaiTro = new NguoiDungVaiTro();
-        NguoiDungVaiTroId id = new NguoiDungVaiTroId();
-        id.setManguoidung(requestDTO.getManguoidung());
-        id.setMavaitro(requestDTO.getMavaitro());
-        id.setLoainguoidung(requestDTO.getLoainguoidung());
-        nguoiDungVaiTro.setId(id);
-        nguoiDungVaiTro.setVaiTro(vaiTro);
-
-        nguoiDungVaiTroRepository.save(nguoiDungVaiTro);
+    public NguoiDungVaiTroDTO getNguoiDungVaiTroById(Integer id) {
+        NguoiDungVaiTro nguoiDungVaiTro = nguoiDungVaiTroRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("NguoiDungVaiTro not found with ID: " + id));
+        return nguoiDungVaiTroMapper.toDTO(nguoiDungVaiTro);
     }
 
     @Override
     @Transactional
-    public void removeRoleFromUser(Integer userId, Integer roleId, String userType) {
-        validateUserType(userType);
-        validateUserExists(userId, userType);
+    public NguoiDungVaiTroDTO createNguoiDungVaiTro(NguoiDungVaiTroDTO nguoiDungVaiTroDTO) {
+        NguoiDungVaiTro nguoiDungVaiTro = nguoiDungVaiTroMapper.toEntity(nguoiDungVaiTroDTO);
+        nguoiDungVaiTro.setNgaytao(LocalDateTime.now());
 
-        NguoiDungVaiTroId id = new NguoiDungVaiTroId();
-        id.setManguoidung(userId);
-        id.setMavaitro(roleId);
-        id.setLoainguoidung(userType);
+        NhanVien nhanVien = nhanVienRepository.findById(nguoiDungVaiTroDTO.getManhanvien())
+                .orElseThrow(() -> new RuntimeException("NhanVien not found with ID: " + nguoiDungVaiTroDTO.getManhanvien()));
+        nguoiDungVaiTro.setManhanvien(nhanVien);
 
+        VaiTro vaiTro = vaiTroRepository.findById(nguoiDungVaiTroDTO.getMavaitro())
+                .orElseThrow(() -> new RuntimeException("VaiTro not found with ID: " + nguoiDungVaiTroDTO.getMavaitro()));
+        nguoiDungVaiTro.setMavaitro(vaiTro);
+
+        NguoiDungVaiTro savedNguoiDungVaiTro = nguoiDungVaiTroRepository.save(nguoiDungVaiTro);
+        return nguoiDungVaiTroMapper.toDTO(savedNguoiDungVaiTro);
+    }
+
+    @Override
+    @Transactional
+    public NguoiDungVaiTroDTO updateNguoiDungVaiTro(Integer id, NguoiDungVaiTroDTO nguoiDungVaiTroDTO) {
+        NguoiDungVaiTro existingNguoiDungVaiTro = nguoiDungVaiTroRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("NguoiDungVaiTro not found with ID: " + id));
+
+        existingNguoiDungVaiTro.setTrangthai(nguoiDungVaiTroDTO.getTrangthai());
+
+        NhanVien nhanVien = nhanVienRepository.findById(nguoiDungVaiTroDTO.getManhanvien())
+                .orElseThrow(() -> new RuntimeException("NhanVien not found with ID: " + nguoiDungVaiTroDTO.getManhanvien()));
+        existingNguoiDungVaiTro.setManhanvien(nhanVien);
+
+        VaiTro vaiTro = vaiTroRepository.findById(nguoiDungVaiTroDTO.getMavaitro())
+                .orElseThrow(() -> new RuntimeException("VaiTro not found with ID: " + nguoiDungVaiTroDTO.getMavaitro()));
+        existingNguoiDungVaiTro.setMavaitro(vaiTro);
+
+        NguoiDungVaiTro updatedNguoiDungVaiTro = nguoiDungVaiTroRepository.save(existingNguoiDungVaiTro);
+        return nguoiDungVaiTroMapper.toDTO(updatedNguoiDungVaiTro);
+    }
+
+    @Override
+    @Transactional
+    public void deleteNguoiDungVaiTro(Integer id) {
         NguoiDungVaiTro nguoiDungVaiTro = nguoiDungVaiTroRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User-Role mapping not found"));
-        nguoiDungVaiTroRepository.delete(nguoiDungVaiTro);
+                .orElseThrow(() -> new RuntimeException("NguoiDungVaiTro not found with ID: " + id));
+        nguoiDungVaiTro.setTrangthai(false);
+        nguoiDungVaiTroRepository.save(nguoiDungVaiTro);
     }
 
-    private void validateUserType(String userType) {
-        if (!userType.equals("NhanVien") && !userType.equals("KhachHang")) {
-            throw new RuntimeException("Invalid user type: " + userType);
-        }
+    @Override
+    public List<NguoiDungVaiTroDTO> getNguoiDungVaiTroByManhanvien(Integer manhanvien) {
+        return nguoiDungVaiTroRepository.findByManhanvien_Manhanvien(manhanvien)
+                .stream()
+                .map(nguoiDungVaiTroMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
-    private void validateUserExists(Integer userId, String userType) {
-        if (userType.equals("NhanVien")) {
-            nhanVienRepository.findById(userId)
-                    .orElseThrow(() -> new RuntimeException("Employee not found with ID: " + userId));
-        } else {
-            khachHangRepository.findById(userId)
-                    .orElseThrow(() -> new RuntimeException("Customer not found with ID: " + userId));
-        }
+    @Override
+    public List<NguoiDungVaiTroDTO> getNguoiDungVaiTroByMavaitro(Integer mavaitro) {
+        return nguoiDungVaiTroRepository.findByMavaitro_Mavaitro(mavaitro)
+                .stream()
+                .map(nguoiDungVaiTroMapper::toDTO)
+                .collect(Collectors.toList());
     }
 }

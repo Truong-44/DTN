@@ -1,6 +1,6 @@
 package com.example.be.tempotide.controller;
 
-import com.example.be.tempotide.dto.VaiTroDTO;
+import com.example.be.tempotide.dto.NguoiDungVaiTroDTO;
 import com.example.be.tempotide.service.NguoiDungVaiTroService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -13,34 +13,59 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/user-roles")
+@RequestMapping("/api/nguoidung-vaitro")
 @RequiredArgsConstructor
-@Tag(name = "User-Role API", description = "APIs for managing user-role mappings")
+@Tag(name = "NguoiDungVaiTro API", description = "APIs for managing nguoidung_vaitro")
 public class NguoiDungVaiTroController {
     private final NguoiDungVaiTroService nguoiDungVaiTroService;
 
-    @GetMapping("/user/{userId}/type/{userType}")
-    @PreAuthorize("hasRole('ADMIN') or (authentication.principal.manhanvien == #userId and #userType == 'NhanVien')")
-    @Operation(summary = "Get roles of a user by user ID and type")
-    public ResponseEntity<List<VaiTroDTO>> getRolesByUserIdAndType(
-            @PathVariable Integer userId, @PathVariable String userType) {
-        return ResponseEntity.ok(nguoiDungVaiTroService.getRolesByUserIdAndType(userId, userType));
+    @GetMapping
+    @Operation(summary = "Get all nguoidung_vaitro")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<NguoiDungVaiTroDTO>> getAllNguoiDungVaiTros() {
+        return ResponseEntity.ok(nguoiDungVaiTroService.getAllNguoiDungVaiTros());
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "Get nguoidung_vaitro by ID")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<NguoiDungVaiTroDTO> getNguoiDungVaiTroById(@PathVariable Integer id) {
+        return ResponseEntity.ok(nguoiDungVaiTroService.getNguoiDungVaiTroById(id));
+    }
+
+    @GetMapping("/manhanvien/{manhanvien}")
+    @Operation(summary = "Get nguoidung_vaitro by manhanvien")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<NguoiDungVaiTroDTO>> getNguoiDungVaiTroByManhanvien(@PathVariable Integer manhanvien) {
+        return ResponseEntity.ok(nguoiDungVaiTroService.getNguoiDungVaiTroByManhanvien(manhanvien));
+    }
+
+    @GetMapping("/mavaitro/{mavaitro}")
+    @Operation(summary = "Get nguoidung_vaitro by mavaitro")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<NguoiDungVaiTroDTO>> getNguoiDungVaiTroByMavaitro(@PathVariable Integer mavaitro) {
+        return ResponseEntity.ok(nguoiDungVaiTroService.getNguoiDungVaiTroByMavaitro(mavaitro));
     }
 
     @PostMapping
+    @Operation(summary = "Create a new nguoidung_vaitro")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Assign a role to a user")
-    public ResponseEntity<Void> assignRoleToUser(@Valid @RequestBody NguoiDungVaiTroRequestDTO requestDTO) {
-        nguoiDungVaiTroService.assignRoleToUser(requestDTO);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<NguoiDungVaiTroDTO> createNguoiDungVaiTro(@Valid @RequestBody NguoiDungVaiTroDTO nguoiDungVaiTroDTO) {
+        return ResponseEntity.ok(nguoiDungVaiTroService.createNguoiDungVaiTro(nguoiDungVaiTroDTO));
     }
 
-    @DeleteMapping("/user/{userId}/type/{userType}/role/{roleId}")
+    @PutMapping("/{id}")
+    @Operation(summary = "Update a nguoidung_vaitro")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Remove a role from a user")
-    public ResponseEntity<Void> removeRoleFromUser(
-            @PathVariable Integer userId, @PathVariable String userType, @PathVariable Integer roleId) {
-        nguoiDungVaiTroService.removeRoleFromUser(userId, roleId, userType);
+    public ResponseEntity<NguoiDungVaiTroDTO> updateNguoiDungVaiTro(@PathVariable Integer id, @Valid @RequestBody NguoiDungVaiTroDTO nguoiDungVaiTroDTO) {
+        return ResponseEntity.ok(nguoiDungVaiTroService.updateNguoiDungVaiTro(id, nguoiDungVaiTroDTO));
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Delete a nguoidung_vaitro (soft delete)")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteNguoiDungVaiTro(@PathVariable Integer id) {
+        nguoiDungVaiTroService.deleteNguoiDungVaiTro(id);
         return ResponseEntity.noContent().build();
     }
 }

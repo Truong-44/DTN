@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface NguoiDungVaiTroRepository extends JpaRepository<NguoiDungVaiTro, NguoiDungVaiTroId> {
-    List<NguoiDungVaiTro> findByIdManguoidungAndIdLoainguoidung(Integer manguoidung, String loainguoidung);
-    boolean existsByIdManguoidungAndIdMavaitroAndIdLoainguoidung(Integer manguoidung, Integer mavaitro, String loainguoidung);
+public interface NguoiDungVaiTroRepository extends JpaRepository<NguoiDungVaiTro, Integer> {
+    List<NguoiDungVaiTro> findByManhanvien_Manhanvien(Integer manhanvien);
+    List<NguoiDungVaiTro> findByMavaitro_Mavaitro(Integer mavaitro);
 }

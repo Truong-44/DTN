@@ -1,13 +1,13 @@
 package com.example.be.tempotide.dto;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Data
 public class VaiTroQuyenDTO {
-    private Integer mavaitroQuyen;
+    private Integer mavaitroquyen;
 
     @NotNull(message = "Mã vai trò không được để trống")
     private Integer mavaitro;
@@ -15,8 +15,10 @@ public class VaiTroQuyenDTO {
     @NotNull(message = "Mã quyền không được để trống")
     private Integer maquyen;
 
+    @NotNull(message = "Ngày tạo không được để trống")
     private LocalDateTime ngaytao;
+
     private Boolean trangthai;
 
-    // Không bao gồm nguoitao trong DTO để tránh vòng lặp tuần hoàn khi serialize
+    private Integer nguoitao; // Thêm trường này
 }

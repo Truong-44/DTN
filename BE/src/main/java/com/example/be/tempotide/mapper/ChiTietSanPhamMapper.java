@@ -7,14 +7,12 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface ChiTietSanPhamMapper {
-    @Mapping(target = "masanpham", source = "masanpham.masanpham")
-    @Mapping(target = "mathuoctinh", source = "mathuoctinh.mathuoctinh")
-    @Mapping(target = "nguoitao", ignore = true)
-    @Mapping(target = "nguoicapnhat", ignore = true)
+    @Mapping(source = "masanpham.masanpham", target = "masanpham")
+    @Mapping(source = "nguoitao.manhanvien", target = "nguoitao")
+    @Mapping(source = "nguoicapnhat.manhanvien", target = "nguoicapnhat")
     ChiTietSanPhamDTO toDTO(ChiTietSanPham chiTietSanPham);
 
     @Mapping(target = "masanpham", ignore = true)
-    @Mapping(target = "mathuoctinh", ignore = true)
     @Mapping(target = "nguoitao", ignore = true)
     @Mapping(target = "nguoicapnhat", ignore = true)
     ChiTietSanPham toEntity(ChiTietSanPhamDTO chiTietSanPhamDTO);

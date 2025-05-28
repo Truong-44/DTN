@@ -7,9 +7,9 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface ChatboxLichSuMapper {
-    @Mapping(target = "makhachhang", source = "makhachhang.makhachhang")
-    @Mapping(target = "giosanpham", source = "giosanpham.masanpham")
-    @Mapping(target = "nguoitao", ignore = true)
+    @Mapping(source = "makhachhang.makhachhang", target = "makhachhang")
+    @Mapping(source = "giosanpham.masanpham", target = "giosanpham")
+    @Mapping(source = "nguoitao.manhanvien", target = "nguoitao")
     ChatboxLichSuDTO toDTO(ChatboxLichSu chatboxLichSu);
 
     @Mapping(target = "makhachhang", ignore = true)

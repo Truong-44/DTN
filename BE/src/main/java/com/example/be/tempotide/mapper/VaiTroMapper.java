@@ -7,9 +7,9 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface VaiTroMapper {
-    @Mapping(target = "nguoitao", ignore = true) // Bỏ qua nguoitao để tránh vòng lặp
+    @Mapping(source = "nguoitao.manhanvien", target = "nguoitao")
     VaiTroDTO toDTO(VaiTro vaiTro);
 
-    @Mapping(target = "nguoitao", ignore = true) // Bỏ qua khi tạo mới
+    @Mapping(target = "nguoitao", ignore = true)
     VaiTro toEntity(VaiTroDTO vaiTroDTO);
 }
