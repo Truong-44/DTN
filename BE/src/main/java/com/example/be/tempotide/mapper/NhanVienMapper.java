@@ -7,11 +7,11 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface NhanVienMapper {
-    @Mapping(target = "nguoitao", ignore = true) // Bỏ qua nguoitao để tránh vòng lặp
-    @Mapping(target = "nguoicapnhat", ignore = true) // Bỏ qua nguoicapnhat để tránh vòng lặp
+    @Mapping(source = "nguoitao.manhanvien", target = "nguoitao")
+    @Mapping(source = "nguoicapnhat.manhanvien", target = "nguoicapnhat")
     NhanVienDTO toDTO(NhanVien nhanVien);
 
-    @Mapping(target = "nguoitao", ignore = true) // Bỏ qua khi tạo mới
-    @Mapping(target = "nguoicapnhat", ignore = true) // Bỏ qua khi tạo mới
+    @Mapping(target = "nguoitao", ignore = true)
+    @Mapping(target = "nguoicapnhat", ignore = true)
     NhanVien toEntity(NhanVienDTO nhanVienDTO);
 }

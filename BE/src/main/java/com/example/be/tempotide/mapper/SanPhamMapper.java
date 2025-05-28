@@ -7,13 +7,13 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface SanPhamMapper {
-    @Mapping(target = "madanhmuc", source = "madanhmuc.madanhmuc") // Chỉ lấy ID
-    @Mapping(target = "nguoitao", ignore = true) // Bỏ qua nguoitao để tránh vòng lặp
-    @Mapping(target = "nguoicapnhat", ignore = true) // Bỏ qua nguoicapnhat để tránh vòng lặp
+    @Mapping(source = "madanhmuc.madanhmuc", target = "madanhmuc")
+    @Mapping(source = "nguoitao.manhanvien", target = "nguoitao")
+    @Mapping(source = "nguoicapnhat.manhanvien", target = "nguoicapnhat")
     SanPhamDTO toDTO(SanPham sanPham);
 
-    @Mapping(target = "madanhmuc", ignore = true) // Bỏ qua, sẽ set thủ công trong service
-    @Mapping(target = "nguoitao", ignore = true) // Bỏ qua khi tạo mới
-    @Mapping(target = "nguoicapnhat", ignore = true) // Bỏ qua khi tạo mới
+    @Mapping(target = "madanhmuc", ignore = true)
+    @Mapping(target = "nguoitao", ignore = true)
+    @Mapping(target = "nguoicapnhat", ignore = true)
     SanPham toEntity(SanPhamDTO sanPhamDTO);
 }

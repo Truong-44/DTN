@@ -7,9 +7,9 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface ChiTietDonHangMapper {
-    @Mapping(target = "madonhang", source = "madonhang.madonhang")
-    @Mapping(target = "machitietsanpham", source = "machitietsanpham.machitietsanpham")
-    @Mapping(target = "nguoitao", ignore = true)
+    @Mapping(source = "madonhang.madonhang", target = "madonhang")
+    @Mapping(source = "machitietsanpham.machitietsanpham", target = "machitietsanpham")
+    @Mapping(source = "nguoitao.manhanvien", target = "nguoitao")
     ChiTietDonHangDTO toDTO(ChiTietDonHang chiTietDonHang);
 
     @Mapping(target = "madonhang", ignore = true)

@@ -7,10 +7,10 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface DonHangMapper {
-    @Mapping(target = "makhachhang", source = "makhachhang.makhachhang")
-    @Mapping(target = "manhanvienxuly", source = "manhanvienxuly.manhanvien")
-    @Mapping(target = "nguoitao", ignore = true)
-    @Mapping(target = "nguoicapnhat", ignore = true)
+    @Mapping(source = "makhachhang.makhachhang", target = "makhachhang")
+    @Mapping(source = "manhanvienxuly.manhanvien", target = "manhanvienxuly")
+    @Mapping(source = "nguoitao.manhanvien", target = "nguoitao")
+    @Mapping(source = "nguoicapnhat.manhanvien", target = "nguoicapnhat")
     DonHangDTO toDTO(DonHang donHang);
 
     @Mapping(target = "makhachhang", ignore = true)

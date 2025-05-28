@@ -9,9 +9,6 @@ import java.time.LocalDateTime;
 public class ThuocTinhSanPhamDTO {
     private Integer mathuoctinh;
 
-    @NotNull(message = "Mã sản phẩm không được để trống")
-    private Integer masanpham;
-
     @NotBlank(message = "Tên thuộc tính không được để trống")
     @Size(max = 50, message = "Tên thuộc tính không được vượt quá 50 ký tự")
     private String tenthuoctinh;
@@ -20,8 +17,13 @@ public class ThuocTinhSanPhamDTO {
     @Size(max = 100, message = "Giá trị không được vượt quá 100 ký tự")
     private String giatri;
 
+    @NotNull(message = "Mã sản phẩm không được để trống")
+    private Integer masanpham;
+
+    @NotNull(message = "Ngày tạo không được để trống")
     private LocalDateTime ngaytao;
+
     private Boolean trangthai;
 
-    // Không bao gồm nguoitao trong DTO để tránh vòng lặp tuần hoàn
+    private Integer nguoitao; // Thêm trường này
 }

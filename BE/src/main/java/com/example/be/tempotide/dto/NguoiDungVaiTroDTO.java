@@ -6,16 +6,17 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class GioHangDTO {
-    private Integer magiohang;
+public class NguoiDungVaiTroDTO {
+    private Integer manguoidungVaitro;
 
-    @NotNull(message = "Mã khách hàng không được để trống")
-    private Integer makhachhang;
+    @NotNull(message = "Mã nhân viên không được để trống")
+    private Integer manhanvien;
+
+    @NotNull(message = "Mã vai trò không được để trống")
+    private Integer mavaitro;
 
     @NotNull(message = "Ngày tạo không được để trống")
     private LocalDateTime ngaytao;
 
     private Boolean trangthai;
-
-    private Integer nguoitao; // Thêm trường này
 }

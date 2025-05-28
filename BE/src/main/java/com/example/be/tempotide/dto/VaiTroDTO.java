@@ -16,7 +16,10 @@ public class VaiTroDTO {
     @Size(max = 200, message = "Mô tả không được vượt quá 200 ký tự")
     private String mota;
 
+    @NotNull(message = "Ngày tạo không được để trống")
     private LocalDateTime ngaytao;
+
     private Boolean trangthai;
 
+    private Integer nguoitao; // Thêm trường này
 }

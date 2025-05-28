@@ -7,13 +7,13 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface VaiTroQuyenMapper {
-    @Mapping(target = "mavaitro", source = "mavaitro.mavaitro") // Chỉ lấy ID từ VaiTro
-    @Mapping(target = "maquyen", source = "maquyen.maquyen") // Chỉ lấy ID từ Quyen
-    @Mapping(target = "nguoitao", ignore = true) // Bỏ qua nguoitao để tránh vòng lặp
+    @Mapping(source = "mavaitro.mavaitro", target = "mavaitro")
+    @Mapping(source = "maquyen.maquyen", target = "maquyen")
+    @Mapping(source = "nguoitao.manhanvien", target = "nguoitao")
     VaiTroQuyenDTO toDTO(VaiTroQuyen vaiTroQuyen);
 
-    @Mapping(target = "mavaitro", ignore = true) // Bỏ qua, sẽ set thủ công trong service
-    @Mapping(target = "maquyen", ignore = true) // Bỏ qua, sẽ set thủ công trong service
-    @Mapping(target = "nguoitao", ignore = true) // Bỏ qua khi tạo mới
+    @Mapping(target = "mavaitro", ignore = true)
+    @Mapping(target = "maquyen", ignore = true)
+    @Mapping(target = "nguoitao", ignore = true)
     VaiTroQuyen toEntity(VaiTroQuyenDTO vaiTroQuyenDTO);
 }

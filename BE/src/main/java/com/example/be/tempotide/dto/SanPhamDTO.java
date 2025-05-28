@@ -13,9 +13,6 @@ public class SanPhamDTO {
     @Size(max = 100, message = "Tên sản phẩm không được vượt quá 100 ký tự")
     private String tensanpham;
 
-    @NotNull(message = "Mã danh mục không được để trống")
-    private Integer madanhmuc;
-
     @Size(max = 500, message = "Mô tả không được vượt quá 500 ký tự")
     private String mota;
 
@@ -23,8 +20,16 @@ public class SanPhamDTO {
     @DecimalMin(value = "0.0", inclusive = false, message = "Giá phải lớn hơn 0")
     private Double gia;
 
+    @NotNull(message = "Mã danh mục không được để trống")
+    private Integer madanhmuc;
+
+    @NotNull(message = "Ngày tạo không được để trống")
     private LocalDateTime ngaytao;
+
+    private LocalDateTime ngaycapnhat;
+
     private Boolean trangthai;
 
-    // Không bao gồm nguoitao và nguoicapnhat trong DTO để tránh vòng lặp tuần hoàn
+    private Integer nguoitao; // Thêm trường này
+    private Integer nguoicapnhat; // Thêm trường này
 }

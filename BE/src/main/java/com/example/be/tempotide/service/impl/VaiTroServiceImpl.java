@@ -4,6 +4,7 @@ import com.example.be.tempotide.dto.VaiTroDTO;
 import com.example.be.tempotide.entity.NhanVien;
 import com.example.be.tempotide.entity.VaiTro;
 import com.example.be.tempotide.mapper.VaiTroMapper;
+import com.example.be.tempotide.repository.NhanVienRepository;
 import com.example.be.tempotide.repository.VaiTroRepository;
 import com.example.be.tempotide.service.VaiTroService;
 import lombok.RequiredArgsConstructor;
