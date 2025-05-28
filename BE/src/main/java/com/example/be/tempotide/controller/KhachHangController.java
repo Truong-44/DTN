@@ -13,45 +13,44 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/customers")
+@RequestMapping("/api/khachhang")
 @RequiredArgsConstructor
-@Tag(name = "Customer API", description = "APIs for managing customers")
+@Tag(name = "KhachHang API", description = "APIs for managing khachhang")
 public class KhachHangController {
     private final KhachHangService khachHangService;
 
     @GetMapping
+    @Operation(summary = "Get all khachhangs")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Get all active customers")
-    public ResponseEntity<List<KhachHangDTO>> getAllCustomers() {
-        return ResponseEntity.ok(khachHangService.getAllActiveCustomers());
+    public ResponseEntity<List<KhachHangDTO>> getAllKhachHangs() {
+        return ResponseEntity.ok(khachHangService.getAllKhachHangs());
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Get customer by ID")
-    public ResponseEntity<KhachHangDTO> getCustomerById(@PathVariable Integer id) {
-        return ResponseEntity.ok(khachHangService.getCustomerById(id));
+    @Operation(summary = "Get khachhang by ID")
+    public ResponseEntity<KhachHangDTO> getKhachHangById(@PathVariable Integer id) {
+        return ResponseEntity.ok(khachHangService.getKhachHangById(id));
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
-    @Operation(summary = "Create a new customer")
-    public ResponseEntity<KhachHangDTO> createCustomer(@Valid @RequestBody KhachHangDTO khachHangDTO) {
-        return ResponseEntity.ok(khachHangService.createCustomer(khachHangDTO));
+    @Operation(summary = "Create a new khachhang")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<KhachHangDTO> createKhachHang(@Valid @RequestBody KhachHangDTO khachHangDTO) {
+        return ResponseEntity.ok(khachHangService.createKhachHang(khachHangDTO));
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Update a khachhang")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Update a customer")
-    public ResponseEntity<KhachHangDTO> updateCustomer(@PathVariable Integer id, @Valid @RequestBody KhachHangDTO khachHangDTO) {
-        return ResponseEntity.ok(khachHangService.updateCustomer(id, khachHangDTO));
+    public ResponseEntity<KhachHangDTO> updateKhachHang(@PathVariable Integer id, @Valid @RequestBody KhachHangDTO khachHangDTO) {
+        return ResponseEntity.ok(khachHangService.updateKhachHang(id, khachHangDTO));
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete a khachhang (soft delete)")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Delete a customer (soft delete)")
-    public ResponseEntity<Void> deleteCustomer(@PathVariable Integer id) {
-        khachHangService.deleteCustomer(id);
+    public ResponseEntity<Void> deleteKhachHang(@PathVariable Integer id) {
+        khachHangService.deleteKhachHang(id);
         return ResponseEntity.noContent().build();
     }
 }

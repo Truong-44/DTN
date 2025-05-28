@@ -1,12 +1,13 @@
 package com.example.be.tempotide.service;
 
-import com.example.be.tempotide.dto.QuyenDTO;
-import com.example.be.tempotide.dto.VaiTroQuyenRequestDTO;
+import com.example.be.tempotide.dto.VaiTroQuyenDTO;
 
 import java.util.List;
 
 public interface VaiTroQuyenService {
-    List<QuyenDTO> getPermissionsByRoleId(Integer roleId);
-    void assignPermissionToRole(VaiTroQuyenRequestDTO requestDTO);
-    void removePermissionFromRole(Integer roleId, Integer permissionId);
+    List<VaiTroQuyenDTO> getAllVaiTroQuyens();
+    VaiTroQuyenDTO getVaiTroQuyenById(Integer id);
+    VaiTroQuyenDTO createVaiTroQuyen(VaiTroQuyenDTO vaiTroQuyenDTO);
+    VaiTroQuyenDTO updateVaiTroQuyen(Integer id, VaiTroQuyenDTO vaiTroQuyenDTO);
+    void deleteVaiTroQuyen(Integer id);
 }

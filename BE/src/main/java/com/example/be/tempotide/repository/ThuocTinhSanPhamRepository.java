@@ -1,12 +1,7 @@
-package com.example.tempotide.repository;
+package com.example.be.tempotide.repository;
 
-import com.example.tempotide.entity.ThuocTinhSanPham;
+import com.example.be.tempotide.entity.ThuocTinhSanPham;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
-import java.util.Optional;
-
 public interface ThuocTinhSanPhamRepository extends JpaRepository<ThuocTinhSanPham, Integer> {
-    List<ThuocTinhSanPham> findByTrangthaiTrue();
-    Optional<ThuocTinhSanPham> findByTenthuoctinh(String tenthuoctinh);
 }

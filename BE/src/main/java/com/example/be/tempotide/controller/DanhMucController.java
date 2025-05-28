@@ -13,43 +13,44 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/categories")
+@RequestMapping("/api/danhmuc")
 @RequiredArgsConstructor
-@Tag(name = "Category API", description = "APIs for managing categories")
+@Tag(name = "DanhMuc API", description = "APIs for managing danhmuc")
 public class DanhMucController {
     private final DanhMucService danhMucService;
 
     @GetMapping
-    @Operation(summary = "Get all active categories")
-    public ResponseEntity<List<DanhMucDTO>> getAllCategories() {
-        return ResponseEntity.ok(danhMucService.getAllActiveCategories());
+    @Operation(summary = "Get all danhmucs")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<DanhMucDTO>> getAllDanhMucs() {
+        return ResponseEntity.ok(danhMucService.getAllDanhMucs());
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get category by ID")
-    public ResponseEntity<DanhMucDTO> getCategoryById(@PathVariable Integer id) {
-        return ResponseEntity.ok(danhMucService.getCategoryById(id));
+    @Operation(summary = "Get danhmuc by ID")
+    public ResponseEntity<DanhMucDTO> getDanhMucById(@PathVariable Integer id) {
+        return ResponseEntity.ok(danhMucService.getDanhMucById(id));
     }
 
     @PostMapping
+    @Operation(summary = "Create a new danhmuc")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Create a new category")
-    public ResponseEntity<DanhMucDTO> createCategory(@Valid @RequestBody DanhMucDTO danhMucDTO) {
-        return ResponseEntity.ok(danhMucService.createCategory(danhMucDTO));
+    public ResponseEntity<DanhMucDTO> createDanhMuc(@Valid @RequestBody DanhMucDTO danhMucDTO) {
+        return ResponseEntity.ok(danhMucService.createDanhMuc(danhMucDTO));
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Update a danhmuc")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Update a category")
-    public ResponseEntity<DanhMucDTO> updateCategory(@PathVariable Integer id, @Valid @RequestBody DanhMucDTO danhMucDTO) {
-        return ResponseEntity.ok(danhMucService.updateCategory(id, danhMucDTO));
+    public ResponseEntity<DanhMucDTO> updateDanhMuc(@PathVariable Integer id, @Valid @RequestBody DanhMucDTO danhMucDTO) {
+        return ResponseEntity.ok(danhMucService.updateDanhMuc(id, danhMucDTO));
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete a danhmuc (soft delete)")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Delete a category (soft delete)")
-    public ResponseEntity<Void> deleteCategory(@PathVariable Integer id) {
-        danhMucService.deleteCategory(id);
+    public ResponseEntity<Void> deleteDanhMuc(@PathVariable Integer id) {
+        danhMucService.deleteDanhMuc(id);
         return ResponseEntity.noContent().build();
     }
 }

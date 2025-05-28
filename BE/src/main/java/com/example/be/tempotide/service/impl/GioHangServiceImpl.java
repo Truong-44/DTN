@@ -1,14 +1,14 @@
-package com.example.tempotide.service.impl;
+package com.example.be.tempotide.service.impl;
 
-import com.example.tempotide.dto.GioHangDTO;
-import com.example.tempotide.entity.GioHang;
-import com.example.tempotide.entity.KhachHang;
-import com.example.tempotide.entity.NhanVien;
-import com.example.tempotide.mapper.GioHangMapper;
-import com.example.tempotide.repository.GioHangRepository;
-import com.example.tempotide.repository.KhachHangRepository;
-import com.example.tempotide.repository.NhanVienRepository;
-import com.example.tempotide.service.GioHangService;
+import com.example.be.tempotide.dto.GioHangDTO;
+import com.example.be.tempotide.entity.GioHang;
+import com.example.be.tempotide.entity.KhachHang;
+import com.example.be.tempotide.entity.NhanVien;
+import com.example.be.tempotide.mapper.GioHangMapper;
+import com.example.be.tempotide.repository.GioHangRepository;
+import com.example.be.tempotide.repository.KhachHangRepository;
+import com.example.be.tempotide.repository.NhanVienRepository;
+import com.example.be.tempotide.service.GioHangService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -22,118 +22,115 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class GioHangServiceImpl implements GioHangService {
     private final GioHangRepository gioHangRepository;
+    private final GioHangMapper gioHangMapper;
     private final KhachHangRepository khachHangRepository;
     private final NhanVienRepository nhanVienRepository;
-    private final GioHangMapper gioHangMapper;
 
     @Override
-    public List<GioHangDTO> getAllActiveCarts() {
-        return gioHangRepository.findByTrangthaiTrue()
+    public List<GioHangDTO> getAllGioHangs() {
+        return gioHangRepository.findAll()
                 .stream()
                 .map(gioHangMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public GioHangDTO getUserCart() {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        KhachHang khachHang = khachHangRepository.findByEmail(username)
-                .orElse(null);
-
-        GioHang gioHang;
-        if (khachHang != null) {
-            gioHang = gioHangRepository.findByKhachhangMakhachhangAndTrangthaiTrue(khachHang.getMakhachhang())
-                    .orElseThrow(() -> new RuntimeException("Cart not found for user: " + username));
-        } else {
-            throw new RuntimeException("User not found or not authenticated");
-        }
+    public GioHangDTO getGioHangById(Integer id) {
+        GioHang gioHang = gioHangRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("GioHang not found with ID: " + id));
         return gioHangMapper.toDTO(gioHang);
     }
 
     @Override
     @Transactional
-    public GioHangDTO createCart(GioHangDTO gioHangDTO) {
-        // Kiểm tra makhachhang hoặc sodienthoai
+    public GioHangDTO createGioHang(GioHangDTO gioHangDTO) {
         if (gioHangDTO.getMakhachhang() == null && gioHangDTO.getSodienthoai() == null) {
-            throw new RuntimeException("Either customer ID or phone number must be provided");
+            throw new IllegalArgumentException("Phải cung cấp ít nhất makhachhang hoặc sodienthoai");
         }
 
-        // Kiểm tra giỏ hàng đã tồn tại
-        if (gioHangDTO.getMakhachhang() != null) {
-            if (gioHangRepository.findByKhachhangMakhachhangAndTrangthaiTrue(gioHangDTO.getMakhachhang()).isPresent()) {
-                throw new RuntimeException("Active cart already exists for customer ID: " + gioHangDTO.getMakhachhang());
-            }
-            KhachHang khachHang = khachHangRepository.findById(gioHangDTO.getMakhachhang())
-                    .orElseThrow(() -> new RuntimeException("Customer not found with ID: " + gioHangDTO.getMakhachhang()));
-        } else if (gioHangDTO.getSodienthoai() != null) {
-            if (gioHangRepository.findBySodienthoaiAndTrangthaiTrue(gioHangDTO.getSodienthoai()).isPresent()) {
-                throw new RuntimeException("Active cart already exists for phone number: " + gioHangDTO.getSodienthoai());
-            }
+        if (gioHangDTO.getMakhachhang() != null && gioHangRepository.findByMakhachhang_Makhachhang(gioHangDTO.getMakhachhang()).isPresent()) {
+            throw new RuntimeException("Giỏ hàng đã tồn tại cho khách hàng với ID: " + gioHangDTO.getMakhachhang());
+        }
+        if (gioHangDTO.getSodienthoai() != null && gioHangRepository.findBySodienthoai(gioHangDTO.getSodienthoai()).isPresent()) {
+            throw new RuntimeException("Giỏ hàng đã tồn tại cho số điện thoại: " + gioHangDTO.getSodienthoai());
         }
 
         GioHang gioHang = gioHangMapper.toEntity(gioHangDTO);
+        gioHang.setNgaytao(LocalDateTime.now());
+        gioHang.setNgaycapnhat(LocalDateTime.now());
 
         if (gioHangDTO.getMakhachhang() != null) {
             KhachHang khachHang = khachHangRepository.findById(gioHangDTO.getMakhachhang())
-                    .orElseThrow(() -> new RuntimeException("Customer not found with ID: " + gioHangDTO.getMakhachhang()));
-            gioHang.setKhachhang(khachHang);
+                    .orElseThrow(() -> new RuntimeException("KhachHang not found with ID: " + gioHangDTO.getMakhachhang()));
+            gioHang.setMakhachhang(khachHang);
         }
 
-        // Gán nguoitao
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         NhanVien nguoitao = nhanVienRepository.findByEmail(username)
                 .orElseThrow(() -> new RuntimeException("User not found: " + username));
         gioHang.setNguoitao(nguoitao);
 
-        gioHang = gioHangRepository.save(gioHang);
-        return gioHangMapper.toDTO(gioHang);
+        GioHang savedGioHang = gioHangRepository.save(gioHang);
+        return gioHangMapper.toDTO(savedGioHang);
     }
 
     @Override
     @Transactional
-    public GioHangDTO updateCart(Integer id, GioHangDTO gioHangDTO) {
-        GioHang gioHang = gioHangRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cart not found with ID: " + id));
+    public GioHangDTO updateGioHang(Integer id, GioHangDTO gioHangDTO) {
+        GioHang existingGioHang = gioHangRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("GioHang not found with ID: " + id));
 
-        // Kiểm tra quyền sở hữu hoặc ADMIN
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        KhachHang currentUser = khachHangRepository.findByEmail(username).orElse(null);
-        if (currentUser == null || (gioHang.getKhachhang() != null && !gioHang.getKhachhang().getMakhachhang().equals(currentUser.getMakhachhang()))) {
-            throw new RuntimeException("Unauthorized to update this cart");
+        if (gioHangDTO.getMakhachhang() != null && gioHangDTO.getMakhachhang() != existingGioHang.getMakhachhang().getMakhachhang() &&
+                gioHangRepository.findByMakhachhang_Makhachhang(gioHangDTO.getMakhachhang()).isPresent()) {
+            throw new RuntimeException("Giỏ hàng đã tồn tại cho khách hàng với ID: " + gioHangDTO.getMakhachhang());
+        }
+        if (gioHangDTO.getSodienthoai() != null && !gioHangDTO.getSodienthoai().equals(existingGioHang.getSodienthoai()) &&
+                gioHangRepository.findBySodienthoai(gioHangDTO.getSodienthoai()).isPresent()) {
+            throw new RuntimeException("Giỏ hàng đã tồn tại cho số điện thoại: " + gioHangDTO.getSodienthoai());
         }
 
-        // Cập nhật sodienthoai hoặc makhachhang
+        existingGioHang.setSodienthoai(gioHangDTO.getSodienthoai());
+        existingGioHang.setNgaytao(gioHangDTO.getNgaytao());
+        existingGioHang.setNgaycapnhat(LocalDateTime.now());
+        existingGioHang.setTrangthai(gioHangDTO.getTrangthai());
+
         if (gioHangDTO.getMakhachhang() != null) {
             KhachHang khachHang = khachHangRepository.findById(gioHangDTO.getMakhachhang())
-                    .orElseThrow(() -> new RuntimeException("Customer not found with ID: " + gioHangDTO.getMakhachhang()));
-            gioHang.setKhachhang(khachHang);
-            gioHang.setSodienthoai(null);
-        } else if (gioHangDTO.getSodienthoai() != null) {
-            gioHang.setKhachhang(null);
-            gioHang.setSodienthoai(gioHangDTO.getSodienthoai());
+                    .orElseThrow(() -> new RuntimeException("KhachHang not found with ID: " + gioHangDTO.getMakhachhang()));
+            existingGioHang.setMakhachhang(khachHang);
+        } else {
+            existingGioHang.setMakhachhang(null);
         }
 
-        gioHang.setTrangthai(gioHangDTO.getTrangthai());
-        gioHang.setNgaycapnhat(LocalDateTime.now());
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        NhanVien nguoitao = nhanVienRepository.findByEmail(username)
+                .orElseThrow(() -> new RuntimeException("User not found: " + username));
+        existingGioHang.setNguoitao(nguoitao);
 
-        gioHang = gioHangRepository.save(gioHang);
-        return gioHangMapper.toDTO(gioHang);
+        GioHang updatedGioHang = gioHangRepository.save(existingGioHang);
+        return gioHangMapper.toDTO(updatedGioHang);
     }
 
     @Override
     @Transactional
-    public void deleteCart(Integer id) {
+    public void deleteGioHang(Integer id) {
         GioHang gioHang = gioHangRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cart not found with ID: " + id));
-
-        // Kiểm tra quyền sở hữu hoặc ADMIN
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        KhachHang currentUser = khachHangRepository.findByEmail(username).orElse(null);
-        if (currentUser == null || (gioHang.getKhachhang() != null && !gioHang.getKhachhang().getMakhachhang().equals(currentUser.getMakhachhang()))) {
-            throw new RuntimeException("Unauthorized to delete this cart");
-        }
-
+                .orElseThrow(() -> new RuntimeException("GioHang not found with ID: " + id));
         gioHang.setTrangthai(false);
         gioHangRepository.save(gioHang);
+    }
+
+    @Override
+    public GioHangDTO getGioHangByKhachHangId(Integer makhachhang) {
+        GioHang gioHang = gioHangRepository.findByMakhachhang_Makhachhang(makhachhang)
+                .orElseThrow(() -> new RuntimeException("GioHang not found for KhachHang ID: " + makhachhang));
+        return gioHangMapper.toDTO(gioHang);
+    }
+
+    @Override
+    public GioHangDTO getGioHangBySodienthoai(String sodienthoai) {
+        GioHang gioHang = gioHangRepository.findBySodienthoai(sodienthoai)
+                .orElseThrow(() -> new RuntimeException("GioHang not found for sodienthoai: " + sodienthoai));
+        return gioHangMapper.toDTO(gioHang);
     }
 }

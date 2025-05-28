@@ -1,17 +1,20 @@
-package com.example.tempotide.service.impl;
+package com.example.be.tempotide.service.impl;
 
-import com.example.tempotide.dto.ThuocTinhSanPhamDTO;
-import com.example.tempotide.entity.NhanVien;
-import com.example.tempotide.entity.ThuocTinhSanPham;
-import com.example.tempotide.mapper.ThuocTinhSanPhamMapper;
-import com.example.tempotide.repository.NhanVienRepository;
-import com.example.tempotide.repository.ThuocTinhSanPhamRepository;
-import com.example.tempotide.service.ThuocTinhSanPhamService;
+import com.example.be.tempotide.dto.ThuocTinhSanPhamDTO;
+import com.example.be.tempotide.entity.ThuocTinhSanPham;
+import com.example.be.tempotide.entity.SanPham;
+import com.example.be.tempotide.entity.NhanVien;
+import com.example.be.tempotide.mapper.ThuocTinhSanPhamMapper;
+import com.example.be.tempotide.repository.ThuocTinhSanPhamRepository;
+import com.example.be.tempotide.repository.SanPhamRepository;
+import com.example.be.tempotide.repository.NhanVienRepository;
+import com.example.be.tempotide.service.ThuocTinhSanPhamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,69 +22,77 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ThuocTinhSanPhamServiceImpl implements ThuocTinhSanPhamService {
     private final ThuocTinhSanPhamRepository thuocTinhSanPhamRepository;
-    private final NhanVienRepository nhanVienRepository;
     private final ThuocTinhSanPhamMapper thuocTinhSanPhamMapper;
+    private final SanPhamRepository sanPhamRepository;
+    private final NhanVienRepository nhanVienRepository;
 
     @Override
-    public List<ThuocTinhSanPhamDTO> getAllActiveAttributes() {
-        return thuocTinhSanPhamRepository.findByTrangthaiTrue()
+    public List<ThuocTinhSanPhamDTO> getAllThuocTinhSanPhams() {
+        return thuocTinhSanPhamRepository.findAll()
                 .stream()
                 .map(thuocTinhSanPhamMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public ThuocTinhSanPhamDTO getAttributeById(Integer id) {
+    public ThuocTinhSanPhamDTO getThuocTinhSanPhamById(Integer id) {
         ThuocTinhSanPham thuocTinhSanPham = thuocTinhSanPhamRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Attribute not found with ID: " + id));
+                .orElseThrow(() -> new RuntimeException("ThuocTinhSanPham not found with ID: " + id));
         return thuocTinhSanPhamMapper.toDTO(thuocTinhSanPham);
     }
 
     @Override
     @Transactional
-    public ThuocTinhSanPhamDTO createAttribute(ThuocTinhSanPhamDTO thuocTinhSanPhamDTO) {
-        // Kiểm tra trùng tenthuoctinh
-        if (thuocTinhSanPhamRepository.findByTenthuoctinh(thuocTinhSanPhamDTO.getTenthuoctinh()).isPresent()) {
-            throw new RuntimeException("Attribute name already exists: " + thuocTinhSanPhamDTO.getTenthuoctinh());
-        }
-
+    public ThuocTinhSanPhamDTO createThuocTinhSanPham(ThuocTinhSanPhamDTO thuocTinhSanPhamDTO) {
         ThuocTinhSanPham thuocTinhSanPham = thuocTinhSanPhamMapper.toEntity(thuocTinhSanPhamDTO);
+        thuocTinhSanPham.setNgaytao(LocalDateTime.now());
 
-        // Gán nguoitao từ người dùng hiện tại
+        // Gán masanpham
+        SanPham sanPham = sanPhamRepository.findById(thuocTinhSanPhamDTO.getMasanpham())
+                .orElseThrow(() -> new RuntimeException("SanPham not found with ID: " + thuocTinhSanPhamDTO.getMasanpham()));
+        thuocTinhSanPham.setMasanpham(sanPham);
+
+        // Gán nguoitao từ thông tin người dùng hiện tại
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         NhanVien nguoitao = nhanVienRepository.findByEmail(username)
                 .orElseThrow(() -> new RuntimeException("User not found: " + username));
         thuocTinhSanPham.setNguoitao(nguoitao);
 
-        thuocTinhSanPham = thuocTinhSanPhamRepository.save(thuocTinhSanPham);
-        return thuocTinhSanPhamMapper.toDTO(thuocTinhSanPham);
+        ThuocTinhSanPham savedThuocTinhSanPham = thuocTinhSanPhamRepository.save(thuocTinhSanPham);
+        return thuocTinhSanPhamMapper.toDTO(savedThuocTinhSanPham);
     }
 
     @Override
     @Transactional
-    public ThuocTinhSanPhamDTO updateAttribute(Integer id, ThuocTinhSanPhamDTO thuocTinhSanPhamDTO) {
-        ThuocTinhSanPham thuocTinhSanPham = thuocTinhSanPhamRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Attribute not found with ID: " + id));
+    public ThuocTinhSanPhamDTO updateThuocTinhSanPham(Integer id, ThuocTinhSanPhamDTO thuocTinhSanPhamDTO) {
+        ThuocTinhSanPham existingThuocTinhSanPham = thuocTinhSanPhamRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("ThuocTinhSanPham not found with ID: " + id));
 
-        // Kiểm tra trùng tenthuoctinh
-        Optional<ThuocTinhSanPham> existingThuocTinh = thuocTinhSanPhamRepository.findByTenthuoctinh(thuocTinhSanPhamDTO.getTenthuoctinh());
-        if (existingThuocTinh.isPresent() && !existingThuocTinh.get().getMathuoctinh().equals(id)) {
-            throw new RuntimeException("Attribute name already exists: " + thuocTinhSanPhamDTO.getTenthuoctinh());
-        }
+        existingThuocTinhSanPham.setTenthuoctinh(thuocTinhSanPhamDTO.getTenthuoctinh());
+        existingThuocTinhSanPham.setGiatri(thuocTinhSanPhamDTO.getGiatri());
+        existingThuocTinhSanPham.setNgaytao(thuocTinhSanPhamDTO.getNgaytao());
+        existingThuocTinhSanPham.setTrangthai(thuocTinhSanPhamDTO.getTrangthai());
 
-        thuocTinhSanPham.setTenthuoctinh(thuocTinhSanPhamDTO.getTenthuoctinh());
-        thuocTinhSanPham.setMota(thuocTinhSanPhamDTO.getMota());
-        thuocTinhSanPham.setTrangthai(thuocTinhSanPhamDTO.getTrangthai());
+        // Cập nhật masanpham
+        SanPham sanPham = sanPhamRepository.findById(thuocTinhSanPhamDTO.getMasanpham())
+                .orElseThrow(() -> new RuntimeException("SanPham not found with ID: " + thuocTinhSanPhamDTO.getMasanpham()));
+        existingThuocTinhSanPham.setMasanpham(sanPham);
 
-        thuocTinhSanPham = thuocTinhSanPhamRepository.save(thuocTinhSanPham);
-        return thuocTinhSanPhamMapper.toDTO(thuocTinhSanPham);
+        // Gán nguoitao từ thông tin người dùng hiện tại
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        NhanVien nguoitao = nhanVienRepository.findByEmail(username)
+                .orElseThrow(() -> new RuntimeException("User not found: " + username));
+        existingThuocTinhSanPham.setNguoitao(nguoitao);
+
+        ThuocTinhSanPham updatedThuocTinhSanPham = thuocTinhSanPhamRepository.save(existingThuocTinhSanPham);
+        return thuocTinhSanPhamMapper.toDTO(updatedThuocTinhSanPham);
     }
 
     @Override
     @Transactional
-    public void deleteAttribute(Integer id) {
+    public void deleteThuocTinhSanPham(Integer id) {
         ThuocTinhSanPham thuocTinhSanPham = thuocTinhSanPhamRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Attribute not found with ID: " + id));
+                .orElseThrow(() -> new RuntimeException("ThuocTinhSanPham not found with ID: " + id));
         thuocTinhSanPham.setTrangthai(false);
         thuocTinhSanPhamRepository.save(thuocTinhSanPham);
     }

@@ -7,14 +7,14 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "giohang")
+@Table(name = "chatbox_lichsu")
 @Getter
 @Setter
-public class GioHang {
+public class ChatboxLichSu {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "magiohang")
-    private Integer magiohang;
+    @Column(name = "machat")
+    private Integer machat;
 
     @ManyToOne
     @JoinColumn(name = "makhachhang")
@@ -23,11 +23,18 @@ public class GioHang {
     @Column(name = "sodienthoai", length = 15)
     private String sodienthoai;
 
+    @Column(name = "noidung", nullable = false, length = 1000)
+    private String noidung;
+
+    @Column(name = "loai_cauhoi", length = 50)
+    private String loaiCauhoi;
+
+    @ManyToOne
+    @JoinColumn(name = "giosanpham")
+    private SanPham giosanpham;
+
     @Column(name = "ngaytao")
     private LocalDateTime ngaytao;
-
-    @Column(name = "ngaycapnhat")
-    private LocalDateTime ngaycapnhat;
 
     @Column(name = "trangthai")
     private Boolean trangthai;

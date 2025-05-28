@@ -1,12 +1,11 @@
-package com.example.tempotide.dto;
+package com.example.be.tempotide.dto;
 
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.validation.constraints.*;
+import lombok.Data;
 
-@Getter
-@Setter
+import java.time.LocalDateTime;
+
+@Data
 public class GioHangDTO {
     private Integer magiohang;
 
@@ -16,5 +15,7 @@ public class GioHangDTO {
     @Pattern(regexp = "^[0-9]{10}$", message = "Số điện thoại phải là 10 chữ số")
     private String sodienthoai;
 
+    private LocalDateTime ngaytao;
+    private LocalDateTime ngaycapnhat;
     private Boolean trangthai;
 }

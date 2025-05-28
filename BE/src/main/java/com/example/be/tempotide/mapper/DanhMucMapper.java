@@ -7,8 +7,11 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface DanhMucMapper {
-    @Mapping(target = "danhmucchaId", source = "danhmuccha.madanhmuc")
+    @Mapping(target = "madanhmuccha", source = "madanhmuccha.madanhmuc") // Chỉ lấy ID
+    @Mapping(target = "nguoitao", ignore = true) // Bỏ qua nguoitao để tránh vòng lặp
     DanhMucDTO toDTO(DanhMuc danhMuc);
-    @Mapping(target = "danhmuccha", ignore = true)
+
+    @Mapping(target = "madanhmuccha", ignore = true) // Bỏ qua, sẽ set thủ công trong service
+    @Mapping(target = "nguoitao", ignore = true) // Bỏ qua khi tạo mới
     DanhMuc toEntity(DanhMucDTO danhMucDTO);
 }

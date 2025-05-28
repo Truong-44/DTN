@@ -1,8 +1,8 @@
-package com.example.temp;
+package com.example.be.tempotide.controller;
 
-import com.example.temp.dto.ChiTietSanPhamDTO;
-import com.example.temp.service.ChiTietSanPhamService;
-import io.swagger.v3.oas.annotations.OpenAPIOperation;
+import com.example.be.tempotide.dto.ChiTietSanPhamDTO;
+import com.example.be.tempotide.service.ChiTietSanPhamService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -13,43 +13,50 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/comments")
+@RequestMapping("/api/chitietsanpham")
 @RequiredArgsConstructor
-@Tag(name = "Product Detail API", description = "APIs for managing product details")
+@Tag(name = "ChiTietSanPham API", description = "APIs for managing chitietsanpham")
 public class ChiTietSanPhamController {
     private final ChiTietSanPhamService chiTietSanPhamService;
 
     @GetMapping
-    @Operation(summary = "Get all active product details")
-    public ResponseEntity<List<ChiTietSanPhamDTO>> getAllProductDetails() {
-        return ResponseEntity.ok(chiTietSanPhamService.getAllActiveProductDetails());
+    @Operation(summary = "Get all chitietsanphams")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<ChiTietSanPhamDTO>> getAllChiTietSanPhams() {
+        return ResponseEntity.ok(chiTietSanPhamService.getAllChiTietSanPhams());
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get product detail by ID")
-    public ResponseEntity<ChiTietSanPhamDTO> getProductDetailById(@PathVariable long id) {
-        return ResponseEntity.ok(chiTietSanPhamService.getProductDetailById(id));
+    @Operation(summary = "Get chitietsanpham by ID")
+    public ResponseEntity<ChiTietSanPhamDTO> getChiTietSanPhamById(@PathVariable Integer id) {
+        return ResponseEntity.ok(chiTietSanPhamService.getChiTietSanPhamById(id));
+    }
+
+    @GetMapping("/sanpham/{masanpham}")
+    @Operation(summary = "Get chitietsanpham by sanpham ID")
+    public ResponseEntity<List<ChiTietSanPhamDTO>> getChiTietSanPhamBySanPhamId(@PathVariable Integer masanpham) {
+        return ResponseEntity.ok(chiTietSanPhamService.getChiTietSanPhamBySanPhamId(masanpham));
     }
 
     @PostMapping
+    @Operation(summary = "Create a new chitietsanpham")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Create a new product detail")
-    public ResponseEntity<ChiTietSanPhamDTO> createProductDetail(@Valid @RequestBody ChiTietSanPhamDTO chiTietSanPhamDTO) {
-        return ResponseEntity.ok(chiTietSanPhamService.createProductDetail(chiTietSanPhamDTO));
+    public ResponseEntity<ChiTietSanPhamDTO> createChiTietSanPham(@Valid @RequestBody ChiTietSanPhamDTO chiTietSanPhamDTO) {
+        return ResponseEntity.ok(chiTietSanPhamService.createChiTietSanPham(chiTietSanPhamDTO));
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Update a chitietsanpham")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Update a product detail")
-    public ResponseEntity<ChiTietSanPhamDTO> updateProductDetail(@PathVariable long id, @Valid @RequestBody ChiTietSanPhamDTO chiTietSanPhamDTO) {
-        return ResponseEntity.ok(chiTietSanPhamService.updateProductDetail(id, chiTietSanPhamDTO));
+    public ResponseEntity<ChiTietSanPhamDTO> updateChiTietSanPham(@PathVariable Integer id, @Valid @RequestBody ChiTietSanPhamDTO chiTietSanPhamDTO) {
+        return ResponseEntity.ok(chiTietSanPhamService.updateChiTietSanPham(id, chiTietSanPhamDTO));
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete a chitietsanpham (soft delete)")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Delete a product detail (soft delete)")
-    public ResponseEntity<Void> deleteProductDetail(@PathVariable long id) {
-        chiTietSanPhamService.deleteProductDetail(id);
+    public ResponseEntity<Void> deleteChiTietSanPham(@PathVariable Integer id) {
+        chiTietSanPhamService.deleteChiTietSanPham(id);
         return ResponseEntity.noContent().build();
     }
 }

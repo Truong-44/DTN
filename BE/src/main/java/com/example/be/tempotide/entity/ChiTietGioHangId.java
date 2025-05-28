@@ -1,4 +1,4 @@
-package com.example.tempotide.entity;
+package com.example.be.tempotide.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;

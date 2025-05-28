@@ -1,12 +1,14 @@
-package com.example.tempotide.service;
+package com.example.be.tempotide.service;
 
-import com.example.tempotide.dto.ChiTietDonHangDTO;
+import com.example.be.tempotide.dto.ChiTietDonHangDTO;
 
 import java.util.List;
 
 public interface ChiTietDonHangService {
-    List<ChiTietDonHangDTO> getOrderItems(Integer orderId);
-    ChiTietDonHangDTO addOrderItem(ChiTietDonHangDTO chiTietDonHangDTO);
-    ChiTietDonHangDTO updateOrderItem(ChiTietDonHangDTO chiTietDonHangDTO);
-    void deleteOrderItem(Integer orderId, Integer productDetailId);
+    List<ChiTietDonHangDTO> getAllChiTietDonHangs();
+    ChiTietDonHangDTO getChiTietDonHangById(Integer id);
+    ChiTietDonHangDTO createChiTietDonHang(ChiTietDonHangDTO chiTietDonHangDTO);
+    ChiTietDonHangDTO updateChiTietDonHang(Integer id, ChiTietDonHangDTO chiTietDonHangDTO);
+    void deleteChiTietDonHang(Integer id);
+    List<ChiTietDonHangDTO> getChiTietDonHangByDonHangId(Integer madonhang);
 }

@@ -1,13 +1,14 @@
-package com.example.temp.service;
+package com.example.be.tempotide.service;
 
-import com.example.temp.dto.ChiTietSanPhamDTO;
+import com.example.be.tempotide.dto.ChiTietSanPhamDTO;
 
 import java.util.List;
 
 public interface ChiTietSanPhamService {
-    List<ChiTietSanPhamDTO> getAllActiveProductDetails();
-    ChiTietSanPhamDTO getProductDetailById(long id);
-    ChiTietSanPhamDTO createProductDetail(ChiTietSanPhamDTO chiTietSanPhamDTO);
-    ChiTietSanPhamDTO updateProductDetail(long id, ChiTietSanPhamDTO chiTietSanPhamDTO);
-    void deleteProductDetail(long id);
+    List<ChiTietSanPhamDTO> getAllChiTietSanPhams();
+    ChiTietSanPhamDTO getChiTietSanPhamById(Integer id);
+    ChiTietSanPhamDTO createChiTietSanPham(ChiTietSanPhamDTO chiTietSanPhamDTO);
+    ChiTietSanPhamDTO updateChiTietSanPham(Integer id, ChiTietSanPhamDTO chiTietSanPhamDTO);
+    void deleteChiTietSanPham(Integer id);
+    List<ChiTietSanPhamDTO> getChiTietSanPhamBySanPhamId(Integer masanpham);
 }

@@ -1,7 +1,7 @@
-package com.example.tempotide.controller;
+package com.example.be.tempotide.controller;
 
-import com.example.tempotide.dto.ChiTietDonHangDTO;
-import com.example.tempotide.service.ChiTietDonHangService;
+import com.example.be.tempotide.dto.ChiTietDonHangDTO;
+import com.example.be.tempotide.service.ChiTietDonHangService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -13,38 +13,50 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/order-items")
+@RequestMapping("/api/chitietdonhang")
 @RequiredArgsConstructor
-@Tag(name = "Order Item API", description = "APIs for managing order items")
+@Tag(name = "ChiTietDonHang API", description = "APIs for managing chitietdonhang")
 public class ChiTietDonHangController {
     private final ChiTietDonHangService chiTietDonHangService;
 
-    @GetMapping("/{orderId}")
-    @PreAuthorize("isAuthenticated()")
-    @Operation(summary = "Get order items by order ID")
-    public ResponseEntity<List<ChiTietDonHangDTO>> getOrderItems(@PathVariable Integer orderId) {
-        return ResponseEntity.ok(chiTietDonHangService.getOrderItems(orderId));
+    @GetMapping
+    @Operation(summary = "Get all chitietdonhangs")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<ChiTietDonHangDTO>> getAllChiTietDonHangs() {
+        return ResponseEntity.ok(chiTietDonHangService.getAllChiTietDonHangs());
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "Get chitietdonhang by ID")
+    public ResponseEntity<ChiTietDonHangDTO> getChiTietDonHangById(@PathVariable Integer id) {
+        return ResponseEntity.ok(chiTietDonHangService.getChiTietDonHangById(id));
+    }
+
+    @GetMapping("/donhang/{madonhang}")
+    @Operation(summary = "Get chitietdonhang by DonHang ID")
+    public ResponseEntity<List<ChiTietDonHangDTO>> getChiTietDonHangByDonHangId(@PathVariable Integer madonhang) {
+        return ResponseEntity.ok(chiTietDonHangService.getChiTietDonHangByDonHangId(madonhang));
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
-    @Operation(summary = "Add item to order")
-    public ResponseEntity<ChiTietDonHangDTO> addOrderItem(@Valid @RequestBody ChiTietDonHangDTO chiTietDonHangDTO) {
-        return ResponseEntity.ok(chiTietDonHangService.addOrderItem(chiTietDonHangDTO));
+    @Operation(summary = "Create a new chitietdonhang")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ChiTietDonHangDTO> createChiTietDonHang(@Valid @RequestBody ChiTietDonHangDTO chiTietDonHangDTO) {
+        return ResponseEntity.ok(chiTietDonHangService.createChiTietDonHang(chiTietDonHangDTO));
     }
 
-    @PutMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
-    @Operation(summary = "Update order item")
-    public ResponseEntity<ChiTietDonHangDTO> updateOrderItem(@Valid @RequestBody ChiTietDonHangDTO chiTietDonHangDTO) {
-        return ResponseEntity.ok(chiTietDonHangService.updateOrderItem(chiTietDonHangDTO));
+    @PutMapping("/{id}")
+    @Operation(summary = "Update a chitietdonhang")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ChiTietDonHangDTO> updateChiTietDonHang(@PathVariable Integer id, @Valid @RequestBody ChiTietDonHangDTO chiTietDonHangDTO) {
+        return ResponseEntity.ok(chiTietDonHangService.updateChiTietDonHang(id, chiTietDonHangDTO));
     }
 
-    @DeleteMapping("/{orderId}/{productDetailId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
-    @Operation(summary = "Delete order item")
-    public ResponseEntity<Void> deleteOrderItem(@PathVariable Integer orderId, @PathVariable Integer productDetailId) {
-        chiTietDonHangService.deleteOrderItem(orderId, productDetailId);
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Delete a chitietdonhang (soft delete)")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteChiTietDonHang(@PathVariable Integer id) {
+        chiTietDonHangService.deleteChiTietDonHang(id);
         return ResponseEntity.noContent().build();
     }
 }
