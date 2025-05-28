@@ -1,7 +1,7 @@
-package com.example.tempotide.controller;
+package com.example.be.tempotide.controller;
 
-import com.example.tempotide.dto.SanPhamDTO;
-import com.example.tempotide.service.SanPhamService;
+import com.example.be.tempotide.dto.SanPhamDTO;
+import com.example.be.tempotide.service.SanPhamService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -13,43 +13,44 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/products")
+@RequestMapping("/api/sanpham")
 @RequiredArgsConstructor
-@Tag(name = "Product API", description = "APIs for managing products")
+@Tag(name = "SanPham API", description = "APIs for managing sanpham")
 public class SanPhamController {
     private final SanPhamService sanPhamService;
 
     @GetMapping
-    @Operation(summary = "Get all active products")
-    public ResponseEntity<List<SanPhamDTO>> getAllProducts() {
-        return ResponseEntity.ok(sanPhamService.getAllActiveProducts());
+    @Operation(summary = "Get all sanphams")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<SanPhamDTO>> getAllSanPhams() {
+        return ResponseEntity.ok(sanPhamService.getAllSanPhams());
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get product by ID")
-    public ResponseEntity<SanPhamDTO> getProductById(@PathVariable Integer id) {
-        return ResponseEntity.ok(sanPhamService.getProductById(id));
+    @Operation(summary = "Get sanpham by ID")
+    public ResponseEntity<SanPhamDTO> getSanPhamById(@PathVariable Integer id) {
+        return ResponseEntity.ok(sanPhamService.getSanPhamById(id));
     }
 
     @PostMapping
+    @Operation(summary = "Create a new sanpham")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Create a new product")
-    public ResponseEntity<SanPhamDTO> createProduct(@Valid @RequestBody SanPhamDTO sanPhamDTO) {
-        return ResponseEntity.ok(sanPhamService.createProduct(sanPhamDTO));
+    public ResponseEntity<SanPhamDTO> createSanPham(@Valid @RequestBody SanPhamDTO sanPhamDTO) {
+        return ResponseEntity.ok(sanPhamService.createSanPham(sanPhamDTO));
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Update a sanpham")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Update a product")
-    public ResponseEntity<SanPhamDTO> updateProduct(@PathVariable Integer id, @Valid @RequestBody SanPhamDTO sanPhamDTO) {
-        return ResponseEntity.ok(sanPhamService.updateProduct(id, sanPhamDTO));
+    public ResponseEntity<SanPhamDTO> updateSanPham(@PathVariable Integer id, @Valid @RequestBody SanPhamDTO sanPhamDTO) {
+        return ResponseEntity.ok(sanPhamService.updateSanPham(id, sanPhamDTO));
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete a sanpham (soft delete)")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Delete a product (soft delete)")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Integer id) {
-        sanPhamService.deleteProduct(id);
+    public ResponseEntity<Void> deleteSanPham(@PathVariable Integer id) {
+        sanPhamService.deleteSanPham(id);
         return ResponseEntity.noContent().build();
     }
 }

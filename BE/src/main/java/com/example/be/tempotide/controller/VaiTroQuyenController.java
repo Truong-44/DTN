@@ -1,7 +1,6 @@
 package com.example.be.tempotide.controller;
 
-import com.example.be.tempotide.dto.QuyenDTO;
-import com.example.be.tempotide.dto.VaiTroQuyenRequestDTO;
+import com.example.be.tempotide.dto.VaiTroQuyenDTO;
 import com.example.be.tempotide.service.VaiTroQuyenService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,32 +13,44 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/role-permissions")
+@RequestMapping("/api/vaitro-quyen")
 @RequiredArgsConstructor
-@Tag(name = "Role-Permission API", description = "APIs for managing role-permission mappings")
+@Tag(name = "VaiTroQuyen API", description = "APIs for managing vaitro_quyen")
 public class VaiTroQuyenController {
     private final VaiTroQuyenService vaiTroQuyenService;
 
-    @GetMapping("/role/{roleId}")
+    @GetMapping
+    @Operation(summary = "Get all vaitro_quyens")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Get permissions of a role by role ID")
-    public ResponseEntity<List<QuyenDTO>> getPermissionsByRoleId(@PathVariable Integer roleId) {
-        return ResponseEntity.ok(vaiTroQuyenService.getPermissionsByRoleId(roleId));
+    public ResponseEntity<List<VaiTroQuyenDTO>> getAllVaiTroQuyens() {
+        return ResponseEntity.ok(vaiTroQuyenService.getAllVaiTroQuyens());
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "Get vaitro_quyen by ID")
+    public ResponseEntity<VaiTroQuyenDTO> getVaiTroQuyenById(@PathVariable Integer id) {
+        return ResponseEntity.ok(vaiTroQuyenService.getVaiTroQuyenById(id));
     }
 
     @PostMapping
+    @Operation(summary = "Create a new vaitro_quyen")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Assign a permission to a role")
-    public ResponseEntity<Void> assignPermissionToRole(@Valid @RequestBody VaiTroQuyenRequestDTO requestDTO) {
-        vaiTroQuyenService.assignPermissionToRole(requestDTO);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<VaiTroQuyenDTO> createVaiTroQuyen(@Valid @RequestBody VaiTroQuyenDTO vaiTroQuyenDTO) {
+        return ResponseEntity.ok(vaiTroQuyenService.createVaiTroQuyen(vaiTroQuyenDTO));
     }
 
-    @DeleteMapping("/role/{roleId}/permission/{permissionId}")
+    @PutMapping("/{id}")
+    @Operation(summary = "Update a vaitro_quyen")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Remove a permission from a role")
-    public ResponseEntity<Void> removePermissionFromRole(@PathVariable Integer roleId, @PathVariable Integer permissionId) {
-        vaiTroQuyenService.removePermissionFromRole(roleId, permissionId);
+    public ResponseEntity<VaiTroQuyenDTO> updateVaiTroQuyen(@PathVariable Integer id, @Valid @RequestBody VaiTroQuyenDTO vaiTroQuyenDTO) {
+        return ResponseEntity.ok(vaiTroQuyenService.updateVaiTroQuyen(id, vaiTroQuyenDTO));
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Delete a vaitro_quyen (soft delete)")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteVaiTroQuyen(@PathVariable Integer id) {
+        vaiTroQuyenService.deleteVaiTroQuyen(id);
         return ResponseEntity.noContent().build();
     }
 }

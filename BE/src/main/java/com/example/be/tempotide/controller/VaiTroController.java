@@ -13,45 +13,44 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/roles")
+@RequestMapping("/api/vaitro")
 @RequiredArgsConstructor
-@Tag(name = "Role API", description = "APIs for managing roles")
+@Tag(name = "VaiTro API", description = "APIs for managing vaitro")
 public class VaiTroController {
     private final VaiTroService vaiTroService;
 
     @GetMapping
+    @Operation(summary = "Get all vaitros")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Get all active roles")
-    public ResponseEntity<List<VaiTroDTO>> getAllRoles() {
-        return ResponseEntity.ok(vaiTroService.getAllActiveRoles());
+    public ResponseEntity<List<VaiTroDTO>> getAllVaiTros() {
+        return ResponseEntity.ok(vaiTroService.getAllVaiTros());
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Get role by ID")
-    public ResponseEntity<VaiTroDTO> getRoleById(@PathVariable Integer id) {
-        return ResponseEntity.ok(vaiTroService.getRoleById(id));
+    @Operation(summary = "Get vaitro by ID")
+    public ResponseEntity<VaiTroDTO> getVaiTroById(@PathVariable Integer id) {
+        return ResponseEntity.ok(vaiTroService.getVaiTroById(id));
     }
 
     @PostMapping
+    @Operation(summary = "Create a new vaitro")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Create a new role")
-    public ResponseEntity<VaiTroDTO> createRole(@Valid @RequestBody VaiTroDTO vaiTroDTO) {
-        return ResponseEntity.ok(vaiTroService.createRole(vaiTroDTO));
+    public ResponseEntity<VaiTroDTO> createVaiTro(@Valid @RequestBody VaiTroDTO vaiTroDTO) {
+        return ResponseEntity.ok(vaiTroService.createVaiTro(vaiTroDTO));
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Update a vaitro")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Update a role")
-    public ResponseEntity<VaiTroDTO> updateRole(@PathVariable Integer id, @Valid @RequestBody VaiTroDTO vaiTroDTO) {
-        return ResponseEntity.ok(vaiTroService.updateRole(id, vaiTroDTO));
+    public ResponseEntity<VaiTroDTO> updateVaiTro(@PathVariable Integer id, @Valid @RequestBody VaiTroDTO vaiTroDTO) {
+        return ResponseEntity.ok(vaiTroService.updateVaiTro(id, vaiTroDTO));
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete a vaitro (soft delete)")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Delete a role (soft delete)")
-    public ResponseEntity<Void> deleteRole(@PathVariable Integer id) {
-        vaiTroService.deleteRole(id);
+    public ResponseEntity<Void> deleteVaiTro(@PathVariable Integer id) {
+        vaiTroService.deleteVaiTro(id);
         return ResponseEntity.noContent().build();
     }
 }

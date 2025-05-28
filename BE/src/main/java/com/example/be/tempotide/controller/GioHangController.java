@@ -1,7 +1,7 @@
-package com.example.tempotide.controller;
+package com.example.be.tempotide.controller;
 
-import com.example.tempotide.dto.GioHangDTO;
-import com.example.tempotide.service.GioHangService;
+import com.example.be.tempotide.dto.GioHangDTO;
+import com.example.be.tempotide.service.GioHangService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -13,45 +13,56 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/carts")
+@RequestMapping("/api/giohang")
 @RequiredArgsConstructor
-@Tag(name = "Cart API", description = "APIs for managing shopping carts")
+@Tag(name = "GioHang API", description = "APIs for managing giohang")
 public class GioHangController {
     private final GioHangService gioHangService;
 
     @GetMapping
+    @Operation(summary = "Get all giohangs")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Get all active carts")
-    public ResponseEntity<List<GioHangDTO>> getAllCarts() {
-        return ResponseEntity.ok(gioHangService.getAllActiveCarts());
+    public ResponseEntity<List<GioHangDTO>> getAllGioHangs() {
+        return ResponseEntity.ok(gioHangService.getAllGioHangs());
     }
 
-    @GetMapping("/user")
-    @PreAuthorize("isAuthenticated()")
-    @Operation(summary = "Get current user's cart")
-    public ResponseEntity<GioHangDTO> getUserCart() {
-        return ResponseEntity.ok(gioHangService.getUserCart());
+    @GetMapping("/{id}")
+    @Operation(summary = "Get giohang by ID")
+    public ResponseEntity<GioHangDTO> getGioHangById(@PathVariable Integer id) {
+        return ResponseEntity.ok(gioHangService.getGioHangById(id));
+    }
+
+    @GetMapping("/khachhang/{makhachhang}")
+    @Operation(summary = "Get giohang by KhachHang ID")
+    public ResponseEntity<GioHangDTO> getGioHangByKhachHangId(@PathVariable Integer makhachhang) {
+        return ResponseEntity.ok(gioHangService.getGioHangByKhachHangId(makhachhang));
+    }
+
+    @GetMapping("/sodienthoai/{sodienthoai}")
+    @Operation(summary = "Get giohang by sodienthoai")
+    public ResponseEntity<GioHangDTO> getGioHangBySodienthoai(@PathVariable String sodienthoai) {
+        return ResponseEntity.ok(gioHangService.getGioHangBySodienthoai(sodienthoai));
     }
 
     @PostMapping
-    @PreAuthorize("isAuthenticated()")
-    @Operation(summary = "Create a new cart")
-    public ResponseEntity<GioHangDTO> createCart(@Valid @RequestBody GioHangDTO gioHangDTO) {
-        return ResponseEntity.ok(gioHangService.createCart(gioHangDTO));
+    @Operation(summary = "Create a new giohang")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<GioHangDTO> createGioHang(@Valid @RequestBody GioHangDTO gioHangDTO) {
+        return ResponseEntity.ok(gioHangService.createGioHang(gioHangDTO));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("isAuthenticated()")
-    @Operation(summary = "Update a cart")
-    public ResponseEntity<GioHangDTO> updateCart(@PathVariable Integer id, @Valid @RequestBody GioHangDTO gioHangDTO) {
-        return ResponseEntity.ok(gioHangService.updateCart(id, gioHangDTO));
+    @Operation(summary = "Update a giohang")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<GioHangDTO> updateGioHang(@PathVariable Integer id, @Valid @RequestBody GioHangDTO gioHangDTO) {
+        return ResponseEntity.ok(gioHangService.updateGioHang(id, gioHangDTO));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("isAuthenticated()")
-    @Operation(summary = "Delete a cart (soft delete)")
-    public ResponseEntity<Void> deleteCart(@PathVariable Integer id) {
-        gioHangService.deleteCart(id);
+    @Operation(summary = "Delete a giohang (soft delete)")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteGioHang(@PathVariable Integer id) {
+        gioHangService.deleteGioHang(id);
         return ResponseEntity.noContent().build();
     }
 }

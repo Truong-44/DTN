@@ -13,32 +13,26 @@ import java.time.LocalDateTime;
 public class DanhMuc {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "madanhmuc")
     private Integer madanhmuc;
 
-    @Column(name = "tendanhmuc", nullable = false, length = 50, unique = true)
+    @Column(name = "tendanhmuc", nullable = false, length = 100)
     private String tendanhmuc;
+
+    @ManyToOne
+    @JoinColumn(name = "madanhmuccha")
+    private DanhMuc madanhmuccha;
 
     @Column(name = "mota", length = 200)
     private String mota;
 
-    @Column(name = "trangthai", nullable = false)
-    private Boolean trangthai = true;
+    @Column(name = "ngaytao")
+    private LocalDateTime ngaytao;
 
-    @Column(name = "ngaytao", nullable = false)
-    private LocalDateTime ngaytao = LocalDateTime.now();
-
-    @Column(name = "ngaycapnhat", nullable = false)
-    private LocalDateTime ngaycapnhat = LocalDateTime.now();
+    @Column(name = "trangthai")
+    private Boolean trangthai;
 
     @ManyToOne
     @JoinColumn(name = "nguoitao")
     private NhanVien nguoitao;
-
-    @ManyToOne
-    @JoinColumn(name = "nguoicapnhat")
-    private NhanVien nguoicapnhat;
-
-    @ManyToOne
-    @JoinColumn(name = "danhmuccha")
-    private DanhMuc danhmuccha;
 }

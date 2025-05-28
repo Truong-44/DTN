@@ -1,13 +1,15 @@
-package com.example.tempotide.service;
+package com.example.be.tempotide.service;
 
-import com.example.tempotide.dto.GioHangDTO;
+import com.example.be.tempotide.dto.GioHangDTO;
 
 import java.util.List;
 
 public interface GioHangService {
-    List<GioHangDTO> getAllActiveCarts();
-    GioHangDTO getUserCart();
-    GioHangDTO createCart(GioHangDTO gioHangDTO);
-    GioHangDTO updateCart(Integer id, GioHangDTO gioHangDTO);
-    void deleteCart(Integer id);
+    List<GioHangDTO> getAllGioHangs();
+    GioHangDTO getGioHangById(Integer id);
+    GioHangDTO createGioHang(GioHangDTO gioHangDTO);
+    GioHangDTO updateGioHang(Integer id, GioHangDTO gioHangDTO);
+    void deleteGioHang(Integer id);
+    GioHangDTO getGioHangByKhachHangId(Integer makhachhang);
+    GioHangDTO getGioHangBySodienthoai(String sodienthoai);
 }

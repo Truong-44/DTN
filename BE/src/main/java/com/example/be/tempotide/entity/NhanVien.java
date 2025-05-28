@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -14,6 +13,7 @@ import java.time.LocalDateTime;
 public class NhanVien {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "manhanvien")
     private Integer manhanvien;
 
     @Column(name = "ho", nullable = false, length = 50)
@@ -29,19 +29,19 @@ public class NhanVien {
     private String sodienthoai;
 
     @Column(name = "ngaytuyendung", nullable = false)
-    private LocalDate ngaytuyendung;
+    private LocalDateTime ngaytuyendung;
 
     @Column(name = "matkhau", nullable = false, length = 255)
     private String matkhau;
 
-    @Column(name = "ngaytao", nullable = false)
-    private LocalDateTime ngaytao = LocalDateTime.now();
+    @Column(name = "ngaytao")
+    private LocalDateTime ngaytao;
 
-    @Column(name = "ngaycapnhat", nullable = false)
-    private LocalDateTime ngaycapnhat = LocalDateTime.now();
+    @Column(name = "ngaycapnhat")
+    private LocalDateTime ngaycapnhat;
 
-    @Column(name = "trangthai", nullable = false)
-    private Boolean trangthai = true;
+    @Column(name = "trangthai")
+    private Boolean trangthai;
 
     @ManyToOne
     @JoinColumn(name = "nguoitao")

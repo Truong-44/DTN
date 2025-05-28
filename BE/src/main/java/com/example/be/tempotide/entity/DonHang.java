@@ -1,10 +1,9 @@
-package com.example.tempotide.entity;
+package com.example.be.tempotide.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -14,51 +13,73 @@ import java.time.LocalDateTime;
 public class DonHang {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "madonhang")
     private Integer madonhang;
 
     @ManyToOne
     @JoinColumn(name = "makhachhang")
-    private KhachHang khachhang;
+    private KhachHang makhachhang;
 
     @ManyToOne
-    @JoinColumn(name = "manhanvien")
-    private NhanVien nhanvien;
+    @JoinColumn(name = "manhanvienxuly")
+    private NhanVien manhanvienxuly;
 
-    @Column(name = "tennguoinhan", length = 100)
-    private String tennguoinhan;
+    @Column(name = "ngaydathang")
+    private LocalDateTime ngaydathang;
 
-    @Column(name = "sodienthoai", nullable = false, length = 15)
-    private String sodienthoai;
+    @Column(name = "tongtien", nullable = false)
+    private Double tongtien;
 
-    @Column(name = "diachi", nullable = false, length = 500)
-    private String diachi;
+    @Column(name = "diachigiaohang", nullable = false, length = 200)
+    private String diachigiaohang;
 
-    @Column(name = "ngaydat")
-    private LocalDateTime ngaydat = LocalDateTime.now();
-
-    @Column(name = "ngaygiaohang")
-    private LocalDateTime ngaygiaohang;
-
-    @Column(name = "phivanchuyen", precision = 18, scale = 3)
-    private BigDecimal phivanchuyen;
-
-    @Column(name = "tongtien", precision = 18, scale = 3)
-    private BigDecimal tongtien;
-
-    @Column(name = "ghichu", length = 500)
-    private String ghichu;
-
-    @Column(name = "trangthai", nullable = false, length = 50)
-    private String trangthai;
+    @Column(name = "phuongthucvanchuyen", nullable = false, length = 50)
+    private String phuongthucvanchuyen;
 
     @Column(name = "phuongthucthanhtoan", nullable = false, length = 50)
     private String phuongthucthanhtoan;
 
-    @Column(name = "ngaytao", nullable = false)
-    private LocalDateTime ngaytao = LocalDateTime.now();
+    @Column(name = "sotien", nullable = false)
+    private Double sotien;
 
-    @Column(name = "ngaycapnhat", nullable = false)
-    private LocalDateTime ngaycapnhat = LocalDateTime.now();
+    @Column(name = "trangthaithanhtoan", nullable = false, length = 50)
+    private String trangthaithanhtoan;
+
+    @Column(name = "giamgia")
+    private Double giamgia;
+
+    @Column(name = "trangthaidonhang", nullable = false, length = 50)
+    private String trangthaidonhang;
+
+    @Column(name = "tenkhachhang", length = 100)
+    private String tenkhachhang;
+
+    @Column(name = "sodienthoai", length = 15)
+    private String sodienthoai;
+
+    @Column(name = "email", length = 100)
+    private String email;
+
+    @Column(name = "ngaythanhtoan")
+    private LocalDateTime ngaythanhtoan;
+
+    @Column(name = "ghichu", length = 500)
+    private String ghichu;
+
+    @Column(name = "trangthai_hoadon")
+    private Boolean trangthaiHoadon;
+
+    @Column(name = "ladonhangvanglai")
+    private Boolean ladonhangvanglai;
+
+    @Column(name = "ngaytao")
+    private LocalDateTime ngaytao;
+
+    @Column(name = "ngaycapnhat")
+    private LocalDateTime ngaycapnhat;
+
+    @Column(name = "trangthai")
+    private Boolean trangthai;
 
     @ManyToOne
     @JoinColumn(name = "nguoitao")

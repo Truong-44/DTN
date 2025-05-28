@@ -1,13 +1,13 @@
-package com.example.tempotide.service;
+package com.example.be.tempotide.service;
 
-import com.example.tempotide.dto.ThuocTinhSanPhamDTO;
+import com.example.be.tempotide.dto.ThuocTinhSanPhamDTO;
 
 import java.util.List;
 
 public interface ThuocTinhSanPhamService {
-    List<ThuocTinhSanPhamDTO> getAllActiveAttributes();
-    ThuocTinhSanPhamDTO getAttributeById(Integer id);
-    ThuocTinhSanPhamDTO createAttribute(ThuocTinhSanPhamDTO thuocTinhSanPhamDTO);
-    ThuocTinhSanPhamDTO updateAttribute(Integer id, ThuocTinhSanPhamDTO thuocTinhSanPhamDTO);
-    void deleteAttribute(Integer id);
+    List<ThuocTinhSanPhamDTO> getAllThuocTinhSanPhams();
+    ThuocTinhSanPhamDTO getThuocTinhSanPhamById(Integer id);
+    ThuocTinhSanPhamDTO createThuocTinhSanPham(ThuocTinhSanPhamDTO thuocTinhSanPhamDTO);
+    ThuocTinhSanPhamDTO updateThuocTinhSanPham(Integer id, ThuocTinhSanPhamDTO thuocTinhSanPhamDTO);
+    void deleteThuocTinhSanPham(Integer id);
 }

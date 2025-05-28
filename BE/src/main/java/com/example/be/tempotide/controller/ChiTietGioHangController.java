@@ -1,7 +1,7 @@
-package com.example.tempotide.controller;
+package com.example.be.tempotide.controller;
 
-import com.example.tempotide.dto.ChiTietGioHangDTO;
-import com.example.tempotide.service.ChiTietGioHangService;
+import com.example.be.tempotide.dto.ChiTietGioHangDTO;
+import com.example.be.tempotide.service.ChiTietGioHangService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -13,38 +13,50 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/cart-items")
+@RequestMapping("/api/chitietgiohang")
 @RequiredArgsConstructor
-@Tag(name = "Cart Item API", description = "APIs for managing cart items")
+@Tag(name = "ChiTietGioHang API", description = "APIs for managing chitietgiohang")
 public class ChiTietGioHangController {
     private final ChiTietGioHangService chiTietGioHangService;
 
-    @GetMapping("/{cartId}")
-    @PreAuthorize("isAuthenticated()")
-    @Operation(summary = "Get cart items by cart ID")
-    public ResponseEntity<List<ChiTietGioHangDTO>> getCartItems(@PathVariable Integer cartId) {
-        return ResponseEntity.ok(chiTietGioHangService.getCartItems(cartId));
+    @GetMapping
+    @Operation(summary = "Get all chitietgiohangs")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<ChiTietGioHangDTO>> getAllChiTietGioHangs() {
+        return ResponseEntity.ok(chiTietGioHangService.getAllChiTietGioHangs());
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "Get chitietgiohang by ID")
+    public ResponseEntity<ChiTietGioHangDTO> getChiTietGioHangById(@PathVariable Integer id) {
+        return ResponseEntity.ok(chiTietGioHangService.getChiTietGioHangById(id));
+    }
+
+    @GetMapping("/giohang/{magiohang}")
+    @Operation(summary = "Get chitietgiohang by GioHang ID")
+    public ResponseEntity<List<ChiTietGioHangDTO>> getChiTietGioHangByGioHangId(@PathVariable Integer magiohang) {
+        return ResponseEntity.ok(chiTietGioHangService.getChiTietGioHangByGioHangId(magiohang));
     }
 
     @PostMapping
-    @PreAuthorize("isAuthenticated()")
-    @Operation(summary = "Add item to cart")
-    public ResponseEntity<ChiTietGioHangDTO> addCartItem(@Valid @RequestBody ChiTietGioHangDTO chiTietGioHangDTO) {
-        return ResponseEntity.ok(chiTietGioHangService.addCartItem(chiTietGioHangDTO));
+    @Operation(summary = "Create a new chitietgiohang")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ChiTietGioHangDTO> createChiTietGioHang(@Valid @RequestBody ChiTietGioHangDTO chiTietGioHangDTO) {
+        return ResponseEntity.ok(chiTietGioHangService.createChiTietGioHang(chiTietGioHangDTO));
     }
 
-    @PutMapping
-    @PreAuthorize("isAuthenticated()")
-    @Operation(summary = "Update cart item")
-    public ResponseEntity<ChiTietGioHangDTO> updateCartItem(@Valid @RequestBody ChiTietGioHangDTO chiTietGioHangDTO) {
-        return ResponseEntity.ok(chiTietGioHangService.updateCartItem(chiTietGioHangDTO));
+    @PutMapping("/{id}")
+    @Operation(summary = "Update a chitietgiohang")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ChiTietGioHangDTO> updateChiTietGioHang(@PathVariable Integer id, @Valid @RequestBody ChiTietGioHangDTO chiTietGioHangDTO) {
+        return ResponseEntity.ok(chiTietGioHangService.updateChiTietGioHang(id, chiTietGioHangDTO));
     }
 
-    @DeleteMapping("/{cartId}/{productDetailId}")
-    @PreAuthorize("isAuthenticated()")
-    @Operation(summary = "Delete cart item")
-    public ResponseEntity<Void> deleteCartItem(@PathVariable Integer cartId, @PathVariable Integer productDetailId) {
-        chiTietGioHangService.deleteCartItem(cartId, productDetailId);
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Delete a chitietgiohang (soft delete)")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteChiTietGioHang(@PathVariable Integer id) {
+        chiTietGioHangService.deleteChiTietGioHang(id);
         return ResponseEntity.noContent().build();
     }
 }

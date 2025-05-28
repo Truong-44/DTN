@@ -4,6 +4,7 @@ import com.example.be.tempotide.dto.QuyenDTO;
 import com.example.be.tempotide.service.QuyenService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,43 +13,44 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/permissions")
+@RequestMapping("/api/quyen")
 @RequiredArgsConstructor
-@Tag(name = "Permission API", description = "APIs for managing permissions")
+@Tag(name = "Quyen API", description = "APIs for managing quyen")
 public class QuyenController {
     private final QuyenService quyenService;
 
     @GetMapping
-    @Operation(summary = "Get all active permissions")
-    public ResponseEntity<List<QuyenDTO>> getAllPermissions() {
-        return ResponseEntity.ok(quyenService.getAllActivePermissions());
+    @Operation(summary = "Get all quyens")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<QuyenDTO>> getAllQuyens() {
+        return ResponseEntity.ok(quyenService.getAllQuyens());
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get permission by ID")
-    public ResponseEntity<QuyenDTO> getPermissionById(@PathVariable Integer id) {
-        return ResponseEntity.ok(quyenService.getPermissionById(id));
+    @Operation(summary = "Get quyen by ID")
+    public ResponseEntity<QuyenDTO> getQuyenById(@PathVariable Integer id) {
+        return ResponseEntity.ok(quyenService.getQuyenById(id));
     }
 
     @PostMapping
+    @Operation(summary = "Create a new quyen")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Create a new permission")
-    public ResponseEntity<QuyenDTO> createPermission(@RequestBody QuyenDTO quyenDTO) {
-        return ResponseEntity.ok(quyenService.createPermission(quyenDTO));
+    public ResponseEntity<QuyenDTO> createQuyen(@Valid @RequestBody QuyenDTO quyenDTO) {
+        return ResponseEntity.ok(quyenService.createQuyen(quyenDTO));
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Update a quyen")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Update a permission")
-    public ResponseEntity<QuyenDTO> updatePermission(@PathVariable Integer id, @RequestBody QuyenDTO quyenDTO) {
-        return ResponseEntity.ok(quyenService.updatePermission(id, quyenDTO));
+    public ResponseEntity<QuyenDTO> updateQuyen(@PathVariable Integer id, @Valid @RequestBody QuyenDTO quyenDTO) {
+        return ResponseEntity.ok(quyenService.updateQuyen(id, quyenDTO));
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete a quyen (soft delete)")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Delete a permission (soft delete)")
-    public ResponseEntity<Void> deletePermission(@PathVariable Integer id) {
-        quyenService.deletePermission(id);
+    public ResponseEntity<Void> deleteQuyen(@PathVariable Integer id) {
+        quyenService.deleteQuyen(id);
         return ResponseEntity.noContent().build();
     }
 }

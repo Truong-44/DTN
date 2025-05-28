@@ -1,11 +1,10 @@
 package com.example.be.tempotide.service.impl;
 
-import com.example.be.tempotide.dto.NguoiDungVaiTroRequestDTO;
 import com.example.be.tempotide.dto.VaiTroDTO;
 import com.example.be.tempotide.entity.NguoiDungVaiTro;
-import com.example.be.tempotide.entity.NguoiDungVaiTroId;
 import com.example.be.tempotide.entity.VaiTro;
 import com.example.be.tempotide.mapper.VaiTroMapper;
+import com.example.be.tempotide.repository.KhachHangRepository;
 import com.example.be.tempotide.repository.NguoiDungVaiTroRepository;
 import com.example.be.tempotide.repository.NhanVienRepository;
 import com.example.be.tempotide.repository.VaiTroRepository;

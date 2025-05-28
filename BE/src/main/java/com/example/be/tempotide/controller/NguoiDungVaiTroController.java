@@ -1,6 +1,5 @@
 package com.example.be.tempotide.controller;
 
-import com.example.be.tempotide.dto.NguoiDungVaiTroRequestDTO;
 import com.example.be.tempotide.dto.VaiTroDTO;
 import com.example.be.tempotide.service.NguoiDungVaiTroService;
 import io.swagger.v3.oas.annotations.Operation;

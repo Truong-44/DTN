@@ -1,11 +1,10 @@
-package com.example.tempotide.repository;
+package com.example.be.tempotide.repository;
 
-import com.example.tempotide.entity.ChiTietDonHang;
-import com.example.tempotide.entity.ChiTietDonHangId;
+import com.example.be.tempotide.entity.ChiTietDonHang;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface ChiTietDonHangRepository extends JpaRepository<ChiTietDonHang, ChiTietDonHangId> {
-    List<ChiTietDonHang> findByDonhangMadonhang(Integer madonhang);
+public interface ChiTietDonHangRepository extends JpaRepository<ChiTietDonHang, Integer> {
+    List<ChiTietDonHang> findByMadonhang_Madonhang(Integer madonhang);
 }

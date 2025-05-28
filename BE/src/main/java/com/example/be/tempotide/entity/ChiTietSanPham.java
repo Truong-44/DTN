@@ -1,54 +1,55 @@
-package com.example.temp;
+package com.example.be.tempotide.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "chitietsanpham")
 @Getter
+@Setter
 public class ChiTietSanPham {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long machitietsanpham;
+    @Column(name = "machitietsanpham")
+    private Integer machitietsanpham;
 
     @ManyToOne
     @JoinColumn(name = "masanpham", nullable = false)
-    private SanPham sanpham;
+    private SanPham masanpham;
 
     @ManyToOne
     @JoinColumn(name = "mathuoctinh", nullable = false)
-    private ThuocTinhSanPham thuoctinh;
+    private ThuocTinhSanPham mathuoctinh;
 
     @Column(name = "giatri", nullable = false, length = 100)
     private String giatri;
 
-    @Column(name = "gia", nullable = false, precision = 19, scale = 4)
-    private BigDecimal gia;
+    @Column(name = "gia", nullable = false)
+    private Double gia;
 
     @Column(name = "soluongton", nullable = false)
     private Integer soluongton;
 
-    @Column(name = "sku", nullable = true, length = 50, unique = true)
+    @Column(name = "sku", length = 50, unique = true)
     private String sku;
 
     @Column(name = "duongdanhinhanh", length = 500)
     private String duongdanhinhanh;
 
     @Column(name = "lahinhchinh")
-    private Boolean lahinhchinh = false;
+    private Boolean lahinhchinh;
 
-    @Column(name = "trangthai", nullable = false)
-    private Boolean trangthai = true;
+    @Column(name = "ngaytao")
+    private LocalDateTime ngaytao;
 
-    @Column(name = "ngaytao", nullable = false)
-    private LocalDateTime ngaytao = LocalDateTime.now();
+    @Column(name = "ngaycapnhat")
+    private LocalDateTime ngaycapnhat;
 
-    @Column(name = "ngaycapnhat", nullable = false)
-    private LocalDateTime ngaycapnhat = LocalDateTime.now();
+    @Column(name = "trangthai")
+    private Boolean trangthai;
 
     @ManyToOne
     @JoinColumn(name = "nguoitao")

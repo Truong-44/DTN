@@ -1,13 +1,13 @@
-package com.example.tempotide.service;
+package com.example.be.tempotide.service;
 
-import com.example.tempotide.dto.SanPhamDTO;
+import com.example.be.tempotide.dto.SanPhamDTO;
 
 import java.util.List;
 
 public interface SanPhamService {
-    List<SanPhamDTO> getAllActiveProducts();
-    SanPhamDTO getProductById(Integer id);
-    SanPhamDTO createProduct(SanPhamDTO sanPhamDTO);
-    SanPhamDTO updateProduct(Integer id, SanPhamDTO sanPhamDTO);
-    void deleteProduct(Integer id);
+    List<SanPhamDTO> getAllSanPhams();
+    SanPhamDTO getSanPhamById(Integer id);
+    SanPhamDTO createSanPham(SanPhamDTO sanPhamDTO);
+    SanPhamDTO updateSanPham(Integer id, SanPhamDTO sanPhamDTO);
+    void deleteSanPham(Integer id);
 }
