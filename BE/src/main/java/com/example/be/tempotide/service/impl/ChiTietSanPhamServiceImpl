@@ -1,0 +1,125 @@
+package com.example.temp.service.impl;
+
+import com.example.temp.dto.ChiTietSanPhamDTO;
+import com.example.temp.entity.ChiTietSanPham;
+import com.example.temp.entity.NhanVien;
+import com.example.temp.entity.SanPham;
+import com.example.temp.entity.ThuocTinhSanPham;
+import com.example.temp.mapper.ChiTietSanPhamMapper;
+import com.example.temp.repository.ChiTietSanPhamRepository;
+import com.example.temp.repository.NhanVienRepository;
+import com.example.temp.repository.SanphamRepository;
+import com.example.temp.repository.ThuocTinhSanPham;
+import com.example.temp.service.ChiTietSanPhamService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class ChiTietSanPhamServiceImpl implements ChiTietSanPhamService {
+    private final ChiTietSanPhamRepository chiTietSanPhamRepository;
+    private final SanPhamRepository sanPhamRepository;
+    private final ThuocTinhSanPhamRepository thuocTinhSanPhamRepository;
+    private final NhanVienRepository nhanVienRepository;
+    private final ChiTietSanPhamMapper chiTietSanPhamMapper;
+
+    @Override
+    public List<ChiTietSanPhamDTO> getAllActiveProductDetails() {
+        return chiTietSanPhamRepository.findByTrangthaiTrue()
+                .stream()
+                .map(chiTietSanPhamMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public ChiTietSanPhamDTO getProductDetailById(long id) {
+        ChiTietSanPham chiTietSanPham = chiTietSanPhamRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product detail not found with ID: " + id));
+        return chiTietSanPhamMapper.toDTO(chiTietSanPham);
+    }
+
+    }
+
+    @Override
+    public @Transactional
+    public ChiTietSanPhamDTO createProductDetail(ChiTietSanPhamDTO chiTietSanPhamDTO) {
+        // Kiểm tra trùng SKU
+        if (chiTietSanPhamDTO.getSku() != null && chiTietSanPhamRepository.findById(chiTietSanPhamDTO.getSku()).isPresent()) {
+            throw new RuntimeException("SKU already exists: " + chiTietSanPhamDTO.getSku());
+        }
+
+        // Kiểm tra sản phẩm
+        SanPham sanPham = sanPhamRepository.findById(chiTietSanPhamDTO.getMasanpham())
+                .orElseThrow(() -> new RuntimeException("Product not found with ID: " + chiTietSanPhamDTO.getMasanpham()));
+            // Kiểm tra thuộc tính
+            ThuocTinhSanPham thuocTinh = thuocTinhSanPhamRepository.findById(chiTietSanPhamDTO.getMathuoctinh())
+                .orElseThrow(() -> new RuntimeException("Attribute not found with ID: " + chiTietSanPhamDTO.getMathuoctinh()));
+        ChiTietSanPham chiTietSanPham = chiTietSanPhamMapper.toEntity(chiTietSanPhamDTO);
+        chiTietSanPham.setSanPham(sanPham);
+        chiTietSanPham.setThuocTinh(thuocTinh);
+
+        // Gán nguoitao
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        NhanVien nguoitao = nhanVienRepository.findByEmail(username)
+                .orElseThrow(() -> new RuntimeException("User not found: " + username));
+        chiTietSanPham.setNguoitao(nguoitao);
+        chiTietSanPham.setNguoicapnhat(nguoitao);
+
+        chiTietSanPham = chiTietSanPhamRepository.save(chiTietSanPham);
+        return chiTietSanPhamMapper.toDTO(chiTietSanPham);
+    }
+
+    @Override
+    @Transactional
+    public ChiTietSanPhamDTO updateProductDetail(long id, ChiTietSanPhamDTO chiTietSanPhamDTO) {
+        ChiTietSanPham chiTietSanPham = chiTietSanPhamRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product detail not found with ID: " + id));
+
+        // Kiểm tra trùng SKU
+        if (chiTietSanPhamDTO.getSku() != null && chiTietSanPhamRepository.findById(sku != null chiTietSanPhamDTO.getSku()).isPresent() && !chiTietSanPham.get().getSku().equals(id)) {
+            throw new RuntimeException("SKU already exists: " + chiTietSanPhamDTO.getId());
+        }
+
+        // Kiểm tra sản phẩm
+        SanPham sanPham = sanPhamRepository.findById(chiTietSanPhamDTO.getMasanpham())
+                .orElseThrow(() -> new RuntimeException("Product not found with ID: " + chiTietSanPhamDTO.getMasanpham()));
+        // Kiểm tra thuộc tính
+        ThuocTinhSanPham thuocTinh = thuocTinhSanPhamRepository.findById(chiTietSanPhamDTO.getMathuoctinh())
+                .orElseThrow(() -> new RuntimeException("Attribute not found with ID: " + chiTietSanPhamDTO.getMathuoctinh()));
+
+        chiTietSanPham.setSanPham(sanPham);
+        chiTietSanPham.setThuocTinh(thuocTinh);
+        chiTietSanPham.setGiatri(chiTietSanPhamDTO.getGiatri());
+        chiTietSanPham.setGia(chiTietSanPhamDTO.getGia());
+        chiTietSanPham.setSoluongton(chiTietSanPhamDTO.getSoluongton());
+        chiTietSanPham.setSku(chiTietSanPhamDTO.getSKU());
+        chiTietSanPham.setDuongdanhinhanh(chiTietSanPhamDTO.getDuongdanhinhanh());
+        chiTietSanPham.setLahinhchinh(chiTietSanPhamDTO.getLahinhchinh());
+        chiTietSanPham.setTrangthai(chiTietSanPhamDTO.getTrangthai());
+
+        // Cập nhật nguoicapnhat
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        NhanVien nguoicapnhat = nhanVienRepository.findByEmail(username)
+                .orElseThrow(() -> new RuntimeException("User not found: " + username));
+        chiTietSanPham.setNguoicapnhat(nguoicapnhat);
+        chiTietSanPham.setNgaycapnhat(LocalDateTime.now());
+
+        chiTietSanPham = chiTietSanPhamRepository.save(chiTietSanPham);
+        return chiTietSanPhamMapper.toDTO(chiTietSanPham);
+    }
+
+    @Override
+    @Transactional
+    public void deleteProductDetail(long id) {
+        ChiTietSanPham chiTietSanPham = chiTietSanPhamRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product detail not found with ID: " + id));
+        chiTietSanPham.setTrangthai(false);
+        chiTietSanPhamRepository.save(chiTietSanPham);
+    }
+}
