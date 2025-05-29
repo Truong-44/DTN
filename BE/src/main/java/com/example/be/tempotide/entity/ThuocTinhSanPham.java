@@ -16,20 +16,16 @@ public class ThuocTinhSanPham {
     @Column(name = "mathuoctinh")
     private Integer mathuoctinh;
 
-    @ManyToOne
-    @JoinColumn(name = "masanpham", nullable = false)
-    private SanPham masanpham;
-
     @Column(name = "tenthuoctinh", nullable = false, length = 50)
     private String tenthuoctinh;
 
-    @Column(name = "giatri", nullable = false, length = 100)
-    private String giatri;
+    @Column(name = "mota", length = 200)
+    private String mota;
 
-    @Column(name = "ngaytao")
+    @Column(name = "ngaytao", nullable = false, updatable = false)
     private LocalDateTime ngaytao;
 
-    @Column(name = "trangthai")
+    @Column(name = "trangthai", nullable = false)
     private Boolean trangthai;
 
     @ManyToOne

@@ -45,27 +45,22 @@ public class DonHangServiceImpl implements DonHangService {
     @Transactional
     public DonHangDTO createDonHang(DonHangDTO donHangDTO) {
         DonHang donHang = donHangMapper.toEntity(donHangDTO);
-        donHang.setNgaydathang(LocalDateTime.now());
         donHang.setNgaytao(LocalDateTime.now());
-        donHang.setNgaycapnhat(LocalDateTime.now());
 
-        if (donHangDTO.getMakhachhang() != null) {
-            KhachHang khachHang = khachHangRepository.findById(donHangDTO.getMakhachhang())
-                    .orElseThrow(() -> new RuntimeException("KhachHang not found with ID: " + donHangDTO.getMakhachhang()));
-            donHang.setMakhachhang(khachHang);
-        }
+        KhachHang khachHang = khachHangRepository.findById(donHangDTO.getMakhachhang())
+                .orElseThrow(() -> new RuntimeException("KhachHang not found with ID: " + donHangDTO.getMakhachhang()));
+        donHang.setMakhachhang(khachHang);
 
         if (donHangDTO.getManhanvienxuly() != null) {
-            NhanVien nhanVienXuly = nhanVienRepository.findById(donHangDTO.getManhanvienxuly())
+            NhanVien nhanVien = nhanVienRepository.findById(donHangDTO.getManhanvienxuly())
                     .orElseThrow(() -> new RuntimeException("NhanVien not found with ID: " + donHangDTO.getManhanvienxuly()));
-            donHang.setManhanvienxuly(nhanVienXuly);
+            donHang.setManhanvienxuly(nhanVien);
+        } else {
+            String username = SecurityContextHolder.getContext().getAuthentication().getName();
+            NhanVien nhanVien = nhanVienRepository.findByEmail(username)
+                    .orElseThrow(() -> new RuntimeException("User not found: " + username));
+            donHang.setManhanvienxuly(nhanVien);
         }
-
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        NhanVien nguoitao = nhanVienRepository.findByEmail(username)
-                .orElseThrow(() -> new RuntimeException("User not found: " + username));
-        donHang.setNguoitao(nguoitao);
-        donHang.setNguoicapnhat(nguoitao);
 
         DonHang savedDonHang = donHangRepository.save(donHang);
         return donHangMapper.toDTO(savedDonHang);
@@ -78,9 +73,7 @@ public class DonHangServiceImpl implements DonHangService {
                 .orElseThrow(() -> new RuntimeException("DonHang not found with ID: " + id));
 
         existingDonHang.setTongtien(donHangDTO.getTongtien());
-        existingDonHang.setDiachigiaohang(donHangDTO.getDiachigiaohang());
         existingDonHang.setPhuongthucvanchuyen(donHangDTO.getPhuongthucvanchuyen());
-        existingDonHang.setPhuongthucthanhtoan(donHangDTO.getPhuongthucthanhtoan());
         existingDonHang.setSotien(donHangDTO.getSotien());
         existingDonHang.setTrangthaithanhtoan(donHangDTO.getTrangthaithanhtoan());
         existingDonHang.setGiamgia(donHangDTO.getGiamgia());
@@ -90,32 +83,25 @@ public class DonHangServiceImpl implements DonHangService {
         existingDonHang.setEmail(donHangDTO.getEmail());
         existingDonHang.setNgaythanhtoan(donHangDTO.getNgaythanhtoan());
         existingDonHang.setGhichu(donHangDTO.getGhichu());
-        existingDonHang.setTrangthaiHoadon(donHangDTO.getTrangthaiHoadon());
-        existingDonHang.setLadonhangvanglai(donHangDTO.getLadonhangvanglai());
-        existingDonHang.setNgaytao(donHangDTO.getNgaytao());
+        existingDonHang.setTrangthaiHoadon(donHangDTO.getTrangthaiHoadon()); // Đảm bảo kiểu Boolean
+        existingDonHang.setLadonhangvanglai(donHangDTO.getLadonhangvanglai()); // Đảm bảo kiểu Boolean
         existingDonHang.setNgaycapnhat(LocalDateTime.now());
-        existingDonHang.setTrangthai(donHangDTO.getTrangthai());
+
+        if (donHangDTO.getTrangthai() != null) {
+            existingDonHang.setTrangthai(donHangDTO.getTrangthai());
+        }
 
         if (donHangDTO.getMakhachhang() != null) {
             KhachHang khachHang = khachHangRepository.findById(donHangDTO.getMakhachhang())
                     .orElseThrow(() -> new RuntimeException("KhachHang not found with ID: " + donHangDTO.getMakhachhang()));
             existingDonHang.setMakhachhang(khachHang);
-        } else {
-            existingDonHang.setMakhachhang(null);
         }
 
         if (donHangDTO.getManhanvienxuly() != null) {
-            NhanVien nhanVienXuly = nhanVienRepository.findById(donHangDTO.getManhanvienxuly())
+            NhanVien nhanVien = nhanVienRepository.findById(donHangDTO.getManhanvienxuly())
                     .orElseThrow(() -> new RuntimeException("NhanVien not found with ID: " + donHangDTO.getManhanvienxuly()));
-            existingDonHang.setManhanvienxuly(nhanVienXuly);
-        } else {
-            existingDonHang.setManhanvienxuly(null);
+            existingDonHang.setManhanvienxuly(nhanVien);
         }
-
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        NhanVien nguoicapnhat = nhanVienRepository.findByEmail(username)
-                .orElseThrow(() -> new RuntimeException("User not found: " + username));
-        existingDonHang.setNguoicapnhat(nguoicapnhat);
 
         DonHang updatedDonHang = donHangRepository.save(existingDonHang);
         return donHangMapper.toDTO(updatedDonHang);
@@ -131,17 +117,17 @@ public class DonHangServiceImpl implements DonHangService {
     }
 
     @Override
-    public List<DonHangDTO> getDonHangByKhachHangId(Integer makhachhang) {
-        return donHangRepository.findByMakhachhang_Makhachhang(makhachhang)
-                .stream()
+    public List<DonHangDTO> getDonHangByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
+        List<DonHang> donHangs = donHangRepository.findByNgaytaoBetween(startDate, endDate);
+        return donHangs.stream()
                 .map(donHangMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<DonHangDTO> getDonHangByDateRange(LocalDateTime start, LocalDateTime end) {
-        return donHangRepository.findByNgaydathangBetween(start, end)
-                .stream()
+    public List<DonHangDTO> getDonHangByKhachHangId(Integer makhachhang) {
+        List<DonHang> donHangs = donHangRepository.findByMakhachhangMakhachhang(makhachhang);
+        return donHangs.stream()
                 .map(donHangMapper::toDTO)
                 .collect(Collectors.toList());
     }

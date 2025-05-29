@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -28,27 +29,27 @@ public class ChiTietSanPham {
     private String giatri;
 
     @Column(name = "gia", nullable = false)
-    private Double gia;
+    private BigDecimal gia;
 
     @Column(name = "soluongton", nullable = false)
     private Integer soluongton;
 
-    @Column(name = "sku", length = 50, unique = true)
+    @Column(name = "sku", length = 50)
     private String sku;
 
     @Column(name = "duongdanhinhanh", length = 500)
     private String duongdanhinhanh;
 
-    @Column(name = "lahinhchinh")
+    @Column(name = "lahinhchinh", nullable = false)
     private Boolean lahinhchinh;
 
-    @Column(name = "ngaytao")
+    @Column(name = "ngaytao", nullable = false, updatable = false)
     private LocalDateTime ngaytao;
 
     @Column(name = "ngaycapnhat")
     private LocalDateTime ngaycapnhat;
 
-    @Column(name = "trangthai")
+    @Column(name = "trangthai", nullable = false)
     private Boolean trangthai;
 
     @ManyToOne

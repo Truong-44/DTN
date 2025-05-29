@@ -16,16 +16,16 @@ public class VaiTro {
     @Column(name = "mavaitro")
     private Integer mavaitro;
 
-    @Column(name = "tenvaitro", nullable = false, length = 50, unique = true)
+    @Column(name = "tenvaitro", nullable = false, length = 50)
     private String tenvaitro;
 
     @Column(name = "mota", length = 200)
     private String mota;
 
-    @Column(name = "ngaytao")
+    @Column(name = "ngaytao", nullable = false, updatable = false)
     private LocalDateTime ngaytao;
 
-    @Column(name = "trangthai")
+    @Column(name = "trangthai", nullable = false)
     private Boolean trangthai;
 
     @ManyToOne

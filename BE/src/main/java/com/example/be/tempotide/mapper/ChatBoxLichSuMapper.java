@@ -1,19 +1,19 @@
 package com.example.be.tempotide.mapper;
 
-import com.example.be.tempotide.dto.ChatboxLichSuDTO;
-import com.example.be.tempotide.entity.ChatboxLichSu;
+import com.example.be.tempotide.dto.ChatBoxLichSuDTO;
+import com.example.be.tempotide.entity.ChatBoxLichSu;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
-public interface ChatboxLichSuMapper {
+public interface ChatBoxLichSuMapper {
     @Mapping(source = "makhachhang.makhachhang", target = "makhachhang")
     @Mapping(source = "giosanpham.masanpham", target = "giosanpham")
     @Mapping(source = "nguoitao.manhanvien", target = "nguoitao")
-    ChatboxLichSuDTO toDTO(ChatboxLichSu chatboxLichSu);
+    ChatBoxLichSuDTO toDTO(ChatBoxLichSu chatBoxLichSu);
 
     @Mapping(target = "makhachhang", ignore = true)
     @Mapping(target = "giosanpham", ignore = true)
     @Mapping(target = "nguoitao", ignore = true)
-    ChatboxLichSu toEntity(ChatboxLichSuDTO chatboxLichSuDTO);
+    ChatBoxLichSu toEntity(ChatBoxLichSuDTO chatBoxLichSuDTO);
 }

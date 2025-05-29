@@ -11,6 +11,6 @@ public interface DonHangService {
     DonHangDTO createDonHang(DonHangDTO donHangDTO);
     DonHangDTO updateDonHang(Integer id, DonHangDTO donHangDTO);
     void deleteDonHang(Integer id);
-    List<DonHangDTO> getDonHangByKhachHangId(Integer makhachhang);
-    List<DonHangDTO> getDonHangByDateRange(LocalDateTime start, LocalDateTime end);
+    List<DonHangDTO> getDonHangByDateRange(LocalDateTime startDate, LocalDateTime endDate);
+    List<DonHangDTO> getDonHangByKhachHangId(Integer makhachhang); // Thêm phương thức này
 }

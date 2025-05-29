@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Table(name = "chatbox_lichsu")
 @Getter
 @Setter
-public class ChatboxLichSu {
+public class ChatBoxLichSu {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "machat")
@@ -33,10 +33,10 @@ public class ChatboxLichSu {
     @JoinColumn(name = "giosanpham")
     private SanPham giosanpham;
 
-    @Column(name = "ngaytao")
+    @Column(name = "ngaytao", nullable = false, updatable = false)
     private LocalDateTime ngaytao;
 
-    @Column(name = "trangthai")
+    @Column(name = "trangthai", nullable = false)
     private Boolean trangthai;
 
     @ManyToOne

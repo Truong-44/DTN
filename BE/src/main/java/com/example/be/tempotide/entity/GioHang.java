@@ -23,13 +23,13 @@ public class GioHang {
     @Column(name = "sodienthoai", length = 15)
     private String sodienthoai;
 
-    @Column(name = "ngaytao")
+    @Column(name = "ngaytao", nullable = false, updatable = false)
     private LocalDateTime ngaytao;
 
     @Column(name = "ngaycapnhat")
     private LocalDateTime ngaycapnhat;
 
-    @Column(name = "trangthai")
+    @Column(name = "trangthai", nullable = false)
     private Boolean trangthai;
 
     @ManyToOne

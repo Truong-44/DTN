@@ -22,15 +22,57 @@ public class DonHangDTO {
     @NotBlank(message = "Phương thức thanh toán không được để trống")
     private String phuongthucthanhtoan;
 
-    private String trangthai;
+    @NotNull(message = "Tổng tiền không được để trống")
+    @DecimalMin(value = "0.0", inclusive = false, message = "Tổng tiền phải lớn hơn 0")
+    private Double tongtien;
 
-    private Integer manhanvienxuly;
+    @NotBlank(message = "Phương thức vận chuyển không được để trống")
+    @Size(max = 50, message = "Phương thức vận chuyển không được vượt quá 50 ký tự")
+    private String phuongthucvanchuyen;
+
+    @NotNull(message = "Số tiền không được để trống")
+    @DecimalMin(value = "0.0", inclusive = false, message = "Số tiền phải lớn hơn 0")
+    private Double sotien;
+
+    @NotBlank(message = "Trạng thái thanh toán không được để trống")
+    @Size(max = 50, message = "Trạng thái thanh toán không được vượt quá 50 ký tự")
+    private String trangthaithanhtoan;
+
+    @NotNull(message = "Giảm giá không được để trống")
+    @DecimalMin(value = "0.0", message = "Giảm giá phải lớn hơn hoặc bằng 0")
+    private Double giamgia;
+
+    @NotBlank(message = "Trạng thái đơn hàng không được để trống")
+    @Size(max = 50, message = "Trạng thái đơn hàng không được vượt quá 50 ký tự")
+    private String trangthaidonhang;
+
+    @Size(max = 100, message = "Tên khách hàng không được vượt quá 100 ký tự")
+    private String tenkhachhang;
+
+    @Pattern(regexp = "^\\d{10,11}$", message = "Số điện thoại phải có 10 hoặc 11 chữ số")
+    private String sodienthoai;
+
+    @Email(message = "Email không hợp lệ")
+    private String email;
+
+    private LocalDateTime ngaythanhtoan;
+
+    @Size(max = 500, message = "Ghi chú không được vượt quá 500 ký tự")
+    private String ghichu;
+
+    private Boolean trangthaiHoadon; // Sửa thành Boolean
+
+    private Boolean ladonhangvanglai; // Sửa thành Boolean
 
     @NotNull(message = "Ngày tạo không được để trống")
     private LocalDateTime ngaytao;
 
     private LocalDateTime ngaycapnhat;
 
-    private Integer nguoitao; // Thêm trường này
-    private Integer nguoicapnhat; // Thêm trường này
+    private Boolean trangthai;
+
+    private Integer manhanvienxuly;
+
+    private Integer nguoitao;
+    private Integer nguoicapnhat;
 }

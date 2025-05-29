@@ -3,34 +3,33 @@ package com.example.be.tempotide.dto;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
 public class ChiTietSanPhamDTO {
     private Integer machitietsanpham;
-
     @NotNull(message = "Mã sản phẩm không được để trống")
     private Integer masanpham;
-
-    @NotBlank(message = "Kích thước không được để trống")
-    @Size(max = 10, message = "Kích thước không được vượt quá 10 ký tự")
-    private String kichthuoc;
-
-    @NotBlank(message = "Màu sắc không được để trống")
-    @Size(max = 20, message = "Màu sắc không được vượt quá 20 ký tự")
-    private String mausac;
-
+    @NotNull(message = "Mã thuộc tính không được để trống")
+    private Integer mathuoctinh;
+    @NotNull(message = "Giá trị không được để trống")
+    @Size(max = 100, message = "Giá trị không được vượt quá 100 ký tự")
+    private String giatri;
+    @NotNull(message = "Giá không được để trống")
+    @DecimalMin(value = "0.0", message = "Giá phải lớn hơn hoặc bằng 0")
+    private BigDecimal gia;
     @NotNull(message = "Số lượng tồn không được để trống")
-    @Min(value = 0, message = "Số lượng tồn không được âm")
+    @Min(value = 0, message = "Số lượng tồn phải lớn hơn hoặc bằng 0")
     private Integer soluongton;
-
-    @NotNull(message = "Ngày tạo không được để trống")
+    @Size(max = 50, message = "SKU không được vượt quá 50 ký tự")
+    private String sku;
+    @Size(max = 500, message = "Đường dẫn hình ảnh không được vượt quá 500 ký tự")
+    private String duongdanhinhanh;
+    private Boolean lahinhchinh;
     private LocalDateTime ngaytao;
-
     private LocalDateTime ngaycapnhat;
-
     private Boolean trangthai;
-
-    private Integer nguoitao; // Thêm trường này
-    private Integer nguoicapnhat; // Thêm trường này
+    private Integer nguoitao;
+    private Integer nguoicapnhat;
 }

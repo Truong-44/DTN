@@ -17,8 +17,12 @@ public class NguoiDungVaiTro {
     private Integer manguoidungVaitro;
 
     @ManyToOne
-    @JoinColumn(name = "manhanvien", nullable = false)
+    @JoinColumn(name = "manhanvien")
     private NhanVien manhanvien;
+
+    @ManyToOne
+    @JoinColumn(name = "makhachhang")
+    private KhachHang makhachhang;
 
     @ManyToOne
     @JoinColumn(name = "mavaitro", nullable = false)
@@ -27,6 +31,10 @@ public class NguoiDungVaiTro {
     @Column(name = "ngaytao", nullable = false, updatable = false)
     private LocalDateTime ngaytao;
 
-    @Column(name = "trangthai")
+    @Column(name = "trangthai", nullable = false)
     private Boolean trangthai;
+
+    @ManyToOne
+    @JoinColumn(name = "nguoitao")
+    private NhanVien nguoitao;
 }

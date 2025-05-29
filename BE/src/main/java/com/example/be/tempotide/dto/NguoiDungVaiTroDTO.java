@@ -1,6 +1,6 @@
 package com.example.be.tempotide.dto;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -8,15 +8,11 @@ import java.time.LocalDateTime;
 @Data
 public class NguoiDungVaiTroDTO {
     private Integer manguoidungVaitro;
-
-    @NotNull(message = "Mã nhân viên không được để trống")
     private Integer manhanvien;
-
+    private Integer makhachhang;
     @NotNull(message = "Mã vai trò không được để trống")
     private Integer mavaitro;
-
-    @NotNull(message = "Ngày tạo không được để trống")
     private LocalDateTime ngaytao;
-
     private Boolean trangthai;
+    private Integer nguoitao;
 }

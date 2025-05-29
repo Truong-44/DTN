@@ -6,7 +6,6 @@ import com.example.be.tempotide.mapper.NhanVienMapper;
 import com.example.be.tempotide.repository.NhanVienRepository;
 import com.example.be.tempotide.service.NhanVienService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,15 +39,6 @@ public class NhanVienServiceImpl implements NhanVienService {
     public NhanVienDTO createNhanVien(NhanVienDTO nhanVienDTO) {
         NhanVien nhanVien = nhanVienMapper.toEntity(nhanVienDTO);
         nhanVien.setNgaytao(LocalDateTime.now());
-        nhanVien.setNgaycapnhat(LocalDateTime.now());
-
-        // Gán nguoitao từ thông tin người dùng hiện tại (giả sử dùng Spring Security)
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        NhanVien nguoitao = nhanVienRepository.findByEmail(username)
-                .orElseThrow(() -> new RuntimeException("User not found: " + username));
-        nhanVien.setNguoitao(nguoitao);
-        nhanVien.setNguoicapnhat(nguoitao);
-
         NhanVien savedNhanVien = nhanVienRepository.save(nhanVien);
         return nhanVienMapper.toDTO(savedNhanVien);
     }
@@ -67,12 +57,6 @@ public class NhanVienServiceImpl implements NhanVienService {
         existingNhanVien.setMatkhau(nhanVienDTO.getMatkhau());
         existingNhanVien.setNgaycapnhat(LocalDateTime.now());
         existingNhanVien.setTrangthai(nhanVienDTO.getTrangthai());
-
-        // Gán nguoicapnhat từ thông tin người dùng hiện tại
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        NhanVien nguoicapnhat = nhanVienRepository.findByEmail(username)
-                .orElseThrow(() -> new RuntimeException("User not found: " + username));
-        existingNhanVien.setNguoicapnhat(nguoicapnhat);
 
         NhanVien updatedNhanVien = nhanVienRepository.save(existingNhanVien);
         return nhanVienMapper.toDTO(updatedNhanVien);
