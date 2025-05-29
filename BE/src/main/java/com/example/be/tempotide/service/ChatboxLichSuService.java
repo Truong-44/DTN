@@ -1,15 +1,13 @@
-package com.example.be.tempotide.service;
+package com.example.tempotide.service;
 
-import com.example.be.tempotide.dto.ChatboxLichSuDTO;
+import com.example.tempotide.dto.ChatBoxLichSuDTO;
 
 import java.util.List;
 
-public interface ChatboxLichSuService {
-    List<ChatboxLichSuDTO> getAllChatboxLichSus();
-    ChatboxLichSuDTO getChatboxLichSuById(Integer id);
-    ChatboxLichSuDTO createChatboxLichSu(ChatboxLichSuDTO chatboxLichSuDTO);
-    ChatboxLichSuDTO updateChatboxLichSu(Integer id, ChatboxLichSuDTO chatboxLichSuDTO);
-    void deleteChatboxLichSu(Integer id);
-    List<ChatboxLichSuDTO> getChatboxLichSuByKhachHangId(Integer makhachhang);
-    List<ChatboxLichSuDTO> getChatboxLichSuBySodienthoai(String sodienthoai);
+public interface ChatBoxLichSuService {
+    List<ChatBoxLichSuDTO> getAllChatBoxLichSus();
+    ChatBoxLichSuDTO getChatBoxLichSuById(Integer id);
+    ChatBoxLichSuDTO createChatBoxLichSu(ChatBoxLichSuDTO chatBoxLichSuDTO);
+    ChatBoxLichSuDTO updateChatBoxLichSu(Integer id, ChatBoxLichSuDTO chatBoxLichSuDTO);
+    void deleteChatBoxLichSu(Integer id);
 }

@@ -1,11 +1,7 @@
-package com.example.be.tempotide.repository;
+package com.example.tempotide.repository;
 
-import com.example.be.tempotide.entity.ChatboxLichSu;
+import com.example.tempotide.entity.ChatBoxLichSu;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
-
-public interface ChatboxLichSuRepository extends JpaRepository<ChatboxLichSu, Integer> {
-    List<ChatboxLichSu> findByMakhachhang_Makhachhang(Integer makhachhang);
-    List<ChatboxLichSu> findBySodienthoai(String sodienthoai);
+public interface ChatBoxLichSuRepository extends JpaRepository<ChatBoxLichSu, Integer> {
 }

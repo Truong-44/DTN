@@ -1,6 +1,6 @@
-package com.example.be.tempotide.service;
+package com.example.tempotide.service;
 
-import com.example.be.tempotide.dto.ThuocTinhSanPhamDTO;
+import com.example.tempotide.dto.ThuocTinhSanPhamDTO;
 
 import java.util.List;
 

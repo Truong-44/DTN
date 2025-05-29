@@ -1,14 +1,13 @@
-package com.example.be.tempotide.service.impl;
+package com.example.tempotide.service.impl;
 
-import com.example.be.tempotide.dto.DanhMucDTO;
-import com.example.be.tempotide.entity.DanhMuc;
-import com.example.be.tempotide.entity.NhanVien;
-import com.example.be.tempotide.mapper.DanhMucMapper;
-import com.example.be.tempotide.repository.DanhMucRepository;
-import com.example.be.tempotide.repository.NhanVienRepository;
-import com.example.be.tempotide.service.DanhMucService;
+import com.example.tempotide.dto.DanhMucDTO;
+import com.example.tempotide.entity.DanhMuc;
+import com.example.tempotide.entity.NhanVien;
+import com.example.tempotide.mapper.DanhMucMapper;
+import com.example.tempotide.repository.DanhMucRepository;
+import com.example.tempotide.repository.NhanVienRepository;
+import com.example.tempotide.service.DanhMucService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,8 +19,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class DanhMucServiceImpl implements DanhMucService {
     private final DanhMucRepository danhMucRepository;
-    private final DanhMucMapper danhMucMapper;
     private final NhanVienRepository nhanVienRepository;
+    private final DanhMucMapper danhMucMapper;
 
     @Override
     public List<DanhMucDTO> getAllDanhMucs() {
@@ -42,21 +41,20 @@ public class DanhMucServiceImpl implements DanhMucService {
     @Transactional
     public DanhMucDTO createDanhMuc(DanhMucDTO danhMucDTO) {
         DanhMuc danhMuc = danhMucMapper.toEntity(danhMucDTO);
-        danhMuc.setNgaytao(LocalDateTime.now());
 
-        // Gán madanhmuccha (nếu có)
         if (danhMucDTO.getMadanhmuccha() != null) {
-            DanhMuc danhMucCha = danhMucRepository.findById(danhMucDTO.getMadanhmuccha())
-                    .orElseThrow(() -> new RuntimeException("DanhMucCha not found with ID: " + danhMucDTO.getMadanhmuccha()));
-            danhMuc.setMadanhmuccha(danhMucCha);
+            DanhMuc madanhmuccha = danhMucRepository.findById(danhMucDTO.getMadanhmuccha())
+                    .orElseThrow(() -> new RuntimeException("DanhMuc not found with ID: " + danhMucDTO.getMadanhmuccha()));
+            danhMuc.setMadanhmuccha(madanhmuccha);
         }
 
-        // Gán nguoitao từ thông tin người dùng hiện tại
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        NhanVien nguoitao = nhanVienRepository.findByEmail(username)
-                .orElseThrow(() -> new RuntimeException("User not found: " + username));
-        danhMuc.setNguoitao(nguoitao);
+        if (danhMucDTO.getNguoitao() != null) {
+            NhanVien nguoitao = nhanVienRepository.findById(danhMucDTO.getNguoitao())
+                    .orElseThrow(() -> new RuntimeException("NhanVien not found with ID: " + danhMucDTO.getNguoitao()));
+            danhMuc.setNguoitao(nguoitao);
+        }
 
+        danhMuc.setNgaytao(LocalDateTime.now());
         DanhMuc savedDanhMuc = danhMucRepository.save(danhMuc);
         return danhMucMapper.toDTO(savedDanhMuc);
     }
@@ -69,24 +67,15 @@ public class DanhMucServiceImpl implements DanhMucService {
 
         existingDanhMuc.setTendanhmuc(danhMucDTO.getTendanhmuc());
         existingDanhMuc.setMota(danhMucDTO.getMota());
+        existingDanhMuc.setTrangthai(danhMucDTO.getTrangthai());
 
-        // Cập nhật madanhmuccha (nếu có)
         if (danhMucDTO.getMadanhmuccha() != null) {
-            DanhMuc danhMucCha = danhMucRepository.findById(danhMucDTO.getMadanhmuccha())
-                    .orElseThrow(() -> new RuntimeException("DanhMucCha not found with ID: " + danhMucDTO.getMadanhmuccha()));
-            existingDanhMuc.setMadanhmuccha(danhMucCha);
+            DanhMuc madanhmuccha = danhMucRepository.findById(danhMucDTO.getMadanhmuccha())
+                    .orElseThrow(() -> new RuntimeException("DanhMuc not found with ID: " + danhMucDTO.getMadanhmuccha()));
+            existingDanhMuc.setMadanhmuccha(madanhmuccha);
         } else {
             existingDanhMuc.setMadanhmuccha(null);
         }
-
-        existingDanhMuc.setNgaytao(danhMucDTO.getNgaytao());
-        existingDanhMuc.setTrangthai(danhMucDTO.getTrangthai());
-
-        // Gán nguoitao từ thông tin người dùng hiện tại
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        NhanVien nguoitao = nhanVienRepository.findByEmail(username)
-                .orElseThrow(() -> new RuntimeException("User not found: " + username));
-        existingDanhMuc.setNguoitao(nguoitao);
 
         DanhMuc updatedDanhMuc = danhMucRepository.save(existingDanhMuc);
         return danhMucMapper.toDTO(updatedDanhMuc);

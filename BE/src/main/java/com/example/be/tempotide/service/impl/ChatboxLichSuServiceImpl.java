@@ -1,18 +1,17 @@
-package com.example.be.tempotide.service.impl;
+package com.example.tempotide.service.impl;
 
-import com.example.be.tempotide.dto.ChatboxLichSuDTO;
-import com.example.be.tempotide.entity.ChatboxLichSu;
-import com.example.be.tempotide.entity.KhachHang;
-import com.example.be.tempotide.entity.SanPham;
-import com.example.be.tempotide.entity.NhanVien;
-import com.example.be.tempotide.mapper.ChatboxLichSuMapper;
-import com.example.be.tempotide.repository.ChatboxLichSuRepository;
-import com.example.be.tempotide.repository.KhachHangRepository;
-import com.example.be.tempotide.repository.SanPhamRepository;
-import com.example.be.tempotide.repository.NhanVienRepository;
-import com.example.be.tempotide.service.ChatboxLichSuService;
+import com.example.tempotide.dto.ChatBoxLichSuDTO;
+import com.example.tempotide.entity.ChatBoxLichSu;
+import com.example.tempotide.entity.KhachHang;
+import com.example.tempotide.entity.NhanVien;
+import com.example.tempotide.entity.SanPham;
+import com.example.tempotide.mapper.ChatBoxLichSuMapper;
+import com.example.tempotide.repository.ChatBoxLichSuRepository;
+import com.example.tempotide.repository.KhachHangRepository;
+import com.example.tempotide.repository.NhanVienRepository;
+import com.example.tempotide.repository.SanPhamRepository;
+import com.example.tempotide.service.ChatBoxLichSuService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,114 +21,93 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class ChatboxLichSuServiceImpl implements ChatboxLichSuService {
-    private final ChatboxLichSuRepository chatboxLichSuRepository;
-    private final ChatboxLichSuMapper chatboxLichSuMapper;
+public class ChatBoxLichSuServiceImpl implements ChatBoxLichSuService {
+    private final ChatBoxLichSuRepository chatBoxLichSuRepository;
     private final KhachHangRepository khachHangRepository;
     private final SanPhamRepository sanPhamRepository;
     private final NhanVienRepository nhanVienRepository;
+    private final ChatBoxLichSuMapper chatBoxLichSuMapper;
 
     @Override
-    public List<ChatboxLichSuDTO> getAllChatboxLichSus() {
-        return chatboxLichSuRepository.findAll()
+    public List<ChatBoxLichSuDTO> getAllChatBoxLichSus() {
+        return chatBoxLichSuRepository.findAll()
                 .stream()
-                .map(chatboxLichSuMapper::toDTO)
+                .map(chatBoxLichSuMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public ChatboxLichSuDTO getChatboxLichSuById(Integer id) {
-        ChatboxLichSu chatboxLichSu = chatboxLichSuRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("ChatboxLichSu not found with ID: " + id));
-        return chatboxLichSuMapper.toDTO(chatboxLichSu);
+    public ChatBoxLichSuDTO getChatBoxLichSuById(Integer id) {
+        ChatBoxLichSu chatBoxLichSu = chatBoxLichSuRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("ChatBoxLichSu not found with ID: " + id));
+        return chatBoxLichSuMapper.toDTO(chatBoxLichSu);
     }
 
     @Override
     @Transactional
-    public ChatboxLichSuDTO createChatboxLichSu(ChatboxLichSuDTO chatboxLichSuDTO) {
-        ChatboxLichSu chatboxLichSu = chatboxLichSuMapper.toEntity(chatboxLichSuDTO);
-        chatboxLichSu.setNgaytao(LocalDateTime.now());
+    public ChatBoxLichSuDTO createChatBoxLichSu(ChatBoxLichSuDTO chatBoxLichSuDTO) {
+        ChatBoxLichSu chatBoxLichSu = chatBoxLichSuMapper.toEntity(chatBoxLichSuDTO);
 
-        if (chatboxLichSuDTO.getMakhachhang() != null) {
-            KhachHang khachHang = khachHangRepository.findById(chatboxLichSuDTO.getMakhachhang())
-                    .orElseThrow(() -> new RuntimeException("KhachHang not found with ID: " + chatboxLichSuDTO.getMakhachhang()));
-            chatboxLichSu.setMakhachhang(khachHang);
+        if (chatBoxLichSuDTO.getMakhachhang() != null) {
+            KhachHang khachHang = khachHangRepository.findById(chatBoxLichSuDTO.getMakhachhang())
+                    .orElseThrow(() -> new RuntimeException("KhachHang not found with ID: " + chatBoxLichSuDTO.getMakhachhang()));
+            chatBoxLichSu.setMakhachhang(khachHang);
         }
 
-        if (chatboxLichSuDTO.getGiosanpham() != null) {
-            SanPham sanPham = sanPhamRepository.findById(chatboxLichSuDTO.getGiosanpham())
-                    .orElseThrow(() -> new RuntimeException("SanPham not found with ID: " + chatboxLichSuDTO.getGiosanpham()));
-            chatboxLichSu.setGiosanpham(sanPham);
+        if (chatBoxLichSuDTO.getGiosanpham() != null) {
+            SanPham sanPham = sanPhamRepository.findById(chatBoxLichSuDTO.getGiosanpham())
+                    .orElseThrow(() -> new RuntimeException("SanPham not found with ID: " + chatBoxLichSuDTO.getGiosanpham()));
+            chatBoxLichSu.setGiosanpham(sanPham);
         }
 
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        NhanVien nguoitao = nhanVienRepository.findByEmail(username)
-                .orElseThrow(() -> new RuntimeException("User not found: " + username));
-        chatboxLichSu.setNguoitao(nguoitao);
+        if (chatBoxLichSuDTO.getNguoitao() != null) {
+            NhanVien nguoitao = nhanVienRepository.findById(chatBoxLichSuDTO.getNguoitao())
+                    .orElseThrow(() -> new RuntimeException("NhanVien not found with ID: " + chatBoxLichSuDTO.getNguoitao()));
+            chatBoxLichSu.setNguoitao(nguoitao);
+        }
 
-        ChatboxLichSu savedChatboxLichSu = chatboxLichSuRepository.save(chatboxLichSu);
-        return chatboxLichSuMapper.toDTO(savedChatboxLichSu);
+        chatBoxLichSu.setNgaytao(LocalDateTime.now());
+        ChatBoxLichSu savedChatBoxLichSu = chatBoxLichSuRepository.save(chatBoxLichSu);
+        return chatBoxLichSuMapper.toDTO(savedChatBoxLichSu);
     }
 
     @Override
     @Transactional
-    public ChatboxLichSuDTO updateChatboxLichSu(Integer id, ChatboxLichSuDTO chatboxLichSuDTO) {
-        ChatboxLichSu existingChatboxLichSu = chatboxLichSuRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("ChatboxLichSu not found with ID: " + id));
+    public ChatBoxLichSuDTO updateChatBoxLichSu(Integer id, ChatBoxLichSuDTO chatBoxLichSuDTO) {
+        ChatBoxLichSu existingChatBoxLichSu = chatBoxLichSuRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("ChatBoxLichSu not found with ID: " + id));
 
-        existingChatboxLichSu.setSodienthoai(chatboxLichSuDTO.getSodienthoai());
-        existingChatboxLichSu.setNoidung(chatboxLichSuDTO.getNoidung());
-        existingChatboxLichSu.setLoaiCauhoi(chatboxLichSuDTO.getLoaiCauhoi());
-        existingChatboxLichSu.setNgaytao(chatboxLichSuDTO.getNgaytao());
-        existingChatboxLichSu.setTrangthai(chatboxLichSuDTO.getTrangthai());
+        existingChatBoxLichSu.setSodienthoai(chatBoxLichSuDTO.getSodienthoai());
+        existingChatBoxLichSu.setNoidung(chatBoxLichSuDTO.getNoidung());
+        existingChatBoxLichSu.setLoaiCauhoi(chatBoxLichSuDTO.getLoaiCauhoi());
+        existingChatBoxLichSu.setTrangthai(chatBoxLichSuDTO.getTrangthai());
 
-        if (chatboxLichSuDTO.getMakhachhang() != null) {
-            KhachHang khachHang = khachHangRepository.findById(chatboxLichSuDTO.getMakhachhang())
-                    .orElseThrow(() -> new RuntimeException("KhachHang not found with ID: " + chatboxLichSuDTO.getMakhachhang()));
-            existingChatboxLichSu.setMakhachhang(khachHang);
+        if (chatBoxLichSuDTO.getMakhachhang() != null) {
+            KhachHang khachHang = khachHangRepository.findById(chatBoxLichSuDTO.getMakhachhang())
+                    .orElseThrow(() -> new RuntimeException("KhachHang not found with ID: " + chatBoxLichSuDTO.getMakhachhang()));
+            existingChatBoxLichSu.setMakhachhang(khachHang);
         } else {
-            existingChatboxLichSu.setMakhachhang(null);
+            existingChatBoxLichSu.setMakhachhang(null);
         }
 
-        if (chatboxLichSuDTO.getGiosanpham() != null) {
-            SanPham sanPham = sanPhamRepository.findById(chatboxLichSuDTO.getGiosanpham())
-                    .orElseThrow(() -> new RuntimeException("SanPham not found with ID: " + chatboxLichSuDTO.getGiosanpham()));
-            existingChatboxLichSu.setGiosanpham(sanPham);
+        if (chatBoxLichSuDTO.getGiosanpham() != null) {
+            SanPham sanPham = sanPhamRepository.findById(chatBoxLichSuDTO.getGiosanpham())
+                    .orElseThrow(() -> new RuntimeException("SanPham not found with ID: " + chatBoxLichSuDTO.getGiosanpham()));
+            existingChatBoxLichSu.setGiosanpham(sanPham);
         } else {
-            existingChatboxLichSu.setGiosanpham(null);
+            existingChatBoxLichSu.setGiosanpham(null);
         }
 
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        NhanVien nguoitao = nhanVienRepository.findByEmail(username)
-                .orElseThrow(() -> new RuntimeException("User not found: " + username));
-        existingChatboxLichSu.setNguoitao(nguoitao);
-
-        ChatboxLichSu updatedChatboxLichSu = chatboxLichSuRepository.save(existingChatboxLichSu);
-        return chatboxLichSuMapper.toDTO(updatedChatboxLichSu);
+        ChatBoxLichSu updatedChatBoxLichSu = chatBoxLichSuRepository.save(existingChatBoxLichSu);
+        return chatBoxLichSuMapper.toDTO(updatedChatBoxLichSu);
     }
 
     @Override
     @Transactional
-    public void deleteChatboxLichSu(Integer id) {
-        ChatboxLichSu chatboxLichSu = chatboxLichSuRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("ChatboxLichSu not found with ID: " + id));
-        chatboxLichSu.setTrangthai(false);
-        chatboxLichSuRepository.save(chatboxLichSu);
-    }
-
-    @Override
-    public List<ChatboxLichSuDTO> getChatboxLichSuByKhachHangId(Integer makhachhang) {
-        return chatboxLichSuRepository.findByMakhachhang_Makhachhang(makhachhang)
-                .stream()
-                .map(chatboxLichSuMapper::toDTO)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<ChatboxLichSuDTO> getChatboxLichSuBySodienthoai(String sodienthoai) {
-        return chatboxLichSuRepository.findBySodienthoai(sodienthoai)
-                .stream()
-                .map(chatboxLichSuMapper::toDTO)
-                .collect(Collectors.toList());
+    public void deleteChatBoxLichSu(Integer id) {
+        ChatBoxLichSu chatBoxLichSu = chatBoxLichSuRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("ChatBoxLichSu not found with ID: " + id));
+        chatBoxLichSu.setTrangthai(false);
+        chatBoxLichSuRepository.save(chatBoxLichSu);
     }
 }

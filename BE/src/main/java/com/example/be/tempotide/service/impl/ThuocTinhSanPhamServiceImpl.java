@@ -1,16 +1,13 @@
-package com.example.be.tempotide.service.impl;
+package com.example.tempotide.service.impl;
 
-import com.example.be.tempotide.dto.ThuocTinhSanPhamDTO;
-import com.example.be.tempotide.entity.ThuocTinhSanPham;
-import com.example.be.tempotide.entity.SanPham;
-import com.example.be.tempotide.entity.NhanVien;
-import com.example.be.tempotide.mapper.ThuocTinhSanPhamMapper;
-import com.example.be.tempotide.repository.ThuocTinhSanPhamRepository;
-import com.example.be.tempotide.repository.SanPhamRepository;
-import com.example.be.tempotide.repository.NhanVienRepository;
-import com.example.be.tempotide.service.ThuocTinhSanPhamService;
+import com.example.tempotide.dto.ThuocTinhSanPhamDTO;
+import com.example.tempotide.entity.NhanVien;
+import com.example.tempotide.entity.ThuocTinhSanPham;
+import com.example.tempotide.mapper.ThuocTinhSanPhamMapper;
+import com.example.tempotide.repository.NhanVienRepository;
+import com.example.tempotide.repository.ThuocTinhSanPhamRepository;
+import com.example.tempotide.service.ThuocTinhSanPhamService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,9 +19,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ThuocTinhSanPhamServiceImpl implements ThuocTinhSanPhamService {
     private final ThuocTinhSanPhamRepository thuocTinhSanPhamRepository;
-    private final ThuocTinhSanPhamMapper thuocTinhSanPhamMapper;
-    private final SanPhamRepository sanPhamRepository;
     private final NhanVienRepository nhanVienRepository;
+    private final ThuocTinhSanPhamMapper thuocTinhSanPhamMapper;
 
     @Override
     public List<ThuocTinhSanPhamDTO> getAllThuocTinhSanPhams() {
@@ -45,19 +41,14 @@ public class ThuocTinhSanPhamServiceImpl implements ThuocTinhSanPhamService {
     @Transactional
     public ThuocTinhSanPhamDTO createThuocTinhSanPham(ThuocTinhSanPhamDTO thuocTinhSanPhamDTO) {
         ThuocTinhSanPham thuocTinhSanPham = thuocTinhSanPhamMapper.toEntity(thuocTinhSanPhamDTO);
+
+        if (thuocTinhSanPhamDTO.getNguoitao() != null) {
+            NhanVien nguoitao = nhanVienRepository.findById(thuocTinhSanPhamDTO.getNguoitao())
+                    .orElseThrow(() -> new RuntimeException("NhanVien not found with ID: " + thuocTinhSanPhamDTO.getNguoitao()));
+            thuocTinhSanPham.setNguoitao(nguoitao);
+        }
+
         thuocTinhSanPham.setNgaytao(LocalDateTime.now());
-
-        // Gán masanpham
-        SanPham sanPham = sanPhamRepository.findById(thuocTinhSanPhamDTO.getMasanpham())
-                .orElseThrow(() -> new RuntimeException("SanPham not found with ID: " + thuocTinhSanPhamDTO.getMasanpham()));
-        thuocTinhSanPham.setMasanpham(sanPham);
-
-        // Gán nguoitao từ thông tin người dùng hiện tại
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        NhanVien nguoitao = nhanVienRepository.findByEmail(username)
-                .orElseThrow(() -> new RuntimeException("User not found: " + username));
-        thuocTinhSanPham.setNguoitao(nguoitao);
-
         ThuocTinhSanPham savedThuocTinhSanPham = thuocTinhSanPhamRepository.save(thuocTinhSanPham);
         return thuocTinhSanPhamMapper.toDTO(savedThuocTinhSanPham);
     }
@@ -69,20 +60,8 @@ public class ThuocTinhSanPhamServiceImpl implements ThuocTinhSanPhamService {
                 .orElseThrow(() -> new RuntimeException("ThuocTinhSanPham not found with ID: " + id));
 
         existingThuocTinhSanPham.setTenthuoctinh(thuocTinhSanPhamDTO.getTenthuoctinh());
-        existingThuocTinhSanPham.setGiatri(thuocTinhSanPhamDTO.getGiatri());
-        existingThuocTinhSanPham.setNgaytao(thuocTinhSanPhamDTO.getNgaytao());
+        existingThuocTinhSanPham.setMota(thuocTinhSanPhamDTO.getMota());
         existingThuocTinhSanPham.setTrangthai(thuocTinhSanPhamDTO.getTrangthai());
-
-        // Cập nhật masanpham
-        SanPham sanPham = sanPhamRepository.findById(thuocTinhSanPhamDTO.getMasanpham())
-                .orElseThrow(() -> new RuntimeException("SanPham not found with ID: " + thuocTinhSanPhamDTO.getMasanpham()));
-        existingThuocTinhSanPham.setMasanpham(sanPham);
-
-        // Gán nguoitao từ thông tin người dùng hiện tại
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        NhanVien nguoitao = nhanVienRepository.findByEmail(username)
-                .orElseThrow(() -> new RuntimeException("User not found: " + username));
-        existingThuocTinhSanPham.setNguoitao(nguoitao);
 
         ThuocTinhSanPham updatedThuocTinhSanPham = thuocTinhSanPhamRepository.save(existingThuocTinhSanPham);
         return thuocTinhSanPhamMapper.toDTO(updatedThuocTinhSanPham);

@@ -1,6 +1,6 @@
-package com.example.be.tempotide.service;
+package com.example.tempotide.service;
 
-import com.example.be.tempotide.dto.ChiTietSanPhamDTO;
+import com.example.tempotide.dto.ChiTietSanPhamDTO;
 
 import java.util.List;
 
@@ -10,5 +10,4 @@ public interface ChiTietSanPhamService {
     ChiTietSanPhamDTO createChiTietSanPham(ChiTietSanPhamDTO chiTietSanPhamDTO);
     ChiTietSanPhamDTO updateChiTietSanPham(Integer id, ChiTietSanPhamDTO chiTietSanPhamDTO);
     void deleteChiTietSanPham(Integer id);
-    List<ChiTietSanPhamDTO> getChiTietSanPhamBySanPhamId(Integer masanpham);
 }
