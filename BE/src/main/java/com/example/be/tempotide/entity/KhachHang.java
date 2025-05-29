@@ -31,16 +31,16 @@ public class KhachHang {
     @Column(name = "matkhau", nullable = false, length = 255)
     private String matkhau;
 
-    @Column(name = "diemtichluy")
+    @Column(name = "diemtichluy", nullable = false)
     private Integer diemtichluy;
 
-    @Column(name = "nhanthongbao")
+    @Column(name = "nhanthongbao", nullable = false)
     private Boolean nhanthongbao;
 
-    @Column(name = "ngaytao")
+    @Column(name = "ngaytao", nullable = false, updatable = false)
     private LocalDateTime ngaytao;
 
-    @Column(name = "trangthai")
+    @Column(name = "trangthai", nullable = false)
     private Boolean trangthai;
 
     @ManyToOne

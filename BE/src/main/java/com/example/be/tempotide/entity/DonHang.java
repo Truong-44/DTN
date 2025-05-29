@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -24,11 +25,11 @@ public class DonHang {
     @JoinColumn(name = "manhanvienxuly")
     private NhanVien manhanvienxuly;
 
-    @Column(name = "ngaydathang")
+    @Column(name = "ngaydathang", nullable = false, updatable = false)
     private LocalDateTime ngaydathang;
 
     @Column(name = "tongtien", nullable = false)
-    private Double tongtien;
+    private BigDecimal tongtien;
 
     @Column(name = "diachigiaohang", nullable = false, length = 200)
     private String diachigiaohang;
@@ -40,13 +41,13 @@ public class DonHang {
     private String phuongthucthanhtoan;
 
     @Column(name = "sotien", nullable = false)
-    private Double sotien;
+    private BigDecimal sotien;
 
     @Column(name = "trangthaithanhtoan", nullable = false, length = 50)
     private String trangthaithanhtoan;
 
     @Column(name = "giamgia")
-    private Double giamgia;
+    private BigDecimal giamgia;
 
     @Column(name = "trangthaidonhang", nullable = false, length = 50)
     private String trangthaidonhang;
@@ -66,19 +67,19 @@ public class DonHang {
     @Column(name = "ghichu", length = 500)
     private String ghichu;
 
-    @Column(name = "trangthai_hoadon")
+    @Column(name = "trangthai_hoadon", nullable = false)
     private Boolean trangthaiHoadon;
 
-    @Column(name = "ladonhangvanglai")
+    @Column(name = "ladonhangvanglai", nullable = false)
     private Boolean ladonhangvanglai;
 
-    @Column(name = "ngaytao")
+    @Column(name = "ngaytao", nullable = false, updatable = false)
     private LocalDateTime ngaytao;
 
     @Column(name = "ngaycapnhat")
     private LocalDateTime ngaycapnhat;
 
-    @Column(name = "trangthai")
+    @Column(name = "trangthai", nullable = false)
     private Boolean trangthai;
 
     @ManyToOne

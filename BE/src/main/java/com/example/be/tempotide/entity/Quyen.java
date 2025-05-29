@@ -16,7 +16,7 @@ public class Quyen {
     @Column(name = "maquyen")
     private Integer maquyen;
 
-    @Column(name = "tenquyen", nullable = false, length = 50, unique = true)
+    @Column(name = "tenquyen", nullable = false, length = 50)
     private String tenquyen;
 
     @Column(name = "mota", length = 200)
@@ -25,7 +25,7 @@ public class Quyen {
     @Column(name = "ngaytao", nullable = false, updatable = false)
     private LocalDateTime ngaytao;
 
-    @Column(name = "trangthai")
+    @Column(name = "trangthai", nullable = false)
     private Boolean trangthai;
 
     @ManyToOne

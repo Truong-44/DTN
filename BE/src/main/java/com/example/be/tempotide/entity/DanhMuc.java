@@ -26,10 +26,10 @@ public class DanhMuc {
     @Column(name = "mota", length = 200)
     private String mota;
 
-    @Column(name = "ngaytao")
+    @Column(name = "ngaytao", nullable = false, updatable = false)
     private LocalDateTime ngaytao;
 
-    @Column(name = "trangthai")
+    @Column(name = "trangthai", nullable = false)
     private Boolean trangthai;
 
     @ManyToOne

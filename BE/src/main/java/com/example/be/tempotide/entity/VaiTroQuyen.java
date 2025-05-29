@@ -24,10 +24,10 @@ public class VaiTroQuyen {
     @JoinColumn(name = "maquyen", nullable = false)
     private Quyen maquyen;
 
-    @Column(name = "ngaytao")
+    @Column(name = "ngaytao", nullable = false, updatable = false)
     private LocalDateTime ngaytao;
 
-    @Column(name = "trangthai")
+    @Column(name = "trangthai", nullable = false)
     private Boolean trangthai;
 
     @ManyToOne

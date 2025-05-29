@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -22,25 +23,25 @@ public class NhanVien {
     @Column(name = "ten", nullable = false, length = 50)
     private String ten;
 
-    @Column(name = "email", nullable = false, length = 100, unique = true)
+    @Column(name = "email", nullable = false, length = 100)
     private String email;
 
     @Column(name = "sodienthoai", length = 15)
     private String sodienthoai;
 
     @Column(name = "ngaytuyendung", nullable = false)
-    private LocalDateTime ngaytuyendung;
+    private LocalDate ngaytuyendung;
 
     @Column(name = "matkhau", nullable = false, length = 255)
     private String matkhau;
 
-    @Column(name = "ngaytao")
+    @Column(name = "ngaytao", nullable = false, updatable = false)
     private LocalDateTime ngaytao;
 
     @Column(name = "ngaycapnhat")
     private LocalDateTime ngaycapnhat;
 
-    @Column(name = "trangthai")
+    @Column(name = "trangthai", nullable = false)
     private Boolean trangthai;
 
     @ManyToOne

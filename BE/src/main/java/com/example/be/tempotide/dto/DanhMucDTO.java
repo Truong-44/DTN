@@ -1,6 +1,7 @@
 package com.example.be.tempotide.dto;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -8,18 +9,13 @@ import java.time.LocalDateTime;
 @Data
 public class DanhMucDTO {
     private Integer madanhmuc;
-
-    @NotBlank(message = "Tên danh mục không được để trống")
-    @Size(max = 50, message = "Tên danh mục không được vượt quá 50 ký tự")
+    @NotNull(message = "Tên danh mục không được để trống")
+    @Size(max = 100, message = "Tên danh mục không được vượt quá 100 ký tự")
     private String tendanhmuc;
-
+    private Integer madanhmuccha;
     @Size(max = 200, message = "Mô tả không được vượt quá 200 ký tự")
     private String mota;
-
-    @NotNull(message = "Ngày tạo không được để trống")
     private LocalDateTime ngaytao;
-
     private Boolean trangthai;
-
-    private Integer nguoitao; // Thêm trường này
+    private Integer nguoitao;
 }
