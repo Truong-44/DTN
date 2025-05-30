@@ -1,13 +1,12 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProductListComponent } from '../product-list/product-list.component';
-import { RouterLink } from '@angular/router';
 import { trigger, transition, style, animate } from '@angular/animations';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, ProductListComponent, RouterLink],
+  imports: [CommonModule, ProductListComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
   animations: [
