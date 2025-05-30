@@ -1,12 +1,12 @@
-package com.example.tempotide.service.impl;
+package com.example.be.tempotide.service.impl;
 
-import com.example.tempotide.dto.VaiTroDTO;
-import com.example.tempotide.entity.NhanVien;
-import com.example.tempotide.entity.VaiTro;
-import com.example.tempotide.mapper.VaiTroMapper;
-import com.example.tempotide.repository.NhanVienRepository;
-import com.example.tempotide.repository.VaiTroRepository;
-import com.example.tempotide.service.VaiTroService;
+import com.example.be.tempotide.dto.VaiTroDTO;
+import com.example.be.tempotide.entity.NhanVien;
+import com.example.be.tempotide.entity.VaiTro;
+import com.example.be.tempotide.mapper.VaiTroMapper;
+import com.example.be.tempotide.repository.NhanVienRepository;
+import com.example.be.tempotide.repository.VaiTroRepository;
+import com.example.be.tempotide.service.VaiTroService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

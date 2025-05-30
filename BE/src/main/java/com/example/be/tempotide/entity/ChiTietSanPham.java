@@ -1,20 +1,16 @@
 package com.example.be.tempotide.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-
+import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "chitietsanpham")
-@Getter
-@Setter
+@Data
 public class ChiTietSanPham {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "machitietsanpham")
     private Integer machitietsanpham;
 
     @ManyToOne
@@ -25,32 +21,32 @@ public class ChiTietSanPham {
     @JoinColumn(name = "mathuoctinh", nullable = false)
     private ThuocTinhSanPham mathuoctinh;
 
-    @Column(name = "giatri", nullable = false, length = 100)
+    @Column(nullable = false, length = 100)
     private String giatri;
 
-    @Column(name = "gia", nullable = false)
+    @Column(nullable = false)
     private BigDecimal gia;
 
-    @Column(name = "soluongton", nullable = false)
+    @Column(nullable = false)
     private Integer soluongton;
 
-    @Column(name = "sku", length = 50)
+    @Column(length = 50, unique = true)
     private String sku;
 
-    @Column(name = "duongdanhinhanh", length = 500)
+    @Column(length = 500)
     private String duongdanhinhanh;
 
-    @Column(name = "lahinhchinh", nullable = false)
-    private Boolean lahinhchinh;
+    @Column
+    private Boolean lahinhchinh = false;
 
-    @Column(name = "ngaytao", nullable = false, updatable = false)
-    private LocalDateTime ngaytao;
+    @Column
+    private LocalDateTime ngaytao = LocalDateTime.now();
 
-    @Column(name = "ngaycapnhat")
-    private LocalDateTime ngaycapnhat;
+    @Column
+    private LocalDateTime ngaycapnhat = LocalDateTime.now();
 
-    @Column(name = "trangthai", nullable = false)
-    private Boolean trangthai;
+    @Column
+    private Boolean trangthai = true;
 
     @ManyToOne
     @JoinColumn(name = "nguoitao")

@@ -1,6 +1,6 @@
-package com.example.tempotide.service;
+package com.example.be.tempotide.service;
 
-import com.example.tempotide.dto.ChatBoxLichSuDTO;
+import com.example.be.tempotide.dto.ChatBoxLichSuDTO;
 
 import java.util.List;
 

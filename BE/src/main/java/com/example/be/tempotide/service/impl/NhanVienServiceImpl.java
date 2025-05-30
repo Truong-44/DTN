@@ -38,7 +38,21 @@ public class NhanVienServiceImpl implements NhanVienService {
     @Transactional
     public NhanVienDTO createNhanVien(NhanVienDTO nhanVienDTO) {
         NhanVien nhanVien = nhanVienMapper.toEntity(nhanVienDTO);
+
+        if (nhanVienDTO.getNguoitao() != null) {
+            NhanVien nguoitao = nhanVienRepository.findById(nhanVienDTO.getNguoitao())
+                    .orElseThrow(() -> new RuntimeException("NhanVien not found with ID: " + nhanVienDTO.getNguoitao()));
+            nhanVien.setNguoitao(nguoitao);
+        }
+
+        if (nhanVienDTO.getNguoicapnhat() != null) {
+            NhanVien nguoicapnhat = nhanVienRepository.findById(nhanVienDTO.getNguoicapnhat())
+                    .orElseThrow(() -> new RuntimeException("NhanVien not found with ID: " + nhanVienDTO.getNguoicapnhat()));
+            nhanVien.setNguoicapnhat(nguoicapnhat);
+        }
+
         nhanVien.setNgaytao(LocalDateTime.now());
+        nhanVien.setNgaycapnhat(LocalDateTime.now());
         NhanVien savedNhanVien = nhanVienRepository.save(nhanVien);
         return nhanVienMapper.toDTO(savedNhanVien);
     }
@@ -55,8 +69,14 @@ public class NhanVienServiceImpl implements NhanVienService {
         existingNhanVien.setSodienthoai(nhanVienDTO.getSodienthoai());
         existingNhanVien.setNgaytuyendung(nhanVienDTO.getNgaytuyendung());
         existingNhanVien.setMatkhau(nhanVienDTO.getMatkhau());
-        existingNhanVien.setNgaycapnhat(LocalDateTime.now());
         existingNhanVien.setTrangthai(nhanVienDTO.getTrangthai());
+        existingNhanVien.setNgaycapnhat(LocalDateTime.now());
+
+        if (nhanVienDTO.getNguoicapnhat() != null) {
+            NhanVien nguoicapnhat = nhanVienRepository.findById(nhanVienDTO.getNguoicapnhat())
+                    .orElseThrow(() -> new RuntimeException("NhanVien not found with ID: " + nhanVienDTO.getNguoicapnhat()));
+            existingNhanVien.setNguoicapnhat(nguoicapnhat);
+        }
 
         NhanVien updatedNhanVien = nhanVienRepository.save(existingNhanVien);
         return nhanVienMapper.toDTO(updatedNhanVien);

@@ -1,7 +1,6 @@
-package com.example.tempotide.service;
+package com.example.be.tempotide.service;
 
-import com.example.tempotide.dto.QuyenDTO;
-
+import com.example.be.tempotide.dto.QuyenDTO;
 import java.util.List;
 
 public interface QuyenService {

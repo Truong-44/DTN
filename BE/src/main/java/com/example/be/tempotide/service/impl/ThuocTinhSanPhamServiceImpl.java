@@ -1,12 +1,12 @@
-package com.example.tempotide.service.impl;
+package com.example.be.tempotide.service.impl;
 
-import com.example.tempotide.dto.ThuocTinhSanPhamDTO;
-import com.example.tempotide.entity.NhanVien;
-import com.example.tempotide.entity.ThuocTinhSanPham;
-import com.example.tempotide.mapper.ThuocTinhSanPhamMapper;
-import com.example.tempotide.repository.NhanVienRepository;
-import com.example.tempotide.repository.ThuocTinhSanPhamRepository;
-import com.example.tempotide.service.ThuocTinhSanPhamService;
+import com.example.be.tempotide.dto.ThuocTinhSanPhamDTO;
+import com.example.be.tempotide.entity.ThuocTinhSanPham;
+import com.example.be.tempotide.entity.NhanVien;
+import com.example.be.tempotide.mapper.ThuocTinhSanPhamMapper;
+import com.example.be.tempotide.repository.ThuocTinhSanPhamRepository;
+import com.example.be.tempotide.repository.NhanVienRepository;
+import com.example.be.tempotide.service.ThuocTinhSanPhamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

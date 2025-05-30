@@ -1,7 +1,7 @@
-package com.example.tempotide.controller;
+package com.example.be.tempotide.controller;
 
-import com.example.tempotide.dto.ThuocTinhSanPhamDTO;
-import com.example.tempotide.service.ThuocTinhSanPhamService;
+import com.example.be.tempotide.dto.ThuocTinhSanPhamDTO;
+import com.example.be.tempotide.service.ThuocTinhSanPhamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/thuoctinhsanpham")
+@RequestMapping("/api/thuoctinh-sanpham")
 @RequiredArgsConstructor
 public class ThuocTinhSanPhamController {
     private final ThuocTinhSanPhamService thuocTinhSanPhamService;

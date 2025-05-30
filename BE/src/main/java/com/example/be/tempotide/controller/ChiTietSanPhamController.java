@@ -1,7 +1,7 @@
-package com.example.tempotide.controller;
+package com.example.be.tempotide.controller;
 
-import com.example.tempotide.dto.ChiTietSanPhamDTO;
-import com.example.tempotide.service.ChiTietSanPhamService;
+import com.example.be.tempotide.dto.ChiTietSanPhamDTO;
+import com.example.be.tempotide.service.ChiTietSanPhamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

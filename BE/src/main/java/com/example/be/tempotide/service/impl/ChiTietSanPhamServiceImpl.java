@@ -1,16 +1,16 @@
-package com.example.tempotide.service.impl;
+package com.example.be.tempotide.service.impl;
 
-import com.example.tempotide.dto.ChiTietSanPhamDTO;
-import com.example.tempotide.entity.ChiTietSanPham;
-import com.example.tempotide.entity.NhanVien;
-import com.example.tempotide.entity.SanPham;
-import com.example.tempotide.entity.ThuocTinhSanPham;
-import com.example.tempotide.mapper.ChiTietSanPhamMapper;
-import com.example.tempotide.repository.ChiTietSanPhamRepository;
-import com.example.tempotide.repository.NhanVienRepository;
-import com.example.tempotide.repository.SanPhamRepository;
-import com.example.tempotide.repository.ThuocTinhSanPhamRepository;
-import com.example.tempotide.service.ChiTietSanPhamService;
+import com.example.be.tempotide.dto.ChiTietSanPhamDTO;
+import com.example.be.tempotide.entity.ChiTietSanPham;
+import com.example.be.tempotide.entity.SanPham;
+import com.example.be.tempotide.entity.ThuocTinhSanPham;
+import com.example.be.tempotide.entity.NhanVien;
+import com.example.be.tempotide.mapper.ChiTietSanPhamMapper;
+import com.example.be.tempotide.repository.ChiTietSanPhamRepository;
+import com.example.be.tempotide.repository.SanPhamRepository;
+import com.example.be.tempotide.repository.ThuocTinhSanPhamRepository;
+import com.example.be.tempotide.repository.NhanVienRepository;
+import com.example.be.tempotide.service.ChiTietSanPhamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,6 +69,7 @@ public class ChiTietSanPhamServiceImpl implements ChiTietSanPhamService {
         }
 
         chiTietSanPham.setNgaytao(LocalDateTime.now());
+        chiTietSanPham.setNgaycapnhat(LocalDateTime.now());
         ChiTietSanPham savedChiTietSanPham = chiTietSanPhamRepository.save(chiTietSanPham);
         return chiTietSanPhamMapper.toDTO(savedChiTietSanPham);
     }
@@ -85,8 +86,8 @@ public class ChiTietSanPhamServiceImpl implements ChiTietSanPhamService {
         existingChiTietSanPham.setSku(chiTietSanPhamDTO.getSku());
         existingChiTietSanPham.setDuongdanhinhanh(chiTietSanPhamDTO.getDuongdanhinhanh());
         existingChiTietSanPham.setLahinhchinh(chiTietSanPhamDTO.getLahinhchinh());
-        existingChiTietSanPham.setNgaycapnhat(LocalDateTime.now());
         existingChiTietSanPham.setTrangthai(chiTietSanPhamDTO.getTrangthai());
+        existingChiTietSanPham.setNgaycapnhat(LocalDateTime.now());
 
         SanPham sanPham = sanPhamRepository.findById(chiTietSanPhamDTO.getMasanpham())
                 .orElseThrow(() -> new RuntimeException("SanPham not found with ID: " + chiTietSanPhamDTO.getMasanpham()));

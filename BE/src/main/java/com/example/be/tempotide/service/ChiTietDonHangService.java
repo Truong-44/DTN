@@ -10,5 +10,4 @@ public interface ChiTietDonHangService {
     ChiTietDonHangDTO createChiTietDonHang(ChiTietDonHangDTO chiTietDonHangDTO);
     ChiTietDonHangDTO updateChiTietDonHang(Integer id, ChiTietDonHangDTO chiTietDonHangDTO);
     void deleteChiTietDonHang(Integer id);
-    List<ChiTietDonHangDTO> getChiTietDonHangByDonHangId(Integer madonhang); // Đảm bảo phương thức này tồn tại
 }

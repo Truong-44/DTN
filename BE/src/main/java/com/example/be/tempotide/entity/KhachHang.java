@@ -1,47 +1,43 @@
 package com.example.be.tempotide.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-
+import lombok.Data;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "khachhang")
-@Getter
-@Setter
+@Data
 public class KhachHang {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "makhachhang")
     private Integer makhachhang;
 
-    @Column(name = "ho", nullable = false, length = 50)
+    @Column(nullable = false, length = 50)
     private String ho;
 
-    @Column(name = "ten", nullable = false, length = 50)
+    @Column(nullable = false, length = 50)
     private String ten;
 
-    @Column(name = "email", length = 100)
+    @Column(length = 100)
     private String email;
 
-    @Column(name = "sodienthoai", length = 15)
+    @Column(length = 15)
     private String sodienthoai;
 
-    @Column(name = "matkhau", nullable = false, length = 255)
+    @Column(nullable = false, length = 255)
     private String matkhau;
 
-    @Column(name = "diemtichluy", nullable = false)
-    private Integer diemtichluy;
+    @Column
+    private Integer diemtichluy = 0;
 
-    @Column(name = "nhanthongbao", nullable = false)
-    private Boolean nhanthongbao;
+    @Column
+    private Boolean nhanthongbao = false;
 
-    @Column(name = "ngaytao", nullable = false, updatable = false)
-    private LocalDateTime ngaytao;
+    @Column
+    private LocalDateTime ngaytao = LocalDateTime.now();
 
-    @Column(name = "trangthai", nullable = false)
-    private Boolean trangthai;
+    @Column
+    private Boolean trangthai = true;
 
     @ManyToOne
     @JoinColumn(name = "nguoitao")

@@ -1,14 +1,14 @@
-package com.example.tempotide.service.impl;
+package com.example.be.tempotide.service.impl;
 
-import com.example.tempotide.dto.GioHangDTO;
-import com.example.tempotide.entity.GioHang;
-import com.example.tempotide.entity.KhachHang;
-import com.example.tempotide.entity.NhanVien;
-import com.example.tempotide.mapper.GioHangMapper;
-import com.example.tempotide.repository.GioHangRepository;
-import com.example.tempotide.repository.KhachHangRepository;
-import com.example.tempotide.repository.NhanVienRepository;
-import com.example.tempotide.service.GioHangService;
+import com.example.be.tempotide.dto.GioHangDTO;
+import com.example.be.tempotide.entity.GioHang;
+import com.example.be.tempotide.entity.KhachHang;
+import com.example.be.tempotide.entity.NhanVien;
+import com.example.be.tempotide.mapper.GioHangMapper;
+import com.example.be.tempotide.repository.GioHangRepository;
+import com.example.be.tempotide.repository.KhachHangRepository;
+import com.example.be.tempotide.repository.NhanVienRepository;
+import com.example.be.tempotide.service.GioHangService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,6 +58,7 @@ public class GioHangServiceImpl implements GioHangService {
         }
 
         gioHang.setNgaytao(LocalDateTime.now());
+        gioHang.setNgaycapnhat(LocalDateTime.now());
         GioHang savedGioHang = gioHangRepository.save(gioHang);
         return gioHangMapper.toDTO(savedGioHang);
     }
@@ -69,8 +70,8 @@ public class GioHangServiceImpl implements GioHangService {
                 .orElseThrow(() -> new RuntimeException("GioHang not found with ID: " + id));
 
         existingGioHang.setSodienthoai(gioHangDTO.getSodienthoai());
-        existingGioHang.setNgaycapnhat(LocalDateTime.now());
         existingGioHang.setTrangthai(gioHangDTO.getTrangthai());
+        existingGioHang.setNgaycapnhat(LocalDateTime.now());
 
         if (gioHangDTO.getMakhachhang() != null) {
             KhachHang khachHang = khachHangRepository.findById(gioHangDTO.getMakhachhang())

@@ -1,7 +1,6 @@
-package com.example.tempotide.service;
+package com.example.be.tempotide.service;
 
-import com.example.tempotide.dto.VaiTroDTO;
-
+import com.example.be.tempotide.dto.VaiTroDTO;
 import java.util.List;
 
 public interface VaiTroService {

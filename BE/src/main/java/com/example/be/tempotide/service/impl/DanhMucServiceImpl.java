@@ -1,12 +1,12 @@
-package com.example.tempotide.service.impl;
+package com.example.be.tempotide.service.impl;
 
-import com.example.tempotide.dto.DanhMucDTO;
-import com.example.tempotide.entity.DanhMuc;
-import com.example.tempotide.entity.NhanVien;
-import com.example.tempotide.mapper.DanhMucMapper;
-import com.example.tempotide.repository.DanhMucRepository;
-import com.example.tempotide.repository.NhanVienRepository;
-import com.example.tempotide.service.DanhMucService;
+import com.example.be.tempotide.dto.DanhMucDTO;
+import com.example.be.tempotide.entity.DanhMuc;
+import com.example.be.tempotide.entity.NhanVien;
+import com.example.be.tempotide.mapper.DanhMucMapper;
+import com.example.be.tempotide.repository.DanhMucRepository;
+import com.example.be.tempotide.repository.NhanVienRepository;
+import com.example.be.tempotide.service.DanhMucService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,9 +43,9 @@ public class DanhMucServiceImpl implements DanhMucService {
         DanhMuc danhMuc = danhMucMapper.toEntity(danhMucDTO);
 
         if (danhMucDTO.getMadanhmuccha() != null) {
-            DanhMuc madanhmuccha = danhMucRepository.findById(danhMucDTO.getMadanhmuccha())
-                    .orElseThrow(() -> new RuntimeException("DanhMuc not found with ID: " + danhMucDTO.getMadanhmuccha()));
-            danhMuc.setMadanhmuccha(madanhmuccha);
+            DanhMuc danhMucCha = danhMucRepository.findById(danhMucDTO.getMadanhmuccha())
+                    .orElseThrow(() -> new RuntimeException("DanhMucCha not found with ID: " + danhMucDTO.getMadanhmuccha()));
+            danhMuc.setMadanhmuccha(danhMucCha);
         }
 
         if (danhMucDTO.getNguoitao() != null) {
@@ -70,9 +70,9 @@ public class DanhMucServiceImpl implements DanhMucService {
         existingDanhMuc.setTrangthai(danhMucDTO.getTrangthai());
 
         if (danhMucDTO.getMadanhmuccha() != null) {
-            DanhMuc madanhmuccha = danhMucRepository.findById(danhMucDTO.getMadanhmuccha())
-                    .orElseThrow(() -> new RuntimeException("DanhMuc not found with ID: " + danhMucDTO.getMadanhmuccha()));
-            existingDanhMuc.setMadanhmuccha(madanhmuccha);
+            DanhMuc danhMucCha = danhMucRepository.findById(danhMucDTO.getMadanhmuccha())
+                    .orElseThrow(() -> new RuntimeException("DanhMucCha not found with ID: " + danhMucDTO.getMadanhmuccha()));
+            existingDanhMuc.setMadanhmuccha(danhMucCha);
         } else {
             existingDanhMuc.setMadanhmuccha(null);
         }

@@ -1,40 +1,36 @@
 package com.example.be.tempotide.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-
+import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "sanpham")
-@Getter
-@Setter
+@Data
 public class SanPham {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "masanpham")
     private Integer masanpham;
 
-    @Column(name = "tensanpham", nullable = false, length = 100)
+    @Column(nullable = false, length = 100)
     private String tensanpham;
 
     @ManyToOne
     @JoinColumn(name = "madanhmuc", nullable = false)
     private DanhMuc madanhmuc;
 
-    @Column(name = "mota", length = 500)
+    @Column(length = 500)
     private String mota;
 
-    @Column(name = "gia", nullable = false)
+    @Column(nullable = false)
     private BigDecimal gia;
 
-    @Column(name = "ngaytao", nullable = false, updatable = false)
-    private LocalDateTime ngaytao;
+    @Column
+    private LocalDateTime ngaytao = LocalDateTime.now();
 
-    @Column(name = "trangthai", nullable = false)
-    private Boolean trangthai;
+    @Column
+    private Boolean trangthai = true;
 
     @ManyToOne
     @JoinColumn(name = "nguoitao")
