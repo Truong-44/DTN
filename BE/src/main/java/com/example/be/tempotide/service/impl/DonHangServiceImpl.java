@@ -10,7 +10,6 @@ import com.example.be.tempotide.repository.KhachHangRepository;
 import com.example.be.tempotide.repository.NhanVienRepository;
 import com.example.be.tempotide.service.DonHangService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,9 +21,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class DonHangServiceImpl implements DonHangService {
     private final DonHangRepository donHangRepository;
-    private final DonHangMapper donHangMapper;
     private final KhachHangRepository khachHangRepository;
     private final NhanVienRepository nhanVienRepository;
+    private final DonHangMapper donHangMapper;
 
     @Override
     public List<DonHangDTO> getAllDonHangs() {
@@ -45,23 +44,34 @@ public class DonHangServiceImpl implements DonHangService {
     @Transactional
     public DonHangDTO createDonHang(DonHangDTO donHangDTO) {
         DonHang donHang = donHangMapper.toEntity(donHangDTO);
-        donHang.setNgaytao(LocalDateTime.now());
 
-        KhachHang khachHang = khachHangRepository.findById(donHangDTO.getMakhachhang())
-                .orElseThrow(() -> new RuntimeException("KhachHang not found with ID: " + donHangDTO.getMakhachhang()));
-        donHang.setMakhachhang(khachHang);
-
-        if (donHangDTO.getManhanvienxuly() != null) {
-            NhanVien nhanVien = nhanVienRepository.findById(donHangDTO.getManhanvienxuly())
-                    .orElseThrow(() -> new RuntimeException("NhanVien not found with ID: " + donHangDTO.getManhanvienxuly()));
-            donHang.setManhanvienxuly(nhanVien);
-        } else {
-            String username = SecurityContextHolder.getContext().getAuthentication().getName();
-            NhanVien nhanVien = nhanVienRepository.findByEmail(username)
-                    .orElseThrow(() -> new RuntimeException("User not found: " + username));
-            donHang.setManhanvienxuly(nhanVien);
+        if (donHangDTO.getMakhachhang() != null) {
+            KhachHang khachHang = khachHangRepository.findById(donHangDTO.getMakhachhang())
+                    .orElseThrow(() -> new RuntimeException("KhachHang not found with ID: " + donHangDTO.getMakhachhang()));
+            donHang.setMakhachhang(khachHang);
         }
 
+        if (donHangDTO.getManhanvienxuly() != null) {
+            NhanVien nhanVienXuly = nhanVienRepository.findById(donHangDTO.getManhanvienxuly())
+                    .orElseThrow(() -> new RuntimeException("NhanVien not found with ID: " + donHangDTO.getManhanvienxuly()));
+            donHang.setManhanvienxuly(nhanVienXuly);
+        }
+
+        if (donHangDTO.getNguoitao() != null) {
+            NhanVien nguoitao = nhanVienRepository.findById(donHangDTO.getNguoitao())
+                    .orElseThrow(() -> new RuntimeException("NhanVien not found with ID: " + donHangDTO.getNguoitao()));
+            donHang.setNguoitao(nguoitao);
+        }
+
+        if (donHangDTO.getNguoicapnhat() != null) {
+            NhanVien nguoicapnhat = nhanVienRepository.findById(donHangDTO.getNguoicapnhat())
+                    .orElseThrow(() -> new RuntimeException("NhanVien not found with ID: " + donHangDTO.getNguoicapnhat()));
+            donHang.setNguoicapnhat(nguoicapnhat);
+        }
+
+        donHang.setNgaydathang(LocalDateTime.now());
+        donHang.setNgaytao(LocalDateTime.now());
+        donHang.setNgaycapnhat(LocalDateTime.now());
         DonHang savedDonHang = donHangRepository.save(donHang);
         return donHangMapper.toDTO(savedDonHang);
     }
@@ -73,7 +83,9 @@ public class DonHangServiceImpl implements DonHangService {
                 .orElseThrow(() -> new RuntimeException("DonHang not found with ID: " + id));
 
         existingDonHang.setTongtien(donHangDTO.getTongtien());
+        existingDonHang.setDiachigiaohang(donHangDTO.getDiachigiaohang());
         existingDonHang.setPhuongthucvanchuyen(donHangDTO.getPhuongthucvanchuyen());
+        existingDonHang.setPhuongthucthanhtoan(donHangDTO.getPhuongthucthanhtoan());
         existingDonHang.setSotien(donHangDTO.getSotien());
         existingDonHang.setTrangthaithanhtoan(donHangDTO.getTrangthaithanhtoan());
         existingDonHang.setGiamgia(donHangDTO.getGiamgia());
@@ -83,24 +95,31 @@ public class DonHangServiceImpl implements DonHangService {
         existingDonHang.setEmail(donHangDTO.getEmail());
         existingDonHang.setNgaythanhtoan(donHangDTO.getNgaythanhtoan());
         existingDonHang.setGhichu(donHangDTO.getGhichu());
-        existingDonHang.setTrangthaiHoadon(donHangDTO.getTrangthaiHoadon()); // Đảm bảo kiểu Boolean
-        existingDonHang.setLadonhangvanglai(donHangDTO.getLadonhangvanglai()); // Đảm bảo kiểu Boolean
+        existingDonHang.setTrangthaiHoadon(donHangDTO.getTrangthaiHoadon());
+        existingDonHang.setLadonhangvanglai(donHangDTO.getLadonhangvanglai());
+        existingDonHang.setTrangthai(donHangDTO.getTrangthai());
         existingDonHang.setNgaycapnhat(LocalDateTime.now());
-
-        if (donHangDTO.getTrangthai() != null) {
-            existingDonHang.setTrangthai(donHangDTO.getTrangthai());
-        }
 
         if (donHangDTO.getMakhachhang() != null) {
             KhachHang khachHang = khachHangRepository.findById(donHangDTO.getMakhachhang())
                     .orElseThrow(() -> new RuntimeException("KhachHang not found with ID: " + donHangDTO.getMakhachhang()));
             existingDonHang.setMakhachhang(khachHang);
+        } else {
+            existingDonHang.setMakhachhang(null);
         }
 
         if (donHangDTO.getManhanvienxuly() != null) {
-            NhanVien nhanVien = nhanVienRepository.findById(donHangDTO.getManhanvienxuly())
+            NhanVien nhanVienXuly = nhanVienRepository.findById(donHangDTO.getManhanvienxuly())
                     .orElseThrow(() -> new RuntimeException("NhanVien not found with ID: " + donHangDTO.getManhanvienxuly()));
-            existingDonHang.setManhanvienxuly(nhanVien);
+            existingDonHang.setManhanvienxuly(nhanVienXuly);
+        } else {
+            existingDonHang.setManhanvienxuly(null);
+        }
+
+        if (donHangDTO.getNguoicapnhat() != null) {
+            NhanVien nguoicapnhat = nhanVienRepository.findById(donHangDTO.getNguoicapnhat())
+                    .orElseThrow(() -> new RuntimeException("NhanVien not found with ID: " + donHangDTO.getNguoicapnhat()));
+            existingDonHang.setNguoicapnhat(nguoicapnhat);
         }
 
         DonHang updatedDonHang = donHangRepository.save(existingDonHang);
@@ -114,21 +133,5 @@ public class DonHangServiceImpl implements DonHangService {
                 .orElseThrow(() -> new RuntimeException("DonHang not found with ID: " + id));
         donHang.setTrangthai(false);
         donHangRepository.save(donHang);
-    }
-
-    @Override
-    public List<DonHangDTO> getDonHangByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
-        List<DonHang> donHangs = donHangRepository.findByNgaytaoBetween(startDate, endDate);
-        return donHangs.stream()
-                .map(donHangMapper::toDTO)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<DonHangDTO> getDonHangByKhachHangId(Integer makhachhang) {
-        List<DonHang> donHangs = donHangRepository.findByMakhachhangMakhachhang(makhachhang);
-        return donHangs.stream()
-                .map(donHangMapper::toDTO)
-                .collect(Collectors.toList());
     }
 }

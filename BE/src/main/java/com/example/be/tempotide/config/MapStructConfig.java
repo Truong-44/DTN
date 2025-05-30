@@ -1,4 +1,13 @@
 package com.example.be.tempotide.config;
 
-public class MapStructConfig {
+import org.mapstruct.MapperConfig;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+
+@MapperConfig(
+        componentModel = "spring",
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
+)
+public interface MapStructConfig {
+    void updateEntity(Object dto, @MappingTarget Object entity);
 }

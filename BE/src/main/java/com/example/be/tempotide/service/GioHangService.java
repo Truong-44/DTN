@@ -10,6 +10,4 @@ public interface GioHangService {
     GioHangDTO createGioHang(GioHangDTO gioHangDTO);
     GioHangDTO updateGioHang(Integer id, GioHangDTO gioHangDTO);
     void deleteGioHang(Integer id);
-    GioHangDTO getGioHangByKhachHangId(Integer makhachhang);
-    GioHangDTO getGioHangBySodienthoai(String sodienthoai);
 }

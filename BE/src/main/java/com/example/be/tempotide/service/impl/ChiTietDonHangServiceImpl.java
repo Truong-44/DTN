@@ -3,11 +3,13 @@ package com.example.be.tempotide.service.impl;
 import com.example.be.tempotide.dto.ChiTietDonHangDTO;
 import com.example.be.tempotide.entity.ChiTietDonHang;
 import com.example.be.tempotide.entity.DonHang;
-import com.example.be.tempotide.entity.SanPham;
+import com.example.be.tempotide.entity.ChiTietSanPham;
+import com.example.be.tempotide.entity.NhanVien;
 import com.example.be.tempotide.mapper.ChiTietDonHangMapper;
 import com.example.be.tempotide.repository.ChiTietDonHangRepository;
 import com.example.be.tempotide.repository.DonHangRepository;
-import com.example.be.tempotide.repository.SanPhamRepository;
+import com.example.be.tempotide.repository.ChiTietSanPhamRepository;
+import com.example.be.tempotide.repository.NhanVienRepository;
 import com.example.be.tempotide.service.ChiTietDonHangService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,7 +24,8 @@ import java.util.stream.Collectors;
 public class ChiTietDonHangServiceImpl implements ChiTietDonHangService {
     private final ChiTietDonHangRepository chiTietDonHangRepository;
     private final DonHangRepository donHangRepository;
-    private final SanPhamRepository sanPhamRepository;
+    private final ChiTietSanPhamRepository chiTietSanPhamRepository;
+    private final NhanVienRepository nhanVienRepository;
     private final ChiTietDonHangMapper chiTietDonHangMapper;
 
     @Override
@@ -49,9 +52,15 @@ public class ChiTietDonHangServiceImpl implements ChiTietDonHangService {
                 .orElseThrow(() -> new RuntimeException("DonHang not found with ID: " + chiTietDonHangDTO.getMadonhang()));
         chiTietDonHang.setMadonhang(donHang);
 
-        SanPham sanPham = sanPhamRepository.findById(chiTietDonHangDTO.getMasanpham())
-                .orElseThrow(() -> new RuntimeException("SanPham not found with ID: " + chiTietDonHangDTO.getMasanpham()));
-        chiTietDonHang.setMasanpham(sanPham);
+        ChiTietSanPham chiTietSanPham = chiTietSanPhamRepository.findById(chiTietDonHangDTO.getMachitietsanpham())
+                .orElseThrow(() -> new RuntimeException("ChiTietSanPham not found with ID: " + chiTietDonHangDTO.getMachitietsanpham()));
+        chiTietDonHang.setMachitietsanpham(chiTietSanPham);
+
+        if (chiTietDonHangDTO.getNguoitao() != null) {
+            NhanVien nguoitao = nhanVienRepository.findById(chiTietDonHangDTO.getNguoitao())
+                    .orElseThrow(() -> new RuntimeException("NhanVien not found with ID: " + chiTietDonHangDTO.getNguoitao()));
+            chiTietDonHang.setNguoitao(nguoitao);
+        }
 
         chiTietDonHang.setNgaytao(LocalDateTime.now());
         ChiTietDonHang savedChiTietDonHang = chiTietDonHangRepository.save(chiTietDonHang);
@@ -66,21 +75,15 @@ public class ChiTietDonHangServiceImpl implements ChiTietDonHangService {
 
         existingChiTietDonHang.setSoluong(chiTietDonHangDTO.getSoluong());
         existingChiTietDonHang.setDongia(chiTietDonHangDTO.getDongia());
-        existingChiTietDonHang.setGhichu(chiTietDonHangDTO.getGhichu());
-        existingChiTietDonHang.setNgaycapnhat(LocalDateTime.now());
         existingChiTietDonHang.setTrangthai(chiTietDonHangDTO.getTrangthai());
 
-        if (chiTietDonHangDTO.getMadonhang() != null) {
-            DonHang donHang = donHangRepository.findById(chiTietDonHangDTO.getMadonhang())
-                    .orElseThrow(() -> new RuntimeException("DonHang not found with ID: " + chiTietDonHangDTO.getMadonhang()));
-            existingChiTietDonHang.setMadonhang(donHang);
-        }
+        DonHang donHang = donHangRepository.findById(chiTietDonHangDTO.getMadonhang())
+                .orElseThrow(() -> new RuntimeException("DonHang not found with ID: " + chiTietDonHangDTO.getMadonhang()));
+        existingChiTietDonHang.setMadonhang(donHang);
 
-        if (chiTietDonHangDTO.getMasanpham() != null) {
-            SanPham sanPham = sanPhamRepository.findById(chiTietDonHangDTO.getMasanpham())
-                    .orElseThrow(() -> new RuntimeException("SanPham not found with ID: " + chiTietDonHangDTO.getMasanpham()));
-            existingChiTietDonHang.setMasanpham(sanPham);
-        }
+        ChiTietSanPham chiTietSanPham = chiTietSanPhamRepository.findById(chiTietDonHangDTO.getMachitietsanpham())
+                .orElseThrow(() -> new RuntimeException("ChiTietSanPham not found with ID: " + chiTietDonHangDTO.getMachitietsanpham()));
+        existingChiTietDonHang.setMachitietsanpham(chiTietSanPham);
 
         ChiTietDonHang updatedChiTietDonHang = chiTietDonHangRepository.save(existingChiTietDonHang);
         return chiTietDonHangMapper.toDTO(updatedChiTietDonHang);
@@ -93,13 +96,5 @@ public class ChiTietDonHangServiceImpl implements ChiTietDonHangService {
                 .orElseThrow(() -> new RuntimeException("ChiTietDonHang not found with ID: " + id));
         chiTietDonHang.setTrangthai(false);
         chiTietDonHangRepository.save(chiTietDonHang);
-    }
-
-    @Override
-    public List<ChiTietDonHangDTO> getChiTietDonHangByDonHangId(Integer madonhang) {
-        List<ChiTietDonHang> chiTietDonHangs = chiTietDonHangRepository.findByMadonhangMadonhang(madonhang);
-        return chiTietDonHangs.stream()
-                .map(chiTietDonHangMapper::toDTO)
-                .collect(Collectors.toList());
     }
 }

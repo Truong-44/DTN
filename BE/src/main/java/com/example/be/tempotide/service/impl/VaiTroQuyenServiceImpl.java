@@ -12,7 +12,6 @@ import com.example.be.tempotide.repository.QuyenRepository;
 import com.example.be.tempotide.repository.NhanVienRepository;
 import com.example.be.tempotide.service.VaiTroQuyenService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,10 +23,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class VaiTroQuyenServiceImpl implements VaiTroQuyenService {
     private final VaiTroQuyenRepository vaiTroQuyenRepository;
-    private final VaiTroQuyenMapper vaiTroQuyenMapper;
     private final VaiTroRepository vaiTroRepository;
     private final QuyenRepository quyenRepository;
     private final NhanVienRepository nhanVienRepository;
+    private final VaiTroQuyenMapper vaiTroQuyenMapper;
 
     @Override
     public List<VaiTroQuyenDTO> getAllVaiTroQuyens() {
@@ -48,24 +47,22 @@ public class VaiTroQuyenServiceImpl implements VaiTroQuyenService {
     @Transactional
     public VaiTroQuyenDTO createVaiTroQuyen(VaiTroQuyenDTO vaiTroQuyenDTO) {
         VaiTroQuyen vaiTroQuyen = vaiTroQuyenMapper.toEntity(vaiTroQuyenDTO);
-        vaiTroQuyen.setNgaytao(LocalDateTime.now());
 
-        // Gán mavaitro
         VaiTro vaiTro = vaiTroRepository.findById(vaiTroQuyenDTO.getMavaitro())
                 .orElseThrow(() -> new RuntimeException("VaiTro not found with ID: " + vaiTroQuyenDTO.getMavaitro()));
         vaiTroQuyen.setMavaitro(vaiTro);
 
-        // Gán maquyen
         Quyen quyen = quyenRepository.findById(vaiTroQuyenDTO.getMaquyen())
                 .orElseThrow(() -> new RuntimeException("Quyen not found with ID: " + vaiTroQuyenDTO.getMaquyen()));
         vaiTroQuyen.setMaquyen(quyen);
 
-        // Gán nguoitao từ thông tin người dùng hiện tại
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        NhanVien nguoitao = nhanVienRepository.findByEmail(username)
-                .orElseThrow(() -> new RuntimeException("User not found: " + username));
-        vaiTroQuyen.setNguoitao(nguoitao);
+        if (vaiTroQuyenDTO.getNguoitao() != null) {
+            NhanVien nguoitao = nhanVienRepository.findById(vaiTroQuyenDTO.getNguoitao())
+                    .orElseThrow(() -> new RuntimeException("NhanVien not found with ID: " + vaiTroQuyenDTO.getNguoitao()));
+            vaiTroQuyen.setNguoitao(nguoitao);
+        }
 
+        vaiTroQuyen.setNgaytao(LocalDateTime.now());
         VaiTroQuyen savedVaiTroQuyen = vaiTroQuyenRepository.save(vaiTroQuyen);
         return vaiTroQuyenMapper.toDTO(savedVaiTroQuyen);
     }
@@ -76,24 +73,15 @@ public class VaiTroQuyenServiceImpl implements VaiTroQuyenService {
         VaiTroQuyen existingVaiTroQuyen = vaiTroQuyenRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("VaiTroQuyen not found with ID: " + id));
 
-        // Cập nhật mavaitro
         VaiTro vaiTro = vaiTroRepository.findById(vaiTroQuyenDTO.getMavaitro())
                 .orElseThrow(() -> new RuntimeException("VaiTro not found with ID: " + vaiTroQuyenDTO.getMavaitro()));
         existingVaiTroQuyen.setMavaitro(vaiTro);
 
-        // Cập nhật maquyen
         Quyen quyen = quyenRepository.findById(vaiTroQuyenDTO.getMaquyen())
                 .orElseThrow(() -> new RuntimeException("Quyen not found with ID: " + vaiTroQuyenDTO.getMaquyen()));
         existingVaiTroQuyen.setMaquyen(quyen);
 
-        existingVaiTroQuyen.setNgaytao(vaiTroQuyenDTO.getNgaytao());
         existingVaiTroQuyen.setTrangthai(vaiTroQuyenDTO.getTrangthai());
-
-        // Gán nguoitao từ thông tin người dùng hiện tại
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        NhanVien nguoitao = nhanVienRepository.findByEmail(username)
-                .orElseThrow(() -> new RuntimeException("User not found: " + username));
-        existingVaiTroQuyen.setNguoitao(nguoitao);
 
         VaiTroQuyen updatedVaiTroQuyen = vaiTroQuyenRepository.save(existingVaiTroQuyen);
         return vaiTroQuyenMapper.toDTO(updatedVaiTroQuyen);

@@ -1,19 +1,15 @@
 package com.example.be.tempotide.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-
+import lombok.Data;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "nguoidung_vaitro")
-@Getter
-@Setter
+@Data
 public class NguoiDungVaiTro {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "manguoidung_vaitro")
     private Integer manguoidungVaitro;
 
     @ManyToOne
@@ -28,11 +24,11 @@ public class NguoiDungVaiTro {
     @JoinColumn(name = "mavaitro", nullable = false)
     private VaiTro mavaitro;
 
-    @Column(name = "ngaytao", nullable = false, updatable = false)
-    private LocalDateTime ngaytao;
+    @Column
+    private LocalDateTime ngaytao = LocalDateTime.now();
 
-    @Column(name = "trangthai", nullable = false)
-    private Boolean trangthai;
+    @Column
+    private Boolean trangthai = true;
 
     @ManyToOne
     @JoinColumn(name = "nguoitao")

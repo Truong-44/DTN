@@ -10,5 +10,4 @@ public interface ChiTietGioHangService {
     ChiTietGioHangDTO createChiTietGioHang(ChiTietGioHangDTO chiTietGioHangDTO);
     ChiTietGioHangDTO updateChiTietGioHang(Integer id, ChiTietGioHangDTO chiTietGioHangDTO);
     void deleteChiTietGioHang(Integer id);
-    List<ChiTietGioHangDTO> getChiTietGioHangByGioHangId(Integer magiohang);
 }

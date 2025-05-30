@@ -8,7 +8,6 @@ import com.example.be.tempotide.repository.NhanVienRepository;
 import com.example.be.tempotide.repository.VaiTroRepository;
 import com.example.be.tempotide.service.VaiTroService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,8 +19,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class VaiTroServiceImpl implements VaiTroService {
     private final VaiTroRepository vaiTroRepository;
+    private final NhanVienRepository nhanVienRepository;
     private final VaiTroMapper vaiTroMapper;
-    private final NhanVienRepository nhanVienRepository; // Thêm để lấy nguoitao
 
     @Override
     public List<VaiTroDTO> getAllVaiTros() {
@@ -42,14 +41,14 @@ public class VaiTroServiceImpl implements VaiTroService {
     @Transactional
     public VaiTroDTO createVaiTro(VaiTroDTO vaiTroDTO) {
         VaiTro vaiTro = vaiTroMapper.toEntity(vaiTroDTO);
+
+        if (vaiTroDTO.getNguoitao() != null) {
+            NhanVien nguoitao = nhanVienRepository.findById(vaiTroDTO.getNguoitao())
+                    .orElseThrow(() -> new RuntimeException("NhanVien not found with ID: " + vaiTroDTO.getNguoitao()));
+            vaiTro.setNguoitao(nguoitao);
+        }
+
         vaiTro.setNgaytao(LocalDateTime.now());
-
-        // Gán nguoitao từ thông tin người dùng hiện tại
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        NhanVien nguoitao = nhanVienRepository.findByEmail(username)
-                .orElseThrow(() -> new RuntimeException("User not found: " + username));
-        vaiTro.setNguoitao(nguoitao);
-
         VaiTro savedVaiTro = vaiTroRepository.save(vaiTro);
         return vaiTroMapper.toDTO(savedVaiTro);
     }
@@ -62,14 +61,7 @@ public class VaiTroServiceImpl implements VaiTroService {
 
         existingVaiTro.setTenvaitro(vaiTroDTO.getTenvaitro());
         existingVaiTro.setMota(vaiTroDTO.getMota());
-        existingVaiTro.setNgaytao(vaiTroDTO.getNgaytao());
         existingVaiTro.setTrangthai(vaiTroDTO.getTrangthai());
-
-        // Gán nguoitao từ thông tin người dùng hiện tại
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        NhanVien nguoitao = nhanVienRepository.findByEmail(username)
-                .orElseThrow(() -> new RuntimeException("User not found: " + username));
-        existingVaiTro.setNguoitao(nguoitao);
 
         VaiTro updatedVaiTro = vaiTroRepository.save(existingVaiTro);
         return vaiTroMapper.toDTO(updatedVaiTro);

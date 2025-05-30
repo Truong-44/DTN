@@ -62,6 +62,9 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testImplementation 'org.springframework.security:spring-security-test'
+
+    // Hibernate Validator (để khắc phục cảnh báo Bean Validation)
+    implementation 'org.hibernate.validator:hibernate-validator:8.0.1.Final'
 }
 
 tasks.named('test') {

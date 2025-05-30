@@ -10,5 +10,4 @@ public interface ChiTietSanPhamService {
     ChiTietSanPhamDTO createChiTietSanPham(ChiTietSanPhamDTO chiTietSanPhamDTO);
     ChiTietSanPhamDTO updateChiTietSanPham(Integer id, ChiTietSanPhamDTO chiTietSanPhamDTO);
     void deleteChiTietSanPham(Integer id);
-    List<ChiTietSanPhamDTO> getChiTietSanPhamBySanPhamId(Integer masanpham);
 }

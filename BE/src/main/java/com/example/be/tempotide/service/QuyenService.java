@@ -1,7 +1,6 @@
 package com.example.be.tempotide.service;
 
 import com.example.be.tempotide.dto.QuyenDTO;
-
 import java.util.List;
 
 public interface QuyenService {
