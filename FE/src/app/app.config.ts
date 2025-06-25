@@ -1,14 +1,19 @@
 import { ApplicationConfig } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideAnimations } from '@angular/platform-browser/animations'; // Thêm import này
 import { routes } from './app.routes';
-import { HeaderComponent } from './shared/components/header/header.component';
+import { provideHttpClient } from '@angular/common/http';
+import { ProductService } from './services/product.service';
+import { CartService } from './services/cart.service';
+import { WishlistService } from './services/wishlist.service';
+import { AuthService } from './services/auth.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
-    // provideAnimations() {
-    //   // return { provide: HeaderComponent, useValue: HeaderComponent }
-    // }
-  ]
+    provideHttpClient(),
+    ProductService,
+    CartService,
+    WishlistService,
+    AuthService,
+  ],
 };

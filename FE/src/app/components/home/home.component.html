@@ -1,0 +1,152 @@
+<!-- home.component.html -->
+<div #wrapper id="smooth-wrapper">
+  <div #content id="smooth-content">
+    <!-- SECTION 1: Hero Image Slider -->
+    <section
+      id="hero"
+      class="section hero"
+      [ngStyle]="{ 'background-image': currentHeroImage }"
+    >
+      <div class="overlay">
+        <h1 class="hero-title">Discover Tranquility</h1>
+        <p class="hero-sub">A luxury interior experience</p>
+        <button class="btn-main" (click)="scrollToSection('about')">
+          Explore
+        </button>
+      </div>
+    </section>
+
+    <!-- SECTION 2: About -->
+    <section id="about" class="section about">
+      <div class="about-bg"></div>
+      <div class="container fade-text">
+        <h2 class="section-title">About Us</h2>
+        <p class="section-text">
+          We craft interiors inspired by nature. Each design tells a story
+          through materials, light, and space.
+        </p>
+      </div>
+    </section>
+
+    <!-- SECTION 3: Featured Projects -->
+    <section id="projects" class="section projects">
+      <div class="container">
+        <h2 class="section-title">Featured Projects</h2>
+        <div class="project-grid">
+          <div
+            class="project-card"
+            *ngFor="let img of scrollImages; let i = index"
+            [ngClass]="{
+              even: i % 2 === 0,
+              odd: i % 2 !== 0,
+              offset: i % 3 === 0
+            }"
+          >
+            <img [src]="img" alt="project" />
+            <div class="overlay">Modern Minimal Villa</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: Gallery Fullscreen -->
+    <section id="gallery" class="section gallery fullscreen">
+      <div class="gallery-grid">
+        <div
+          *ngFor="let img of scrollImages; let i = index"
+          [ngClass]="{
+            large: i % 5 === 0,
+            medium: i % 5 === 1,
+            small: i % 5 > 1,
+            offset: i % 2 === 1
+          }"
+          [style.backgroundImage]="'url(' + img + ')'"
+        ></div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: Products Showcase -->
+    <section id="products" class="section products showcase">
+      <div class="container">
+        <h2 class="section-title">Our Collection</h2>
+        <div class="product-grid showcase-grid">
+          <div class="product-card" *ngFor="let p of products">
+            <img [src]="p.image" alt="{{ p.name }}" />
+            <h3>{{ p.name }}</h3>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5.5: Product Showcase Slider with Drag Scroll -->
+    <section class="product-showcase">
+      <div class="container">
+        <h2 class="section-title">Featured Picks</h2>
+        <div class="slider-wrapper" #slider>
+          <div class="product-slide" *ngFor="let item of featuredProducts">
+            <div class="badge" *ngIf="item.badge">{{ item.badge }}</div>
+            <img [src]="item.image" [alt]="item.name" class="product-img" />
+            <div class="details">
+              <h3>{{ item.name }}</h3>
+              <p class="material">{{ item.material }}</p>
+              <div class="colors">
+                <span
+                  *ngFor="let color of item.colors"
+                  [style.backgroundColor]="color"
+                ></span>
+              </div>
+              <div class="pricing">
+                <strong>{{ item.price | number }} ₫</strong>
+                <span *ngIf="item.original"
+                  >From {{ item.original | number }} ₫</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 6: Testimonials -->
+    <section id="testimonials" class="section testimonials">
+      <div class="container">
+        <h2 class="section-title">What Clients Say</h2>
+        <div class="testimonial-carousel">
+          <div class="testimonial-item" *ngFor="let b of blogs">
+            <p class="quote">“{{ b.title }}”</p>
+            <img [src]="b.image" alt="author" />
+            <p class="author">Interior Enthusiast</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 7: Blog Articles -->
+    <section id="blog" class="section blog">
+      <div class="container">
+        <h2 class="section-title">From Our Blog</h2>
+        <div class="blog-grid">
+          <div class="blog-card" *ngFor="let b of blogs">
+            <div
+              class="thumb"
+              [style.backgroundImage]="'url(' + b.image + ')'"
+            ></div>
+            <h4>{{ b.title }}</h4>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 8: Footer -->
+    <footer id="footer" class="section footer">
+      <div class="footer-inner">
+        <p>&copy; 2025 Nature Living | Crafted with love</p>
+        <nav>
+          <a (click)="scrollToSection('hero')">Top</a>
+          <a (click)="scrollToSection('about')">About</a>
+          <a (click)="scrollToSection('products')">Shop</a>
+        </nav>
+      </div>
+    </footer>
+  </div>
+</div>

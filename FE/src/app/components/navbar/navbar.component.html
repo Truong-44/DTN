@@ -1,0 +1,38 @@
+<header class="navbar" [class.scrolled]="scrolled">
+  <!-- Left: Logo -->
+  <div class="navbar__left">
+    <a routerLink="/" class="logo">Ginseng</a>
+  </div>
+
+  <!-- Center: Navigation Menu -->
+  <nav class="navbar__center">
+    <ul>
+      <li *ngFor="let item of navItems" (click)="scrollToSection(item.target)">
+        {{ item.label }}
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Right: Search + Icons -->
+  <div class="navbar__right">
+    <!-- Search bar -->
+    <div class="search-bar">
+      <input type="text" [(ngModel)]="searchText" placeholder="Tìm kiếm..." />
+      <i class="fas fa-search"></i>
+    </div>
+
+    <!-- Login Icon with Dropdown -->
+    <div class="icon-wrapper" (click)="toggleLoginDropdown()">
+      <i class="fas fa-user"></i>
+      <div class="dropdown" *ngIf="loginDropdown">
+        <a routerLink="/login">Đăng nhập</a>
+        <a routerLink="/register">Đăng ký</a>
+      </div>
+    </div>
+
+    <!-- Cart Icon -->
+    <div class="icon-wrapper">
+      <i class="fas fa-shopping-cart"></i>
+    </div>
+  </div>
+</header>

@@ -1,0 +1,28 @@
+<div class="chatbox" [ngClass]="{ 'chatbox--open': isOpen }">
+  <div class="chatbox__toggle" (click)="toggleChatbox()">
+    {{ isOpen ? "Đóng" : "Hỗ trợ trực tuyến" }}
+  </div>
+
+  <div class="chatbox__content" *ngIf="isOpen">
+    <div class="chatbox__messages">
+      <div
+        *ngFor="let message of messages"
+        [ngClass]="
+          message.isUser ? 'chatbox__message--user' : 'chatbox__message--bot'
+        "
+      >
+        {{ message.text }}
+      </div>
+    </div>
+
+    <div class="chatbox__input">
+      <input
+        type="text"
+        placeholder="Bạn cần hỗ trợ gì?"
+        [(ngModel)]="userInput"
+        (keyup.enter)="sendMessage()"
+      />
+      <button (click)="sendMessage()">Gửi</button>
+    </div>
+  </div>
+</div>

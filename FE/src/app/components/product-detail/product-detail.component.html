@@ -1,0 +1,17 @@
+<div class="product-detail" *ngIf="product">
+  <div class="product-detail__image">
+    <img [src]="product.image" [alt]="product.name" />
+  </div>
+  <div class="product-detail__info">
+    <h2>{{ product.name }}</h2>
+    <p class="product-detail__price">{{ product.price | currency : "VND" }}</p>
+    <p>{{ product.description }}</p>
+    <button (click)="addToCart()" [disabled]="!isLoggedIn">
+      Thêm vào giỏ hàng
+    </button>
+    <button (click)="addToWishlist()">Thêm vào yêu thích</button>
+    <p *ngIf="!isLoggedIn && cartAttempted" class="product-detail__error">
+      Vui lòng đăng nhập để thêm vào giỏ hàng
+    </p>
+  </div>
+</div>

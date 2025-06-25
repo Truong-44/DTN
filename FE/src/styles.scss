@@ -1,18 +1,8 @@
-/* Global styles */
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
+body,
+html {
+  overflow-x: hidden;
 }
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
-  .container {
-    padding: 10px;
-  }
+.hero-section {
+  overflow-x: hidden;
 }
