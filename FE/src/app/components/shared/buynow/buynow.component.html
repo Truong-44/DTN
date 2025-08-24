@@ -1,0 +1,110 @@
+<div class="buynow-modal" *ngIf="isVisible">
+  <div class="modal-overlay" (click)="onClose()"></div>
+  <div class="modal-content">
+    <button class="close-btn" (click)="onClose()">×</button>
+    <h2>Mua ngay</h2>
+    <div class="product-info">
+      <div class="product-images">
+        <img
+          *ngFor="let img of getProductImages()"
+          [src]="img"
+          (error)="onImageError($event)"
+          alt="Ảnh sản phẩm"
+          class="product-image"
+        />
+      </div>
+      <div class="product-details">
+        <h3>{{ getSanPham()?.tensanpham }}</h3>
+        <div class="price-section">
+          <span class="current-price">{{
+            formatCurrency(getCurrentPrice())
+          }}</span>
+          <span *ngIf="hasDiscount()" class="old-price">{{
+            formatCurrency(getOldPrice())
+          }}</span>
+          <span *ngIf="hasDiscount()" class="discount-badge"
+            >Giảm {{ getDiscountPercentage() }}%</span
+          >
+        </div>
+        <div class="stock-status">
+          <span>{{ getStockStatusMessage() }}</span>
+        </div>
+        <div class="color-size">
+          <span *ngIf="productDetail?.tenmau">
+            Màu: {{ productDetail?.tenmau }}
+          </span>
+          <span *ngIf="productDetail?.kichthuoc">
+            Kích thước: {{ productDetail?.kichthuoc }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <form (ngSubmit)="onSubmitOrder()" autocomplete="off">
+      <div class="customer-info">
+        <label>Họ tên:</label>
+        <input
+          type="text"
+          [(ngModel)]="customer.hoten"
+          name="hoten"
+          [readonly]="true"
+        />
+      </div>
+      <div class="customer-info">
+        <label>Số điện thoại:</label>
+        <input
+          type="text"
+          [(ngModel)]="customerPhone"
+          name="sodienthoai"
+          [readonly]="true"
+        />
+      </div>
+      <div class="customer-info">
+        <label>Địa chỉ nhận hàng:</label>
+        <input
+          type="text"
+          [(ngModel)]="diachinhan"
+          name="diachinhan"
+          required
+        />
+      </div>
+
+      <div class="quantity-section">
+        <label>Số lượng:</label>
+        <button type="button" (click)="decreaseQuantity()">-</button>
+        <input
+          type="number"
+          [(ngModel)]="quantity"
+          name="quantity"
+          min="1"
+          [max]="productDetail?.soluong || 99"
+          (ngModelChange)="onQuantityChange()"
+          required
+        />
+        <button type="button" (click)="increaseQuantity()">+</button>
+      </div>
+
+      <div class="payment-section">
+        <label>Hình thức thanh toán:</label>
+        <select [(ngModel)]="phuongthucthanhtoan" name="phuongthucthanhtoan">
+          <option *ngFor="let method of paymentMethods" [value]="method.value">
+            {{ method.label }}
+          </option>
+        </select>
+      </div>
+
+      <div class="total-section">
+        <span>Tổng tiền:</span>
+        <span class="total-price">{{ formatCurrency(getTotalPrice()) }}</span>
+      </div>
+
+      <button
+        type="submit"
+        class="order-btn"
+        [disabled]="isLoading || !isFormValid() || !isProductAvailable()"
+      >
+        {{ getSubmitButtonText() }}
+      </button>
+    </form>
+  </div>
+</div>

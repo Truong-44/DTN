@@ -1,0 +1,54 @@
+<div class="dashboard-dark">
+  <div class="dashboard-row">
+    <div class="dashboard-card green">
+      <div class="card-header">
+        <span class="icon">&#128179;</span>
+        <span>Tổng số đơn hàng</span>
+      </div>
+      <div class="card-value">{{ totalSales | number }}</div>
+    </div>
+    <div class="dashboard-card orange">
+      <div class="card-header">
+        <span class="icon">&#36;</span>
+        <span>Tổng doanh thu</span>
+      </div>
+      <div class="card-value">{{ totalIncome | number }} đ</div>
+    </div>
+    <div class="dashboard-card gray">
+      <div class="card-header">
+        <span class="icon">&#128196;</span>
+        <span>Đơn hàng đã thanh toán</span>
+      </div>
+      <div class="card-value">{{ ordersPaid | number }}</div>
+    </div>
+    <div class="dashboard-card blue">
+      <div class="card-header">
+        <span class="icon">&#128100;</span>
+        <span>Tổng khách hàng</span>
+      </div>
+      <div class="card-value">{{ totalVisitor | number }}</div>
+    </div>
+  </div>
+
+  <div class="dashboard-row">
+    <div class="dashboard-panel wide">
+      <div class="panel-title">Đơn hàng gần đây</div>
+      <div class="panel-chart">
+        <!-- Placeholder: bạn có thể tích hợp chart thực tế sau -->
+        <div *ngFor="let d of recentOrderChartData">
+          {{ d.month }}: {{ d.value }}
+        </div>
+      </div>
+    </div>
+    <div class="dashboard-panel">
+      <div class="panel-title">Sản phẩm bán chạy</div>
+      <ul class="top-products">
+        <li *ngFor="let p of topProducts">
+          <img [src]="p.image" alt="product" width="32" height="32" />
+          <span class="prod-name">{{ p.name }}</span>
+          <span class="prod-qty">{{ p.quantity }} sản phẩm</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

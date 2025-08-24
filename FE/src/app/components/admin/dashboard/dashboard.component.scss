@@ -1,0 +1,137 @@
+.dashboard-dark {
+  background: #fff;
+  min-height: 100vh;
+  padding: 32px 24px;
+
+  .dashboard-row {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+
+  .dashboard-card {
+    flex: 1 1 220px;
+    background: #fff;
+    border-radius: 16px;
+    padding: 24px 32px;
+    color: #222e3c;
+    box-shadow: 0 2px 8px rgba(44, 62, 80, 0.06);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 220px;
+    min-height: 120px;
+    transition: box-shadow 0.2s;
+
+    &:hover {
+      box-shadow: 0 4px 16px rgba(44, 62, 80, 0.12);
+    }
+
+    &.green {
+      border-top: 4px solid #4caf50;
+    }
+    &.orange {
+      border-top: 4px solid #ff9800;
+    }
+    &.gray {
+      border-top: 4px solid #b0bec5;
+    }
+    &.blue {
+      border-top: 4px solid #2196f3;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.1rem;
+      font-weight: 500;
+      margin-bottom: 12px;
+
+      .icon {
+        font-size: 1.7rem;
+        display: flex;
+        align-items: center;
+      }
+    }
+
+    .card-value {
+      font-size: 2.2rem;
+      font-weight: bold;
+      margin-top: 8px;
+      color: #222e3c;
+      letter-spacing: 1px;
+    }
+  }
+
+  .dashboard-panel {
+    background: #fff;
+    border-radius: 16px;
+    padding: 24px 32px;
+    color: #222e3c;
+    min-width: 320px;
+    flex: 1 1 320px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(44, 62, 80, 0.06);
+
+    &.wide {
+      flex: 2 1 600px;
+      min-width: 480px;
+    }
+
+    .panel-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 18px;
+      color: #2196f3;
+    }
+
+    .panel-chart {
+      min-height: 120px;
+      background: #f7f9fb;
+      border-radius: 10px;
+      padding: 18px 12px;
+      color: #4a5874;
+      font-size: 1.05rem;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .top-products {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      li {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 0;
+        border-bottom: 1px solid #f2f3f7;
+        &:last-child {
+          border-bottom: none;
+        }
+
+        img {
+          width: 32px;
+          height: 32px;
+          border-radius: 6px;
+          object-fit: cover;
+          background: #f7f9fb;
+        }
+        .prod-name {
+          flex: 1;
+          font-weight: 500;
+          color: #222e3c;
+        }
+        .prod-qty {
+          color: #2196f3;
+          font-size: 0.98rem;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,112 @@
+<form (ngSubmit)="save()" #f="ngForm" class="product-edit-form">
+  <h3>Chỉnh sửa sản phẩm</h3>
+  <div *ngIf="detail" class="detail-section">
+    <!-- 1. Hình chính -->
+    <div class="main-image">
+      <b>Hình chính</b>
+      <div class="img-preview">
+        <img *ngIf="mainImgUrl" [src]="mainImgUrl" alt="Hình chính" />
+        <span *ngIf="mainImgUrl">{{ mainImgUrl }}</span>
+      </div>
+    </div>
+    <!-- 2. Hình phụ -->
+    <div class="sub-images">
+      <b>Hình phụ</b>
+      <div class="img-preview">
+        <ng-container *ngFor="let img of subImgUrls">
+          <img [src]="img" alt="Hình phụ" />
+          <span>{{ img }}</span>
+        </ng-container>
+      </div>
+    </div>
+    <!-- 3. Thông tin cơ bản -->
+    <div class="basic-fields">
+      <label>
+        Tên sản phẩm
+        <input
+          type="text"
+          name="tensanpham"
+          [(ngModel)]="tensanpham"
+          required
+        />
+      </label>
+      <label>
+        Giá cũ
+        <input type="number" name="giacu" [(ngModel)]="giacu" min="0" />
+      </label>
+      <label>
+        Giá mới
+        <input type="number" name="giamoi" [(ngModel)]="giamoi" min="0" />
+      </label>
+      <label>
+        Danh mục
+        <select name="danhmucId" [(ngModel)]="danhmucId" required>
+          <option [ngValue]="null" disabled>Chọn danh mục</option>
+          <option *ngFor="let cat of categories" [ngValue]="cat.id">
+            {{ cat.tendanhmuc }}
+          </option>
+        </select>
+      </label>
+      <label>
+        Mô tả
+        <textarea name="mota" [(ngModel)]="mota" rows="3"></textarea>
+      </label>
+    </div>
+    <!-- 4. Thông tin chi tiết -->
+    <div class="detail-fields">
+      <label>
+        Màu
+        <input type="text" [(ngModel)]="detail.tenmau" name="tenmau" />
+      </label>
+      <label>
+        Mã màu
+        <input type="text" [(ngModel)]="detail.mamau" name="mamau" />
+      </label>
+      <label>
+        Chất liệu
+        <input type="text" [(ngModel)]="detail.chatlieu" name="chatlieu" />
+      </label>
+      <label>
+        Kích thước
+        <input type="text" [(ngModel)]="detail.kichthuoc" name="kichthuoc" />
+      </label>
+      <label>
+        Trọng lượng (kg)
+        <input
+          type="number"
+          [(ngModel)]="detail.trongluong"
+          name="trongluong"
+          min="0"
+        />
+      </label>
+      <label>
+        Số lượng
+        <input
+          type="number"
+          [(ngModel)]="detail.soluong"
+          name="soluong"
+          min="0"
+        />
+      </label>
+      <label>
+        Hình chính
+        <input type="text" [(ngModel)]="detail.hinhchinh" name="hinhchinh" />
+      </label>
+      <label>
+        Hình phụ (mỗi dòng 1 link)
+        <textarea
+          [(ngModel)]="detail.hinhphu"
+          name="hinhphu"
+          rows="3"
+        ></textarea>
+      </label>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button type="submit" [disabled]="loading">Lưu</button>
+    <button type="button" (click)="cancel.emit()" [disabled]="loading">
+      Hủy
+    </button>
+  </div>
+</form>

@@ -1,0 +1,35 @@
+<header class="admin-navbar">
+  <div class="navbar-left">
+    <span>Xin chào, {{ user.tendangnhap || "Quản trị viên" }}</span>
+  </div>
+  <div class="navbar-center">
+    <div class="search-box">
+      <span class="icon-search">&#128269;</span>
+      <input type="text" placeholder="Search for something" />
+    </div>
+  </div>
+  <div class="navbar-right">
+    <button class="icon-btn" (click)="toggleTheme()" title="Đổi nền sáng/tối">
+      <span *ngIf="!isDarkMode">&#9789;</span
+      ><!-- moon -->
+      <span *ngIf="isDarkMode">&#9728;</span
+      ><!-- sun -->
+    </button>
+    <button class="icon-btn" (click)="toggleNotifications()" title="Thông báo">
+      <span>&#128276;</span
+      ><!-- bell -->
+      <span class="noti-dot" *ngIf="showNotifications"></span>
+    </button>
+    <div class="avatar-wrapper" (click)="toggleAccountMenu()">
+      <img
+        class="avatar"
+        src="https://randomuser.me/api/portraits/men/32.jpg"
+        alt="avatar"
+      />
+      <div class="account-menu" *ngIf="showAccountMenu">
+        <button (click)="logout()">Đăng xuất</button>
+        <button (click)="switchAccount()">Chuyển tài khoản</button>
+      </div>
+    </div>
+  </div>
+</header>

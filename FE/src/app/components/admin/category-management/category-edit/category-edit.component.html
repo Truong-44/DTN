@@ -1,0 +1,6 @@
+<form *ngIf="category" (ngSubmit)="save()" style="display: flex; gap: 8px">
+  <input [(ngModel)]="category.tendanhmuc" name="tendanhmuc" required />
+  <input [(ngModel)]="category.mota" name="mota" />
+  <button type="submit">Lưu</button>
+  <button type="button" (click)="cancel.emit()">Hủy</button>
+</form>

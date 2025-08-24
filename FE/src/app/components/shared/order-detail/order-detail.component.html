@@ -1,0 +1,126 @@
+<div class="order-detail-container" [ngClass]="{ 'modal-content': isModal }">
+  <div class="header">
+    <button (click)="goBack()" class="back-btn">
+      <span *ngIf="!isModal">← Quay lại</span>
+      <span *ngIf="isModal">✕ Đóng</span>
+    </button>
+    <h2>Chi tiết đơn hàng</h2>
+  </div>
+
+  <div *ngIf="loading" class="loading">Đang tải...</div>
+
+  <div *ngIf="!loading && !order" class="no-order">
+    Không tìm thấy đơn hàng.
+  </div>
+
+  <div *ngIf="!loading && order" class="order-info">
+    <div class="order-header">
+      <h3>Đơn hàng #{{ order.id || "Đang xử lý" }}</h3>
+      <span class="status">{{
+        getStatusLabel(order.trangthaidonhang || "CHO_XAC_NHAN")
+      }}</span>
+    </div>
+
+    <!-- Thông tin khách hàng -->
+    <div class="customer-info">
+      <h4>Thông tin khách hàng</h4>
+      <div class="detail-row">
+        <span class="label">Họ tên:</span>
+        <span class="value">{{ order.khachhang?.hoten || "N/A" }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="label">Số điện thoại:</span>
+        <span class="value">{{ getPhoneNumber(order) }}</span>
+      </div>
+    </div>
+
+    <div class="order-details">
+      <h4>Thông tin đơn hàng</h4>
+      <div class="detail-row">
+        <span class="label">Ngày đặt:</span>
+        <span class="value">{{ formatDate(order.ngaydat) }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="label">Địa chỉ nhận:</span>
+        <span class="value">{{ order.diachinhan }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="label">Phương thức thanh toán:</span>
+        <span class="value">{{
+          getPaymentMethodLabel(order.phuongthucthanhtoan)
+        }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="label">Trạng thái thanh toán:</span>
+        <span
+          class="value"
+          [ngClass]="order.trangthaithanhtoan ? 'paid' : 'unpaid'"
+        >
+          {{ order.trangthaithanhtoan ? "Đã thanh toán" : "Chưa thanh toán" }}
+        </span>
+      </div>
+      <div class="detail-row" *ngIf="getGhiChu(order)">
+        <span class="label">Ghi chú:</span>
+        <span class="value">{{ getGhiChu(order) }}</span>
+      </div>
+    </div>
+
+    <!-- Chi tiết sản phẩm -->
+    <div
+      class="order-items"
+      *ngIf="order.chitietdonhang && order.chitietdonhang.length > 0"
+    >
+      <h4>Sản phẩm đã đặt</h4>
+      <div class="items-list">
+        <div *ngFor="let item of order.chitietdonhang" class="item-row">
+          <div class="item-image" *ngIf="item.chitietsanpham?.hinhchinh">
+            <img
+              [src]="getImageUrl(item.chitietsanpham?.hinhchinh)"
+              [alt]="item.chitietsanpham?.sanpham?.tensanpham"
+            />
+          </div>
+          <div class="item-info">
+            <span class="item-name">{{
+              item.chitietsanpham?.sanpham?.tensanpham || "Sản phẩm"
+            }}</span>
+            <span class="item-details">
+              <span *ngIf="item.chitietsanpham?.tenmau"
+                >Màu: {{ item.chitietsanpham!.tenmau }}</span
+              >
+              <span *ngIf="item.chitietsanpham?.kichthuoc">
+                | Kích thước: {{ item.chitietsanpham!.kichthuoc }}</span
+              >
+              <span *ngIf="item.chitietsanpham?.chatlieu">
+                | Chất liệu: {{ item.chitietsanpham!.chatlieu }}</span
+              >
+            </span>
+          </div>
+          <div class="item-quantity">SL: {{ item.soluong }}</div>
+          <div class="item-price">{{ formatCurrency(item.dongia) }}</div>
+          <div class="item-total">
+            {{ formatCurrency(item.dongia * item.soluong) }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="order-total">
+      <div class="summary-info">
+        <div class="summary-row">
+          <span class="label">Số sản phẩm:</span>
+          <span class="value">{{ getItemCount() }} sản phẩm</span>
+        </div>
+        <div class="summary-row">
+          <span class="label">Tổng tiền hàng:</span>
+          <span class="value">{{ formatCurrency(getTotalOrderValue()) }}</span>
+        </div>
+      </div>
+      <div class="total-row">
+        <span class="label">Tổng thanh toán:</span>
+        <span class="value total">{{
+          formatCurrency(order.tongtien || getTotalOrderValue())
+        }}</span>
+      </div>
+    </div>
+  </div>
+</div>

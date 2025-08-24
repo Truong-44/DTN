@@ -1,0 +1,121 @@
+<div class="order-management">
+  <div class="header">
+    <h2>Quản lý đơn hàng</h2>
+    <button class="btn btn-primary">+ Tạo đơn hàng</button>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">📦</div>
+      <div class="stat-content">
+        <h3>{{ totalOrders }}</h3>
+        <p>Tổng đơn hàng</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">⏳</div>
+      <div class="stat-content">
+        <h3>{{ pendingOrders }}</h3>
+        <p>Chờ xử lý</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🚚</div>
+      <div class="stat-content">
+        <h3>{{ shippingOrders }}</h3>
+        <p>Đang giao</p>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">✅</div>
+      <div class="stat-content">
+        <h3>{{ completedOrders }}</h3>
+        <p>Hoàn thành</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters">
+    <input
+      type="text"
+      placeholder="Tìm kiếm đơn hàng..."
+      [(ngModel)]="searchTerm"
+      (ngModelChange)="filterOrders()"
+      class="form-control"
+    />
+    <select
+      [(ngModel)]="statusFilter"
+      (ngModelChange)="filterOrders()"
+      class="form-select"
+    >
+      <option value="">Tất cả trạng thái</option>
+      <option value="pending">Chờ xử lý</option>
+      <option value="processing">Đang xử lý</option>
+      <option value="shipping">Đang giao</option>
+      <option value="delivered">Đã giao</option>
+      <option value="cancelled">Đã hủy</option>
+    </select>
+    <input
+      type="date"
+      [(ngModel)]="dateFilter"
+      (ngModelChange)="filterOrders()"
+      class="form-control"
+    />
+  </div>
+
+  <!-- Orders Table -->
+  <div class="orders-table">
+    <table>
+      <thead>
+        <tr>
+          <th>Mã đơn hàng</th>
+          <th>Khách hàng</th>
+          <th>Ngày đặt</th>
+          <th>Tổng tiền</th>
+          <th>Trạng thái</th>
+          <th>Thao tác</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let order of filteredOrders">
+          <td>#{{ order.id }}</td>
+          <td>
+            <div class="customer-info">
+              <strong>{{ order.khachhang?.hoten || "N/A" }}</strong>
+              <small>{{ getPhoneNumber(order) }}</small>
+            </div>
+          </td>
+          <td>{{ formatDate(order.ngaydat) }}</td>
+          <td class="price">{{ formatCurrency(order.tongtien || 0) }}</td>
+          <td>
+            <span [ngClass]="'status-' + order.trangthaidonhang.toLowerCase()">
+              {{ getStatusLabel(order.trangthaidonhang) }}
+            </span>
+          </td>
+          <td>
+            <div class="action-buttons">
+              <button
+                class="btn btn-sm btn-info"
+                (click)="viewOrderDetail(order)"
+              >
+                Xem
+              </button>
+              <button class="btn btn-sm btn-primary" (click)="editOrder(order)">
+                Sửa
+              </button>
+              <button
+                class="btn btn-sm btn-danger"
+                (click)="deleteOrder(order.id)"
+                *ngIf="order.trangthaidonhang === 'pending'"
+              >
+                Hủy
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

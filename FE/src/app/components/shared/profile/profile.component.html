@@ -1,0 +1,196 @@
+<div class="profile-container">
+  <div class="profile-header">
+    <div class="header-content">
+      <div class="avatar">
+        <i class="fas fa-user-circle"></i>
+      </div>
+      <div class="user-info">
+        <h1>{{ khachHang?.hoten || taiKhoan?.tendangnhap || "Người dùng" }}</h1>
+        <p class="account-type">{{ getAccountTypeName() }}</p>
+        <span class="account-status" [ngClass]="getAccountStatusClass()">
+          {{ getAccountStatusText() }}
+        </span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn-edit" (click)="toggleEdit()" [disabled]="isLoading">
+        <i class="fas" [ngClass]="isEditing ? 'fa-times' : 'fa-edit'"></i>
+        {{ isEditing ? "Hủy" : "Chỉnh sửa" }}
+      </button>
+      <button class="btn-logout" (click)="logout()">
+        <i class="fas fa-sign-out-alt"></i>
+        Đăng xuất
+      </button>
+    </div>
+  </div>
+
+  <div class="profile-content">
+    <!-- View Mode -->
+    <div *ngIf="!isEditing" class="profile-view">
+      <div class="info-section">
+        <h2><i class="fas fa-user"></i> Thông tin cá nhân</h2>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Họ và tên</label>
+            <span>{{ khachHang?.hoten || "Chưa cập nhật" }}</span>
+          </div>
+          <div class="info-item">
+            <label>Email</label>
+            <span>{{ taiKhoan?.email || "Chưa cập nhật" }}</span>
+          </div>
+          <div class="info-item">
+            <label>Số điện thoại</label>
+            <span>{{ taiKhoan?.sodienthoai || "Chưa cập nhật" }}</span>
+          </div>
+          <div class="info-item">
+            <label>Giới tính</label>
+            <span>{{ khachHang?.gioitinh || "Chưa cập nhật" }}</span>
+          </div>
+          <div class="info-item">
+            <label>Ngày sinh</label>
+            <span>{{ formatDate(khachHang?.ngaysinh) }}</span>
+          </div>
+          <div class="info-item full-width">
+            <label>Địa chỉ</label>
+            <span>{{ khachHang?.diachi || "Chưa cập nhật" }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-section">
+        <h2><i class="fas fa-shield-alt"></i> Thông tin tài khoản</h2>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Tên đăng nhập</label>
+            <span>{{ taiKhoan?.tendangnhap }}</span>
+          </div>
+          <div class="info-item">
+            <label>Loại đăng nhập</label>
+            <span>{{ getAccountTypeName() }}</span>
+          </div>
+          <div class="info-item">
+            <label>Ngày tạo</label>
+            <span>{{ formatDate(taiKhoan?.ngaytao) }}</span>
+          </div>
+          <div class="info-item">
+            <label>Trạng thái</label>
+            <span [ngClass]="getAccountStatusClass()">{{
+              getAccountStatusText()
+            }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Mode -->
+    <div *ngIf="isEditing" class="profile-edit">
+      <form (ngSubmit)="updateProfile()" #profileFormRef="ngForm">
+        <div class="form-section">
+          <h2><i class="fas fa-edit"></i> Chỉnh sửa thông tin</h2>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="hoten">Họ và tên *</label>
+              <input
+                type="text"
+                id="hoten"
+                name="hoten"
+                [(ngModel)]="profileForm.hoten"
+                required
+                class="form-control"
+                placeholder="Nhập họ và tên"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email *</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                [(ngModel)]="profileForm.email"
+                required
+                class="form-control"
+                placeholder="Nhập email"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="sodienthoai">Số điện thoại</label>
+              <input
+                type="tel"
+                id="sodienthoai"
+                name="sodienthoai"
+                [(ngModel)]="profileForm.sodienthoai"
+                class="form-control"
+                placeholder="Nhập số điện thoại"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="gioitinh">Giới tính</label>
+              <select
+                id="gioitinh"
+                name="gioitinh"
+                [(ngModel)]="profileForm.gioitinh"
+                class="form-control"
+              >
+                <option value="">Chọn giới tính</option>
+                <option
+                  *ngFor="let option of genderOptions"
+                  [value]="option.value"
+                >
+                  {{ option.label }}
+                </option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="ngaysinh">Ngày sinh</label>
+              <input
+                type="date"
+                id="ngaysinh"
+                name="ngaysinh"
+                [(ngModel)]="profileForm.ngaysinh"
+                class="form-control"
+              />
+            </div>
+
+            <div class="form-group full-width">
+              <label for="diachi">Địa chỉ</label>
+              <textarea
+                id="diachi"
+                name="diachi"
+                [(ngModel)]="profileForm.diachi"
+                class="form-control"
+                rows="3"
+                placeholder="Nhập địa chỉ"
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="toggleEdit()"
+              [disabled]="isLoading"
+            >
+              <i class="fas fa-times"></i>
+              Hủy
+            </button>
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="isLoading || !profileFormRef.form.valid"
+            >
+              <i class="fas fa-save"></i>
+              <span *ngIf="!isLoading">Lưu thay đổi</span>
+              <span *ngIf="isLoading">Đang lưu...</span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,17 +1,337 @@
-<div class="product-detail" *ngIf="product">
-  <div class="product-detail__image">
-    <img [src]="product.image" [alt]="product.name" />
+<!-- Loading State -->
+<section class="loading-section" *ngIf="loading">
+  <div class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Đang tải thông tin sản phẩm...</p>
   </div>
-  <div class="product-detail__info">
-    <h2>{{ product.name }}</h2>
-    <p class="product-detail__price">{{ product.price | currency : "VND" }}</p>
-    <p>{{ product.description }}</p>
-    <button (click)="addToCart()" [disabled]="!isLoggedIn">
-      Thêm vào giỏ hàng
+</section>
+
+<!-- Error State -->
+<section class="error-section" *ngIf="error && !loading">
+  <div class="error-container">
+    <h2>Có lỗi xảy ra</h2>
+    <p>{{ error }}</p>
+    <button class="btn-retry" (click)="loadAllData(productId)">Thử lại</button>
+  </div>
+</section>
+
+<section class="product-images-section" *ngIf="product && !loading && !error">
+  <!-- Ảnh chính sản phẩm + gallery phụ -->
+  <div class="main-image-container">
+    <img
+      class="main-product-image"
+      [src]="getCurrentImage()"
+      [alt]="(product && product.tensanpham) || 'Ảnh sản phẩm'"
+      (error)="onImageError($event)"
+    />
+
+    <!-- Debug info for image -->
+    <div *ngIf="hasDiscount()" class="discount-badge">
+      -{{ getDiscountPercent() }}%
+    </div>
+
+    <div class="image-gallery" *ngIf="getImageList().length > 1">
+      <div class="gallery-container">
+        <ng-container
+          *ngFor="
+            let image of getImageList();
+            let i = index;
+            trackBy: trackByImageIndex
+          "
+        >
+          <button
+            type="button"
+            class="gallery-item"
+            [class.active]="i === activeImageIndex"
+            (click)="selectImage(i)"
+            [attr.aria-label]="'Xem hình ' + (i + 1)"
+          >
+            <img
+              [src]="image"
+              [alt]="
+                ((product && product.tensanpham) || 'Sản phẩm') +
+                ' - Hình ' +
+                (i + 1)
+              "
+              (error)="onImageError($event)"
+            />
+          </button>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+  <div class="product-info" style="margin-bottom: 24px">
+    <h1>{{ (product && product.tensanpham) || "Đang tải..." }}</h1>
+
+    <div class="product-pricing">
+      <span *ngIf="hasDiscount()" class="discount-percent">
+        -{{ getDiscountPercent() }}%
+      </span>
+      <span class="price">{{ getCurrentPrice() | number }}đ</span>
+      <span *ngIf="hasDiscount()" class="old-price">
+        {{ getOldPrice() | number }}đ
+      </span>
+    </div>
+
+    <div class="product-options">
+      <div *ngIf="getAvailableColors().length > 0">
+        <label>Màu sắc:</label>
+        <ng-container
+          *ngFor="let color of getAvailableColors(); trackBy: trackByColorName"
+        >
+          <button
+            type="button"
+            class="color-btn"
+            [class.active]="color === selectedColor"
+            (click)="selectColor(color)"
+          >
+            {{ color }}
+          </button>
+        </ng-container>
+      </div>
+
+      <div *ngIf="getAvailableSizes().length > 0">
+        <label>Kích thước:</label>
+        <ng-container
+          *ngFor="let size of getAvailableSizes(); trackBy: trackBySizeName"
+        >
+          <button
+            type="button"
+            class="size-btn"
+            [class.active]="size === selectedSize"
+            (click)="selectSize(size)"
+          >
+            {{ size }}
+          </button>
+        </ng-container>
+      </div>
+    </div>
+
+    <div class="product-attributes">
+      <h3>Thông tin sản phẩm</h3>
+      <div class="attributes-grid">
+        <div class="attribute-item">
+          <div class="attribute-label">Kích thước</div>
+          <div class="attribute-value">
+            {{ selectedDetail?.kichthuoc || "Chưa có thông tin" }}
+          </div>
+        </div>
+        <div class="attribute-item">
+          <div class="attribute-label">Màu sắc</div>
+          <div class="attribute-value">
+            {{ selectedDetail?.tenmau || "Chưa chọn màu" }}
+          </div>
+        </div>
+        <div class="attribute-item">
+          <div class="attribute-label">Tồn kho</div>
+          <div class="attribute-value">
+            {{ selectedDetail?.soluong || 0 }} sản phẩm
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="product-qty-cart">
+      <button
+        class="add-cart-btn"
+        (click)="addToCart()"
+        [disabled]="!canAddToCart()"
+      >
+        THÊM VÀO GIỎ
+      </button>
+      <button
+        class="buy-now-btn"
+        (click)="openBuyNowModal()"
+        [disabled]="!canAddToCart()"
+      >
+        MUA NGAY
+      </button>
+    </div>
+    <div class="product-note">
+      <ul>
+        <li>
+          ✔ Miễn phí giao hàng & lắp đặt tại tất cả quận huyện thuộc TP.HCM, Hà
+          Nội, Khu đô thị Ecopark, Biên Hòa và một số quận thuộc Bình Dương (*)
+        </li>
+        <li>(*) Không áp dụng cho danh mục Đồ Trang Trí</li>
+        <li>
+          (**) Không áp dụng cho các sản phẩm Clearance. Chỉ bảo hành 01 năm cho
+          khung ghế, và mã vải đối với Ghế Văn Phòng
+        </li>
+        <li>Đổi trả 1 đổi 1 - Bảo hành 2 năm - Bảo trì trọn đời (**)</li>
+      </ul>
+    </div>
+  </div>
+  <div *ngIf="showCartSuccess" class="cart-toast-success">
+    <span>Đã thêm vào giỏ hàng!</span>
+  </div>
+  <app-buynow
+    [isVisible]="showBuyNowModal"
+    [productDetail]="selectedDetail"
+    (closeModal)="closeBuyNowModal()"
+    (orderCompleted)="onOrderCompleted()"
+  ></app-buynow>
+</section>
+
+<section class="product-detail-tabs" *ngIf="product && !loading && !error">
+  <div class="tabs">
+    <button
+      class="tab-btn"
+      [class.active]="activeTab === 1"
+      (click)="activeTab = 1"
+    >
+      Chi tiết sản phẩm
     </button>
-    <button (click)="addToWishlist()">Thêm vào yêu thích</button>
-    <p *ngIf="!isLoggedIn && cartAttempted" class="product-detail__error">
-      Vui lòng đăng nhập để thêm vào giỏ hàng
-    </p>
+    <button
+      class="tab-btn"
+      [class.active]="activeTab === 2"
+      (click)="activeTab = 2"
+    >
+      Chính sách giao hàng
+    </button>
+    <button
+      class="tab-btn"
+      [class.active]="activeTab === 3"
+      (click)="activeTab = 3"
+    >
+      Chính sách bảo hành
+    </button>
   </div>
-</div>
+  <div class="tab-content">
+    <!-- Tab 1: Chi tiết sản phẩm -->
+    <div *ngIf="activeTab === 1" class="product-specs">
+      <h2>Thông số kỹ thuật</h2>
+      <table class="spec-table">
+        <tr>
+          <td><b>Tên sản phẩm</b></td>
+          <td>{{ product.tensanpham }}</td>
+        </tr>
+        <tr *ngIf="product.mota">
+          <td><b>Mô tả</b></td>
+          <td>{{ product.mota }}</td>
+        </tr>
+        <tr *ngIf="product.danhmuc?.tendanhmuc">
+          <td><b>Danh mục</b></td>
+          <td>{{ product.danhmuc?.tendanhmuc }}</td>
+        </tr>
+        <tr *ngIf="selectedDetail?.kichthuoc">
+          <td><b>Kích thước</b></td>
+          <td>{{ selectedDetail?.kichthuoc }}</td>
+        </tr>
+        <tr *ngIf="selectedDetail?.tenmau">
+          <td><b>Màu sắc</b></td>
+          <td>{{ selectedDetail?.tenmau }}</td>
+        </tr>
+        <tr *ngIf="selectedDetail?.chatlieu">
+          <td><b>Chất liệu</b></td>
+          <td>{{ selectedDetail?.chatlieu }}</td>
+        </tr>
+        <tr *ngIf="selectedDetail?.soluong !== undefined">
+          <td><b>Số lượng còn</b></td>
+          <td>{{ selectedDetail?.soluong }}</td>
+        </tr>
+        <!-- Thêm các thông số khác nếu có -->
+      </table>
+    </div>
+    <!-- Tab 2: Chính sách giao hàng -->
+    <div *ngIf="activeTab === 2">
+      <h2>Chính sách giao hàng</h2>
+      <ul>
+        <li>
+          ✔ Miễn phí giao hàng & lắp đặt tại TP.HCM, Hà Nội, Ecopark, Biên Hòa,
+          một số quận Bình Dương.
+        </li>
+        <li>✔ Thời gian giao hàng từ 1-3 ngày làm việc (tùy khu vực).</li>
+        <li>✔ Đơn hàng ở xa sẽ được báo phí cụ thể khi đặt hàng.</li>
+        <li>✔ Không áp dụng cho danh mục Đồ Trang Trí.</li>
+      </ul>
+    </div>
+    <!-- Tab 3: Chính sách bảo hành -->
+    <div *ngIf="activeTab === 3">
+      <h2>Chính sách bảo hành</h2>
+      <ul>
+        <li>✔ Đổi trả 1 đổi 1 trong 7 ngày nếu lỗi do nhà sản xuất.</li>
+        <li>✔ Bảo hành 2 năm cho sản phẩm, bảo trì trọn đời.</li>
+        <li>✔ Không áp dụng cho sản phẩm Clearance.</li>
+        <li>
+          ✔ Chỉ bảo hành 1 năm cho khung ghế, mã vải đối với Ghế Văn Phòng.
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="other-products-section" *ngIf="visibleOtherProducts.length > 0">
+  <h2 class="section-title">Các sản phẩm khác</h2>
+  <div class="other-products-slider">
+    <button
+      class="slider-btn"
+      (click)="prevOtherProduct()"
+      [disabled]="otherProductIndex === 0"
+    >
+      &lt;
+    </button>
+    <div class="other-products-list">
+      <div
+        class="other-product-card"
+        *ngFor="let item of visibleOtherProducts; trackBy: trackByProductId"
+        (click)="goToProductDetail(item.id)"
+      >
+        <img [src]="getMainImage(item)" [alt]="item.tensanpham" />
+        <h3>{{ item.tensanpham }}</h3>
+        <span class="price">{{ item.giamoi || item.giacu | number }}₫</span>
+      </div>
+    </div>
+    <button
+      class="slider-btn"
+      (click)="nextOtherProduct()"
+      [disabled]="isNextOtherProductDisabled()"
+    >
+      &gt;
+    </button>
+  </div>
+</section>
+
+<section class="product-review-section">
+  <h2>Đánh giá & Bình luận</h2>
+  <div class="review-list">
+    <div class="review-card" *ngFor="let review of reviews">
+      <div class="review-author">
+        <img [src]="review.avatar" alt="Avatar" />
+        <span>{{ review.name }}</span>
+        <span class="review-rating">★ {{ review.rating }}/5</span>
+      </div>
+      <p class="review-content">{{ review.content }}</p>
+    </div>
+  </div>
+  <form class="review-form" (submit)="submitReview($event)">
+    <input
+      type="text"
+      placeholder="Tên của bạn"
+      [(ngModel)]="reviewName"
+      name="reviewName"
+      required
+    />
+    <textarea
+      placeholder="Bình luận của bạn"
+      [(ngModel)]="reviewContent"
+      name="reviewContent"
+      required
+    ></textarea>
+    <select [(ngModel)]="reviewRating" name="reviewRating" required>
+      <option [value]="5">5 ★</option>
+      <option [value]="4">4 ★</option>
+      <option [value]="3">3 ★</option>
+      <option [value]="2">2 ★</option>
+      <option [value]="1">1 ★</option>
+    </select>
+    <button type="submit">Gửi đánh giá</button>
+  </form>
+</section>
+
+<!-- Buy Now Modal -->
+<app-buynow
+  [isVisible]="showBuyNowModal"
+  [productDetail]="selectedDetail"
+  (closeModal)="closeBuyNowModal()"
+  (orderCompleted)="onOrderCompleted()"
+></app-buynow>

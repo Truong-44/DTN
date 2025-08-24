@@ -1,0 +1,89 @@
+<h2>Quản lý khách hàng</h2>
+<button class="add-btn" (click)="openAddModal()">Thêm khách hàng</button>
+<div *ngIf="loading">Đang tải dữ liệu...</div>
+<table *ngIf="!loading && customers.length > 0">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Họ tên</th>
+      <th>Email</th>
+      <th>SĐT</th>
+      <th>Địa chỉ</th>
+      <th>Thao tác</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let c of customers">
+      <td>{{ c.id }}</td>
+      <td>{{ c.hoten }}</td>
+      <td>{{ c.taikhoan?.email }}</td>
+      <td>{{ c.taikhoan?.sodienthoai }}</td>
+      <td>{{ c.diachi }}</td>
+      <td>
+        <button (click)="openDetailModal(c)">Chi tiết</button>
+        <button (click)="openEditModal(c)">Sửa</button>
+        <button (click)="deleteCustomer(c.id)">Xóa</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<div *ngIf="!loading && customers.length === 0">
+  <p>Không có khách hàng nào.</p>
+</div>
+
+<!-- Modal Chi tiết -->
+<div class="modal" *ngIf="showDetailModal">
+  <div class="modal-content">
+    <h3>Chi tiết khách hàng</h3>
+    <p><b>ID:</b> {{ selectedCustomer?.id }}</p>
+    <p><b>Họ tên:</b> {{ selectedCustomer?.hoten }}</p>
+    <p><b>Email:</b> {{ selectedCustomer?.taikhoan?.email }}</p>
+    <p><b>SĐT:</b> {{ selectedCustomer?.taikhoan?.sodienthoai }}</p>
+    <p><b>Địa chỉ:</b> {{ selectedCustomer?.diachi }}</p>
+    <button (click)="closeModal()">Đóng</button>
+  </div>
+</div>
+
+<!-- Modal Sửa -->
+<div class="modal" *ngIf="showEditModal">
+  <div class="modal-content">
+    <h3>Sửa khách hàng</h3>
+    <form>
+      <label>Họ tên:</label>
+      <input [(ngModel)]="selectedCustomer!.hoten" name="hoten" />
+      <label>Địa chỉ:</label>
+      <input [(ngModel)]="selectedCustomer!.diachi" name="diachi" />
+      <div class="error" *ngIf="editError">{{ editError }}</div>
+      <button type="button" (click)="updateCustomer()">Lưu</button>
+      <button type="button" (click)="closeModal()">Đóng</button>
+    </form>
+  </div>
+</div>
+
+<!-- Modal Thêm -->
+<div class="modal" *ngIf="showAddModal">
+  <div class="modal-content">
+    <h3>Thêm khách hàng</h3>
+    <form>
+      <label>Họ tên:</label>
+      <input [(ngModel)]="newCustomer.hoten" name="hoten" />
+      <label>Địa chỉ:</label>
+      <input [(ngModel)]="newCustomer.diachi" name="diachi" />
+      <div class="error" *ngIf="addError">{{ addError }}</div>
+      <button type="button" (click)="addCustomer()">Thêm</button>
+      <button type="button" (click)="closeModal()">Đóng</button>
+    </form>
+  </div>
+</div>
+
+<div class="modal" *ngIf="showDeleteModal">
+  <div class="modal-content">
+    <h3>Xác nhận xóa</h3>
+    <p>
+      Bạn có chắc chắn muốn xóa khách hàng <b>{{ selectedCustomer?.hoten }}</b
+      >?
+    </p>
+    <button (click)="confirmDeleteCustomer()">Xóa</button>
+    <button (click)="closeModal()">Hủy</button>
+  </div>
+</div>

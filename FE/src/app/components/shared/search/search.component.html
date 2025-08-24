@@ -1,0 +1,46 @@
+<div class="search-result-container">
+  <h2>
+    Kết quả tìm kiếm cho: "<span class="keyword">{{ keyword }}</span
+    >"
+  </h2>
+  <div class="search-summary">
+    <span *ngIf="total > 0">Tìm thấy {{ total }} sản phẩm</span>
+    <span *ngIf="total === 0">Không tìm thấy sản phẩm phù hợp.</span>
+  </div>
+
+  <div class="product-list" *ngIf="results.length > 0">
+    <div class="product-card" *ngFor="let p of results">
+      <a [routerLink]="['/product', p.id]">
+        <img
+          [src]="getImageUrl(p.chitietsanpham?.[0]?.hinhchinh)"
+          alt="{{ p.tensanpham }}"
+        />
+        <div class="product-info">
+          <div class="product-name">{{ p.tensanpham }}</div>
+          <div class="product-price">
+            <span
+              *ngIf="p.giamoi !== undefined && p.giamoi !== null; else giaCu"
+            >
+              {{ p.giamoi | number }}đ
+            </span>
+            <ng-template #giaCu> {{ p.giacu | number }}đ </ng-template>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Pagination (nếu cần) -->
+  <div class="pagination" *ngIf="total > size">
+    <button [disabled]="page === 0" (click)="onPageChange(page - 1)">
+      Trang trước
+    </button>
+    <span>Trang {{ page + 1 }} / {{ totalPages }}</span>
+    <button
+      [disabled]="(page + 1) * size >= total"
+      (click)="onPageChange(page + 1)"
+    >
+      Trang sau
+    </button>
+  </div>
+</div>

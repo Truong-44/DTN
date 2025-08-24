@@ -4,18 +4,11 @@ import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { FooterComponent } from './components/footer/footer.component';
-import { ChatboxComponent } from './components/chatbox/chatbox.component';
 
 describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        CommonModule,
-        RouterOutlet,
-        NavbarComponent,
-        FooterComponent,
-        ChatboxComponent,
-      ],
+      imports: [CommonModule, RouterOutlet, NavbarComponent, FooterComponent],
       declarations: [AppComponent],
     }).compileComponents();
   });

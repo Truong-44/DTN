@@ -1,0 +1,50 @@
+<div class="category-list">
+  <h2>Danh sách danh mục</h2>
+  <button (click)="openAddModal()">Thêm mới</button>
+  <button (click)="loadCategories()" [disabled]="loading">Làm mới</button>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Tên danh mục</th>
+        <th>Mô tả</th>
+        <th>Thao tác</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let cat of filteredCategories">
+        <td>{{ cat.id }}</td>
+        <td>{{ cat.tendanhmuc }}</td>
+        <td>{{ cat.mota }}</td>
+        <td>
+          <button (click)="openEditModal(cat)">Sửa</button>
+          <button (click)="deleteCategory(cat)">Xóa</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div *ngIf="loading">Đang tải...</div>
+
+  <!-- Add Modal -->
+  <div class="modal-backdrop" *ngIf="showAddModal">
+    <div class="modal">
+      <app-category-add
+        (added)="closeAddModal(true)"
+        (cancel)="closeAddModal()"
+      ></app-category-add>
+      <button class="modal-close" (click)="closeAddModal()">×</button>
+    </div>
+  </div>
+
+  <!-- Edit Modal -->
+  <div class="modal-backdrop" *ngIf="showEditModal && editCategory">
+    <div class="modal">
+      <app-category-edit
+        [category]="editCategory"
+        (updated)="closeEditModal(true)"
+        (cancel)="closeEditModal()"
+      ></app-category-edit>
+      <button class="modal-close" (click)="closeEditModal()">×</button>
+    </div>
+  </div>
+</div>
