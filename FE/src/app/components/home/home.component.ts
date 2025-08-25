@@ -41,13 +41,13 @@ export class HomeComponent implements OnInit, OnDestroy {
   // Hero slides
   heroSlides = [
     {
-      image: 'assets/img/BannerSlide/banner1.jpg',
+      image: 'assets/img/BackGround/section1/BG101.webp',
       title: 'Nội thất hiện đại cho ngôi nhà của bạn',
       subtitle: 'Khám phá bộ sưu tập nội thất cao cấp với thiết kế độc đáo',
       ctaText: 'Khám phá ngay',
     },
     {
-      image: 'assets/img/BannerSlide/banner2.jpg',
+      image: 'assets/img/BackGround/section1/BG101.webp',
       title: 'Ưu đãi đặc biệt - Giảm đến 50%',
       subtitle: 'Cơ hội sở hữu nội thất chất lượng với giá tốt nhất',
       ctaText: 'Mua ngay',
