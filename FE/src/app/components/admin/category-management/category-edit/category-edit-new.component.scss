@@ -1,4 +1,4 @@
-.category-add-modal {
+.category-edit-modal {
   background: white;
   border-radius: 12px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
@@ -15,7 +15,7 @@
   align-items: center;
   padding: 20px 24px;
   border-bottom: 1px solid #e5e7eb;
-  background: linear-gradient(135deg, #ff8c42 0%, #ff6b1a 100%);
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
   border-radius: 12px 12px 0 0;
 
   h3 {
@@ -77,8 +77,8 @@
 
     &:focus {
       outline: none;
-      border-color: #ff8c42;
-      box-shadow: 0 0 0 3px rgba(255, 140, 66, 0.1);
+      border-color: #fbbf24;
+      box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.1);
     }
 
     &.error {
@@ -89,6 +89,16 @@
   textarea.form-control {
     resize: vertical;
     min-height: 100px;
+  }
+
+  .readonly-field {
+    padding: 12px 16px;
+    background: #f3f4f6;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #6b7280;
+    font-weight: 600;
   }
 
   .error-message {
@@ -147,12 +157,12 @@
   }
 
   &.btn-primary {
-    background: linear-gradient(135deg, #ff8c42 0%, #ff6b1a 100%);
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
     color: white;
 
     &:hover:not(:disabled) {
       transform: translateY(-1px);
-      box-shadow: 0 8px 25px rgba(255, 107, 26, 0.4);
+      box-shadow: 0 8px 25px rgba(251, 191, 36, 0.4);
     }
   }
 
@@ -180,7 +190,7 @@
 
 // Responsive design
 @media (max-width: 640px) {
-  .category-add-modal {
+  .category-edit-modal {
     margin: 20px;
     max-width: calc(100vw - 40px);
   }

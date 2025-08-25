@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { DonHangService } from '../../../core/services/donhang.service';
+import { OrderManagerService } from '../../../core/services/order-manager.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { DonHang } from '../../../core/models/donhang.model';
 import { ImageService } from '../../../core/services/image.service';
@@ -23,7 +23,7 @@ export class OrderDetailComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private donHangService: DonHangService,
+    private orderManagerService: OrderManagerService,
     private notificationService: NotificationService,
     private imageService: ImageService
   ) {}
@@ -40,10 +40,14 @@ export class OrderDetailComponent implements OnInit {
 
   loadOrderDetail(orderId: number) {
     this.loading = true;
-    this.donHangService.getDonHangById(orderId).subscribe({
-      next: (response: any) => {
-        this.order = response.data || response;
+    this.orderManagerService.getOrderById(orderId).subscribe({
+      next: (order) => {
+        this.order = order;
         this.loading = false;
+        if (!order) {
+          this.notificationService.error('Lỗi', 'Không tìm thấy đơn hàng');
+          this.router.navigate(['/order-list']);
+        }
       },
       error: (err) => {
         console.error('Error loading order detail:', err);
@@ -103,24 +107,18 @@ export class OrderDetailComponent implements OnInit {
     }
   }
 
-  formatDate(dateString: string | Date): string {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('vi-VN');
-  }
-
-  formatCurrency(amount: number | undefined): string {
-    return new Intl.NumberFormat('vi-VN').format(amount || 0) + 'đ';
-  }
-
   getStatusLabel(status: string): string {
-    const statusMap: { [key: string]: string } = {
-      CHO_XAC_NHAN: 'Chờ xác nhận',
-      DA_XAC_NHAN: 'Đã xác nhận',
-      DANG_GIAO: 'Đang giao',
-      DA_GIAO: 'Đã giao',
-      DA_HUY: 'Đã hủy',
-    };
-    return statusMap[status] || status;
+    return this.orderManagerService.getStatusLabel(status);
+  }
+
+  getStatusClass(status: string): string {
+    return this.orderManagerService.getStatusClass(status);
+  }
+
+  getOrderCode(): string {
+    return this.order
+      ? this.orderManagerService.getOrderCode(this.order.id)
+      : '';
   }
 
   getTotalOrderValue(): number {
@@ -137,5 +135,29 @@ export class OrderDetailComponent implements OnInit {
       (total, item) => total + item.soluong,
       0
     );
+  }
+
+  formatPrice(price: number): string {
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+    }).format(price);
+  }
+
+  formatCurrency(price: number): string {
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+    }).format(price);
+  }
+
+  formatDate(date: Date | string): string {
+    return new Date(date).toLocaleDateString('vi-VN', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
   }
 }

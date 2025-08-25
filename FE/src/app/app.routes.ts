@@ -31,14 +31,28 @@ export const routes: Routes = [
   { path: 'cart', component: CartComponent, canActivate: [authGuard] },
   { path: 'giohang', component: CartComponent, canActivate: [authGuard] },
   {
+    path: 'checkout',
+    loadComponent: () =>
+      import('./components/checkout/checkout.component').then(
+        (m) => m.CheckoutComponent
+      ),
+    canActivate: [authGuard],
+  },
+  // {
+  //   path: 'order-success',
+  //   loadComponent: () =>
+  //     import('./components/order-success/order-success.component').then(
+  //       (m) => m.OrderSuccessComponent
+  //     ),
+  //   canActivate: [authGuard],
+  // },
+  {
     path: 'order-list',
     component: OrderListComponent,
-    canActivate: [authGuard],
   },
   {
     path: 'order-detail/:id',
     component: OrderDetailComponent,
-    canActivate: [authGuard],
   },
   {
     path: 'profile',

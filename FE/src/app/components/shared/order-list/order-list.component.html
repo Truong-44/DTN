@@ -1,116 +1,162 @@
 <div class="order-list-container">
-  <div class="header">
-    <h2>Đơn hàng của tôi</h2>
-    <button class="btn-refresh" (click)="loadOrders()" [disabled]="isLoading">
-      {{ isLoading ? "Đang tải..." : "Làm mới" }}
+  <div class="order-list-header">
+    <h2>📋 Đơn hàng của tôi</h2>
+    <button
+      class="test-btn"
+      (click)="createTestOrder()"
+      title="Tạo đơn hàng test"
+    >
+      🧪 Test Order
     </button>
   </div>
 
-  <!-- Loading state -->
-  <div *ngIf="isLoading" class="loading">
-    <p>Đang tải danh sách đơn hàng...</p>
+  <!-- Search and Filter Controls -->
+  <div class="order-controls">
+    <div class="search-box">
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        (input)="onSearchChange()"
+        placeholder="Tìm kiếm theo mã đơn hàng hoặc tên khách hàng..."
+        class="search-input"
+      />
+    </div>
+
+    <div class="filter-controls">
+      <select
+        [(ngModel)]="statusFilter"
+        (change)="onStatusFilterChange()"
+        class="status-filter"
+      >
+        <option *ngFor="let status of statusOptions" [value]="status.value">
+          {{ status.label }}
+        </option>
+      </select>
+    </div>
   </div>
 
-  <!-- Orders table -->
-  <div *ngIf="!isLoading" class="orders-content">
-    <table class="order-list-table" *ngIf="orders.length > 0">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Ngày đặt</th>
-          <th>Khách hàng</th>
-          <th>SĐT</th>
-          <th>Địa chỉ nhận</th>
-          <th>Phương thức</th>
-          <th>Tổng tiền</th>
-          <th>Trạng thái đơn hàng</th>
-          <th>Trạng thái thanh toán</th>
-          <th>Thao tác</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let order of orders; let i = index">
-          <td>{{ i + 1 }}</td>
-          <td>{{ formatDate(order.ngaydat) }}</td>
-          <td>{{ order.khachhang?.hoten }}</td>
-          <td>{{ getPhoneNumber(order) }}</td>
-          <td>{{ order.diachinhan }}</td>
-          <td>{{ getPaymentLabel(order.phuongthucthanhtoan) }}</td>
-          <td>{{ formatCurrency(order.tongtien) }}</td>
-          <td>
-            <span
-              class="status-badge"
-              [ngClass]="getStatusClass(order.trangthaidonhang)"
-            >
-              {{ getOrderStatusLabel(order.trangthaidonhang) }}
-            </span>
-          </td>
-          <td>
-            <span
-              class="payment-status"
-              [ngClass]="order.trangthaithanhtoan ? 'paid' : 'unpaid'"
-            >
-              {{
-                order.trangthaithanhtoan ? "Đã thanh toán" : "Chưa thanh toán"
-              }}
-            </span>
-          </td>
-          <td>
-            <div class="action-buttons">
-              <button class="btn-view-detail" (click)="viewDetail(order)">
-                Xem chi tiết
-              </button>
-              <button
-                *ngIf="canCancelOrder(order)"
-                class="btn-cancel"
-                (click)="promptCancelOrder(order, $event)"
-                title="Hủy đơn hàng"
-              >
-                Hủy đơn
-              </button>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Đang tải đơn hàng...</p>
+  </div>
 
-    <!-- Thông báo khi không có đơn hàng -->
-    <div *ngIf="orders.length === 0" class="no-orders">
-      <div class="empty-state">
-        <h3>Bạn chưa có đơn hàng nào</h3>
-        <p>Khám phá sản phẩm và đặt hàng ngay!</p>
-        <button class="btn-browse" (click)="goToProducts()">
-          Xem sản phẩm
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && filteredOrders.length === 0" class="empty-state">
+    <div class="empty-icon">📦</div>
+    <h3>Chưa có đơn hàng nào</h3>
+    <p>Bạn chưa có đơn hàng nào. Hãy mua sắm ngay!</p>
+    <button class="shop-now-btn" routerLink="/">Mua sắm ngay</button>
+  </div>
+
+  <!-- Orders List -->
+  <div *ngIf="!isLoading && filteredOrders.length > 0" class="orders-list">
+    <div
+      *ngFor="let order of filteredOrders"
+      class="order-card"
+      [class]="getStatusClass(order.trangthaidonhang)"
+    >
+      <!-- Order Header -->
+      <div class="order-header">
+        <div class="order-info">
+          <h4 class="order-code">{{ getOrderCode(order.id) }}</h4>
+          <span class="order-date">{{ formatDate(order.ngaydat) }}</span>
+        </div>
+        <div class="order-status">
+          <span
+            class="status-badge"
+            [class]="getStatusClass(order.trangthaidonhang)"
+          >
+            {{ getStatusLabel(order.trangthaidonhang) }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Customer Info -->
+      <div class="customer-info">
+        <div class="customer-name">
+          <strong>👤 {{ order.khachhang?.hoten || "Khách hàng" }}</strong>
+        </div>
+        <div class="customer-phone">
+          📞 {{ order.khachhang?.taikhoan?.sodienthoai || "Chưa có SĐT" }}
+        </div>
+      </div>
+
+      <!-- Order Items Preview -->
+      <div class="order-items-preview">
+        <div
+          *ngFor="let item of order.chitietdonhang?.slice(0, 2)"
+          class="item-preview"
+        >
+          <div class="item-name">
+            {{ item.chitietsanpham?.tensanpham || "Sản phẩm" }}
+          </div>
+          <div class="item-details">
+            Số lượng: {{ item.soluong }} × {{ formatCurrency(item.dongia) }}
+          </div>
+        </div>
+        <div *ngIf="(order.chitietdonhang?.length || 0) > 2" class="more-items">
+          +{{ (order.chitietdonhang?.length || 0) - 2 }} sản phẩm khác
+        </div>
+      </div>
+
+      <!-- Order Summary -->
+      <div class="order-summary">
+        <div class="total-amount">
+          <strong
+            >💰 Tổng tiền: {{ formatCurrency(order.tongtien || 0) }}</strong
+          >
+        </div>
+        <div class="payment-method">
+          💳 {{ getPaymentMethodLabel(order.phuongthucthanhtoan || "") }}
+        </div>
+      </div>
+
+      <!-- Order Actions -->
+      <div class="order-actions">
+        <button class="btn btn-primary" (click)="viewOrderDetail(order)">
+          👁️ Xem chi tiết
+        </button>
+
+        <button
+          *ngIf="
+            order.trangthaidonhang === 'CHO_XAC_NHAN' ||
+            order.trangthaidonhang === 'DA_XAC_NHAN'
+          "
+          class="btn btn-danger"
+          (click)="cancelOrder(order)"
+        >
+          ❌ Hủy đơn
+        </button>
+
+        <button
+          *ngIf="order.trangthaidonhang === 'DA_GIAO'"
+          class="btn btn-success"
+          (click)="reorder(order)"
+        >
+          🔄 Đặt lại
         </button>
       </div>
     </div>
   </div>
-</div>
 
-<!-- Modal hiển thị chi tiết đơn hàng -->
-<div
-  *ngIf="showOrderDetailModal"
-  class="modal-overlay"
-  (click)="closeOrderDetail()"
->
-  <div class="modal-content" (click)="$event.stopPropagation()">
-    <app-order-detail
-      [order]="selectedOrder"
-      [isModal]="true"
-      (closeModal)="closeOrderDetail()"
-    >
-    </app-order-detail>
+  <!-- Order Detail Modal -->
+  <div
+    *ngIf="showOrderDetailModal && selectedOrder"
+    class="modal-overlay"
+    (click)="closeOrderDetail()"
+  >
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Chi tiết đơn hàng {{ getOrderCode(selectedOrder.id) }}</h3>
+        <button class="close-btn" (click)="closeOrderDetail()">✕</button>
+      </div>
+      <app-order-detail
+        [order]="selectedOrder"
+        [isModal]="true"
+        (closeModal)="closeOrderDetail()"
+      >
+      </app-order-detail>
+    </div>
   </div>
 </div>
-
-<!-- Confirm Dialog để xác nhận hủy đơn hàng -->
-<app-confirm-dialog
-  [isVisible]="showConfirmDialog"
-  title="Xác nhận hủy đơn hàng"
-  message="Bạn có chắc chắn muốn hủy đơn hàng này không? Hành động này không thể hoàn tác."
-  confirmText="Hủy đơn hàng"
-  cancelText="Giữ lại"
-  (confirmed)="confirmCancelOrder()"
-  (cancelled)="cancelDialog()"
->
-</app-confirm-dialog>

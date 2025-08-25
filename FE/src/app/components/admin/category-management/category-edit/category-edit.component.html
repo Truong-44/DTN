@@ -1,6 +1,71 @@
-<form *ngIf="category" (ngSubmit)="save()" style="display: flex; gap: 8px">
-  <input [(ngModel)]="category.tendanhmuc" name="tendanhmuc" required />
-  <input [(ngModel)]="category.mota" name="mota" />
-  <button type="submit">Lưu</button>
-  <button type="button" (click)="cancel.emit()">Hủy</button>
-</form>
+<div class="category-edit-modal" *ngIf="category">
+  <div class="modal-header">
+    <h3>✏️ Chỉnh sửa danh mục</h3>
+    <button type="button" class="close-btn" (click)="onCancel()">
+      <span>&times;</span>
+    </button>
+  </div>
+
+  <form (ngSubmit)="save()" #categoryForm="ngForm" class="category-form">
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="editTendanhmuc" class="form-label">
+          <span class="required">*</span> Tên danh mục:
+        </label>
+        <input
+          type="text"
+          id="editTendanhmuc"
+          name="tendanhmuc"
+          [(ngModel)]="category.tendanhmuc"
+          class="form-control"
+          placeholder="Nhập tên danh mục..."
+          required
+          maxlength="100"
+          #tendanhmucInput="ngModel"
+        />
+        <div
+          *ngIf="tendanhmucInput.invalid && tendanhmucInput.touched"
+          class="error-message"
+        >
+          Tên danh mục không được để trống
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="editMota" class="form-label">Mô tả:</label>
+        <textarea
+          id="editMota"
+          name="mota"
+          [(ngModel)]="category.mota"
+          class="form-control"
+          placeholder="Nhập mô tả cho danh mục..."
+          rows="4"
+          maxlength="500"
+        ></textarea>
+        <div class="character-count">
+          {{ category.mota?.length || 0 }}/500 ký tự
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">ID danh mục:</label>
+        <div class="readonly-field">{{ category.id }}</div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="onCancel()">
+        <span class="btn-icon">❌</span>
+        Hủy
+      </button>
+      <button
+        type="submit"
+        class="btn btn-primary"
+        [disabled]="categoryForm.invalid || !category.tendanhmuc.trim()"
+      >
+        <span class="btn-icon">💾</span>
+        Lưu thay đổi
+      </button>
+    </div>
+  </form>
+</div>

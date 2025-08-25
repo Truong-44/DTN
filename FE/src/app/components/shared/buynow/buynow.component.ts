@@ -8,11 +8,15 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { ChiTietSanPham } from '../../../core/models/chitietsanpham.model';
 import { KhachHang } from '../../../core/models/khachhang.model';
 import { DonHang } from '../../../core/models/donhang.model';
 import { NotificationService } from '../../../core/services/notification.service';
-import { DonHangService } from '../../../core/services/donhang.service';
+import {
+  OrderManagerService,
+  CreateOrderRequest,
+} from '../../../core/services/order-manager.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { SanPham } from '../../../core/models/sanpham.model';
 import { TaiKhoan } from '../../../core/models/taikhoan.model';
@@ -63,8 +67,9 @@ export class BuynowComponent implements OnInit, OnDestroy {
 
   constructor(
     private notificationService: NotificationService,
-    private donHangService: DonHangService,
-    private authService: AuthService
+    private orderManagerService: OrderManagerService,
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -198,50 +203,51 @@ export class BuynowComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if (!this.authService.isAuthenticated()) {
-      this.notificationService.error('Lỗi', 'Vui lòng đăng nhập để đặt hàng.');
-      return;
-    }
-
-    const currentUser = this.authService.getCurrentUser();
-    if (!currentUser || !currentUser.khachhang) {
-      this.notificationService.error(
-        'Lỗi',
-        'Thông tin khách hàng không hợp lệ. Vui lòng liên hệ hỗ trợ.'
-      );
+    if (!this.productDetail) {
+      this.notificationService.error('Lỗi', 'Thông tin sản phẩm không hợp lệ.');
       return;
     }
 
     this.isLoading = true;
-    console.log(
-      '🚀 Starting order submission with customer ID:',
-      currentUser.khachhang.id
-    );
+    console.log('🚀 Starting order submission...');
 
-    const createDonHangRequest = {
-      khachhangid: currentUser.khachhang.id,
+    // Create order request
+    const orderRequest: CreateOrderRequest = {
+      khachhangid: this.currentUser?.khachhang?.id || undefined,
       diachinhan: this.diachinhan,
       phuongthucthanhtoan: this.phuongthucthanhtoan,
+      customerName: this.customer.hoten || 'Khách hàng',
+      customerPhone: this.customerPhone || '0000000000',
       ghichu: '',
       chitietdonhang: [
         {
-          chitietsanphamid: this.productDetail!.id,
+          chitietsanphamid: this.productDetail.id,
           soluong: this.quantity,
           dongia: this.getCurrentPrice(),
+          productDetail: this.productDetail,
         },
       ],
     };
 
-    console.log('📦 Order request:', createDonHangRequest);
+    console.log('📦 Order request:', orderRequest);
 
-    this.donHangService.createDonHang(createDonHangRequest).subscribe({
-      next: (response) => {
-        console.log('� Order created successfully:', response);
+    this.orderManagerService.createOrder(orderRequest).subscribe({
+      next: (newOrder) => {
+        console.log('✅ Order created successfully:', newOrder);
         this.notificationService.success('Thành công', 'Đặt hàng thành công!');
+
+        // Simulate order progress for demo
+        this.orderManagerService.simulateOrderProgress(newOrder.id);
+
         this.orderCompleted.emit();
         this.onClose();
         this.resetForm();
         this.isLoading = false;
+
+        // Navigate to order list after a short delay
+        setTimeout(() => {
+          this.router.navigate(['/order-list']);
+        }, 1500);
       },
       error: (err) => {
         console.error('❌ Error creating order:', err);

@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DanhMuc } from '../../../../core/models/danhmuc.model';
-import { DanhMucService } from '../../../../core/services/danhmuc.service';
+import { SanPhamService } from '../../../../core/services/sanpham.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 
 @Component({
@@ -18,19 +18,31 @@ export class CategoryEditComponent {
   @Output() cancel = new EventEmitter<void>();
 
   constructor(
-    private danhMucService: DanhMucService,
+    private sanPhamService: SanPhamService,
     private notification: NotificationService
   ) {}
 
   save() {
-    this.danhMucService.update(this.category.id, this.category).subscribe({
-      next: () => {
-        this.notification.success('Thành công', 'Đã cập nhật danh mục');
-        this.updated.emit();
-      },
-      error: () => {
-        this.notification.error('Lỗi', 'Không cập nhật được danh mục');
-      },
-    });
+    if (!this.category.tendanhmuc?.trim()) {
+      this.notification.error('Lỗi', 'Tên danh mục không được để trống');
+      return;
+    }
+
+    this.sanPhamService
+      .updateDanhMuc(this.category.id, this.category)
+      .subscribe({
+        next: () => {
+          this.notification.success('Thành công', 'Đã cập nhật danh mục');
+          this.updated.emit();
+        },
+        error: (error) => {
+          console.error('Error updating category:', error);
+          this.notification.error('Lỗi', 'Không cập nhật được danh mục');
+        },
+      });
+  }
+
+  onCancel() {
+    this.cancel.emit();
   }
 }

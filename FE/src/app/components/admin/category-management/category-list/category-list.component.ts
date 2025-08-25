@@ -197,4 +197,8 @@ export class CategoryListComponent implements OnInit {
       this.loadCategories();
     }
   }
+
+  trackByCategory(index: number, category: DanhMuc): number {
+    return category.id;
+  }
 }

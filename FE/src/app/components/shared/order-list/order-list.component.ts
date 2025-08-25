@@ -1,44 +1,47 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { DonHang } from '../../../core/models/donhang.model';
 import { AuthService } from '../../../core/services/auth.service';
-import { DonHangService } from '../../../core/services/donhang.service';
+import { OrderManagerService } from '../../../core/services/order-manager.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { TaiKhoan } from '../../../core/models/taikhoan.model';
 import { OrderDetailComponent } from '../order-detail/order-detail.component';
-import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { Subject } from 'rxjs';
-import { switchMap, takeUntil, filter } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-order-list',
   standalone: true,
-  imports: [
-    FormsModule,
-    CommonModule,
-    OrderDetailComponent,
-    ConfirmDialogComponent,
-  ],
+  imports: [FormsModule, CommonModule, RouterModule, OrderDetailComponent],
   templateUrl: './order-list.component.html',
   styleUrls: ['./order-list.component.scss'],
 })
 export class OrderListComponent implements OnInit, OnDestroy {
   orders: DonHang[] = [];
+  filteredOrders: DonHang[] = [];
   selectedOrder: DonHang | null = null;
   showOrderDetailModal = false;
   isLoading = true;
+  searchTerm = '';
+  statusFilter = 'all';
 
-  // Confirm dialog state
-  showConfirmDialog = false;
-  orderToCancel: DonHang | null = null;
+  // Status options
+  statusOptions = [
+    { value: 'all', label: 'Tất cả' },
+    { value: 'pending', label: 'Chờ xác nhận' },
+    { value: 'processing', label: 'Đang xử lý' },
+    { value: 'shipping', label: 'Đang giao hàng' },
+    { value: 'delivered', label: 'Đã giao hàng' },
+    { value: 'cancelled', label: 'Đã hủy' },
+  ];
 
   private destroy$ = new Subject<void>();
 
   constructor(
     private authService: AuthService,
-    private donHangService: DonHangService,
+    private orderManagerService: OrderManagerService,
     private notificationService: NotificationService,
     private router: Router
   ) {}
@@ -55,180 +58,188 @@ export class OrderListComponent implements OnInit, OnDestroy {
   loadOrders(): void {
     this.isLoading = true;
 
-    const currentUser = this.authService.getCurrentUser();
-    if (!currentUser || !currentUser.khachhang) {
-      console.error(
-        '❌ [OrderList] No authenticated user or customer data found.'
-      );
-      this.notificationService.error(
-        'Lỗi',
-        'Không thể tải danh sách đơn hàng. Vui lòng đăng nhập lại.'
-      );
-      this.isLoading = false;
-      this.orders = [];
-      return;
-    }
-
-    console.log(
-      '🚀 [OrderList] Loading orders for customer ID:',
-      currentUser.khachhang.id
-    );
-
-    this.donHangService
-      .getDonHangByKhachHangId(currentUser.khachhang.id)
+    // Load all orders from OrderManagerService
+    this.orderManagerService
+      .getAllOrders()
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (response) => {
-          console.log('✅ [OrderList] Orders loaded successfully:', response);
-          this.orders = response.content.sort(
-            (a, b) =>
-              new Date(b.ngaydat).getTime() - new Date(a.ngaydat).getTime()
-          );
+        next: (orders) => {
+          console.log('📋 Orders loaded:', orders);
+          this.orders = orders;
+          this.filteredOrders = [...orders];
           this.isLoading = false;
         },
-        error: (err) => {
-          console.error('❌ [OrderList] Error loading orders:', err);
+        error: (error) => {
+          console.error('❌ Error loading orders:', error);
           this.notificationService.error(
             'Lỗi',
-            'Có lỗi xảy ra khi tải danh sách đơn hàng.'
+            'Không thể tải danh sách đơn hàng'
           );
           this.isLoading = false;
         },
       });
   }
 
-  viewDetail(order: DonHang): void {
-    this.selectedOrder = order;
-    this.showOrderDetailModal = true;
+  filterOrders(): void {
+    this.filteredOrders = this.orders.filter((order) => {
+      const orderCode = `DH${order.id.toString().padStart(3, '0')}`;
+      const customerName = order.khachhang?.hoten || '';
+      const matchesSearch =
+        orderCode.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        customerName.toLowerCase().includes(this.searchTerm.toLowerCase());
+
+      let matchesStatus = true;
+      if (this.statusFilter !== 'all') {
+        const statusMap: { [key: string]: string } = {
+          pending: 'CHO_XAC_NHAN',
+          processing: 'DA_XAC_NHAN',
+          shipping: 'DANG_GIAO',
+          delivered: 'DA_GIAO',
+          cancelled: 'DA_HUY',
+        };
+        matchesStatus = order.trangthaidonhang === statusMap[this.statusFilter];
+      }
+
+      return matchesSearch && matchesStatus;
+    });
   }
 
-  closeOrderDetail(): void {
-    this.selectedOrder = null;
-    this.showOrderDetailModal = false;
+  onSearchChange(): void {
+    this.filterOrders();
   }
 
-  canCancelOrder(order: DonHang): boolean {
-    const status = order.trangthaidonhang;
-    // Add more cancellable statuses if needed
-    return status === 'CHO_XAC_NHAN';
+  onStatusFilterChange(): void {
+    this.filterOrders();
   }
 
-  promptCancelOrder(order: DonHang, event?: Event): void {
-    if (event) {
-      event.stopPropagation();
-    }
-
-    if (!this.canCancelOrder(order)) {
-      this.notificationService.info('Thông báo', 'Đơn hàng này không thể hủy.');
-      return;
-    }
-
-    this.orderToCancel = order;
-    this.showConfirmDialog = true;
+  getStatusLabel(status: string): string {
+    return this.orderManagerService.getStatusLabel(status);
   }
 
-  confirmCancelOrder(): void {
-    if (!this.orderToCancel || !this.orderToCancel.id) {
-      return;
-    }
-
-    const orderId = this.orderToCancel.id;
-    this.showConfirmDialog = false;
-    this.orderToCancel = null;
-    this.isLoading = true; // Bắt đầu loading
-
-    this.donHangService
-      .cancelDonHang(orderId, 'Khách hàng yêu cầu hủy')
-      .subscribe({
-        next: () => {
-          this.notificationService.success(
-            'Thành công',
-            'Đơn hàng đã được hủy thành công.'
-          );
-          this.loadOrders(); // Tải lại danh sách, sẽ tự tắt loading khi xong
-        },
-        error: (err) => {
-          console.error('Error canceling order:', err);
-          this.notificationService.error(
-            'Lỗi',
-            err.error?.message || 'Hủy đơn hàng thất bại. Vui lòng thử lại.'
-          );
-          this.isLoading = false; // Tắt loading khi có lỗi
-        },
-      });
+  getStatusClass(status: string): string {
+    return this.orderManagerService.getStatusClass(status);
   }
 
-  cancelDialog(): void {
-    this.showConfirmDialog = false;
-    this.orderToCancel = null;
+  getOrderCode(orderId: number): string {
+    return this.orderManagerService.getOrderCode(orderId);
   }
 
-  getPhoneNumber(order: DonHang): string {
-    return order.khachhang?.taikhoan?.sodienthoai || 'N/A';
+  formatCurrency(amount: number): string {
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+    }).format(amount);
   }
 
-  getPaymentLabel(method: string | undefined): string {
-    switch (method) {
-      case 'COD':
-        return 'Thanh toán khi nhận hàng';
-      case 'BANK':
-        return 'Chuyển khoản ngân hàng';
-      case 'MOMO':
-        return 'Ví MoMo';
-      case 'VNPAY':
-        return 'VNPay';
-      default:
-        return method || '';
-    }
-  }
-
-  getOrderStatusLabel(status: string): string {
-    switch (status) {
-      case 'CHO_XAC_NHAN':
-        return 'Chờ xác nhận';
-      case 'DANG_GIAO':
-        return 'Đang giao';
-      case 'DA_GIAO':
-        return 'Đã giao';
-      case 'DA_HUY':
-        return 'Đã hủy';
-      default:
-        return status;
-    }
-  }
-
-  formatCurrency(amount: number | undefined): string {
-    return new Intl.NumberFormat('vi-VN').format(amount ?? 0) + 'đ';
-  }
-
-  formatDate(date: string | Date): string {
-    const dateObj = new Date(date);
-    return dateObj.toLocaleDateString('vi-VN', {
-      day: '2-digit',
-      month: '2-digit',
+  formatDate(date: Date | string): string {
+    return new Date(date).toLocaleDateString('vi-VN', {
       year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
       hour: '2-digit',
       minute: '2-digit',
     });
   }
 
-  getStatusClass(status: string): string {
-    switch (status) {
-      case 'CHO_XAC_NHAN':
-        return 'pending';
-      case 'DA_XAC_NHAN':
-        return 'confirmed';
-      case 'DANG_GIAO':
-        return 'shipping';
-      case 'DA_GIAO':
-        return 'delivered';
-      case 'DA_HUY':
-        return 'cancelled';
-      default:
-        return 'pending';
+  getPaymentMethodLabel(method: string): string {
+    const methodMap: { [key: string]: string } = {
+      COD: 'Thanh toán khi nhận hàng',
+      BANK: 'Chuyển khoản ngân hàng',
+      MOMO: 'Ví MoMo',
+      VNPAY: 'VNPay',
+    };
+    return methodMap[method] || method;
+  }
+
+  createTestOrder(): void {
+    console.log('🧪 Creating test order manually...');
+    this.notificationService.info('Thông báo', 'Đang tạo đơn hàng test...');
+
+    // Force create sample order
+    const sampleOrderRequest = {
+      diachinhan: '123 Test Street, Test City',
+      phuongthucthanhtoan: 'COD',
+      customerName: 'Test Customer',
+      customerPhone: '0987654321',
+      ghichu: 'Test order created manually',
+      chitietdonhang: [
+        {
+          chitietsanphamid: Math.floor(Math.random() * 1000),
+          soluong: 2,
+          dongia: 750000,
+          productDetail: {
+            id: Math.floor(Math.random() * 1000),
+            sanphamId: 1,
+            tensanpham: 'Test Product',
+            tenmau: 'Blue',
+            soluong: 2,
+            hinhchinh: 'test.jpg',
+            hinhphu: undefined,
+            mamau: undefined,
+            chatlieu: undefined,
+            kichthuoc: undefined,
+            trongluong: undefined,
+          },
+        },
+      ],
+    };
+
+    this.orderManagerService.createOrder(sampleOrderRequest).subscribe({
+      next: (order) => {
+        console.log('✅ Test order created:', order);
+        this.notificationService.success('Thành công', 'Đã tạo đơn hàng test!');
+        // Reload orders
+        this.loadOrders();
+      },
+      error: (err) => {
+        console.error('❌ Error creating test order:', err);
+        this.notificationService.error('Lỗi', 'Không thể tạo đơn hàng test');
+      },
+    });
+  }
+
+  viewOrderDetail(order: DonHang): void {
+    this.selectedOrder = order;
+    this.showOrderDetailModal = true;
+  }
+
+  closeOrderDetail(): void {
+    this.showOrderDetailModal = false;
+    this.selectedOrder = null;
+  }
+
+  reorder(order: DonHang): void {
+    this.notificationService.info(
+      'Thông báo',
+      'Tính năng đặt lại đơn hàng đang được phát triển'
+    );
+  }
+
+  cancelOrder(order: DonHang): void {
+    if (
+      order.trangthaidonhang === 'CHO_XAC_NHAN' ||
+      order.trangthaidonhang === 'DA_XAC_NHAN'
+    ) {
+      this.notificationService.info(
+        'Thông báo',
+        'Tính năng hủy đơn hàng đang được phát triển'
+      );
+    } else {
+      this.notificationService.warning(
+        'Cảnh báo',
+        'Không thể hủy đơn hàng ở trạng thái hiện tại'
+      );
     }
   }
 
-  goToProducts(): void {
+  goToShopping(): void {
     this.router.navigate(['/']);
+  }
+
+  formatPrice(price: number | undefined): string {
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+    }).format(price || 0);
   }
 }

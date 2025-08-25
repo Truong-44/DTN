@@ -291,6 +291,59 @@ export class GioHangService {
     }
   }
 
+  removeFromCart(chiTietSanPhamId: number): void {
+    const isAuthenticated = this.authService?.isAuthenticated();
+
+    if (isAuthenticated) {
+      this.removeFromServerCart(chiTietSanPhamId);
+    } else {
+      this.removeFromLocalCart(chiTietSanPhamId);
+    }
+  }
+
+  private removeFromServerCart(chiTietSanPhamId: number): void {
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser || !currentUser.khachhang) {
+      console.error('[CartService] No authenticated user for cart removal');
+      return;
+    }
+
+    this.apiService
+      .delete(
+        `${_ENDPOINTS.GIOHANG}/${currentUser.khachhang.khachhangid}/chi-tiet/${chiTietSanPhamId}`
+      )
+      .pipe(
+        tap(() => {
+          console.log('[CartService] Item removed from server cart');
+          this.loadCartFromServer();
+        }),
+        catchError((error) => {
+          console.error(
+            '[CartService] Error removing item from server cart:',
+            error
+          );
+          // Fallback to local cart removal
+          this.removeFromLocalCart(chiTietSanPhamId);
+          return of({ success: false });
+        })
+      )
+      .subscribe();
+  }
+
+  private removeFromLocalCart(chiTietSanPhamId: number): void {
+    const existingItems = this.cartItemsSubject.value;
+    const updatedItems = existingItems.filter(
+      (item) => item.chitietsanphamid !== chiTietSanPhamId
+    );
+
+    this.cartItemsSubject.next(updatedItems);
+    this.updateCartCount();
+    this.storageService.setItem(
+      APP_CONSTANTS.CART_KEY,
+      JSON.stringify(updatedItems)
+    );
+  }
+
   private updateServerCartQuantity(
     chiTietSanPhamId: number,
     newQuantity: number
@@ -355,83 +408,6 @@ export class GioHangService {
       item.chitietsanphamid === chiTietSanPhamId
         ? { ...item, soluong: newQuantity }
         : item
-    );
-
-    this.cartItemsSubject.next(updatedItems);
-    this.updateCartCount();
-    this.storageService.setItem(
-      APP_CONSTANTS.CART_KEY,
-      JSON.stringify(updatedItems)
-    );
-  }
-
-  removeFromCart(chiTietSanPhamId: number): void {
-    const isAuthenticated = this.authService.isAuthenticated();
-
-    if (isAuthenticated) {
-      this.removeFromServerCart(chiTietSanPhamId);
-    } else {
-      this.removeFromLocalCart(chiTietSanPhamId);
-    }
-  }
-
-  private removeFromServerCart(chiTietSanPhamId: number): void {
-    const currentUser = this.authService.getCurrentUser();
-    if (!currentUser || !currentUser.khachhang) {
-      console.error(
-        '[CartService] Cannot remove from server cart: No customer data'
-      );
-      return;
-    }
-
-    this.apiService
-      .get<GioHang>(
-        `${_ENDPOINTS.SPECIFIC.GIOHANG_BY_KHACHHANG.replace(
-          '{khachHangId}',
-          currentUser.khachhang.id.toString()
-        )}`
-      )
-      .pipe(
-        switchMap((gioHang) => {
-          if (!gioHang || !gioHang.id) {
-            throw new Error('Cart not found');
-          }
-          return this.apiService.get<ChiTietGioHang[]>(
-            `${_ENDPOINTS.SPECIFIC.CHITIETGIOHANG_BY_GIOHANG.replace(
-              '{giohangId}',
-              gioHang.id.toString()
-            )}`
-          );
-        }),
-        switchMap((chiTietGioHangs) => {
-          const item = chiTietGioHangs.find(
-            (ct) => ct.chitietsanpham?.id === chiTietSanPhamId
-          );
-          if (!item) {
-            throw new Error('Cart item not found');
-          }
-
-          return this.apiService.delete(
-            `${_ENDPOINTS.CHITIETGIOHANG}/${item.id}`
-          );
-        }),
-        catchError((error) => {
-          console.error(
-            '[CartService] Error removing from server cart:',
-            error
-          );
-          return of(null);
-        })
-      )
-      .subscribe(() => {
-        this.loadCartFromServer();
-      });
-  }
-
-  private removeFromLocalCart(chiTietSanPhamId: number): void {
-    const existingItems = this.cartItemsSubject.value;
-    const updatedItems = existingItems.filter(
-      (item) => item.chitietsanphamid !== chiTietSanPhamId
     );
 
     this.cartItemsSubject.next(updatedItems);
