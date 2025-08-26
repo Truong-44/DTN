@@ -1,0 +1,123 @@
+<div class="invoice-management">
+  <div class="header">
+    <h2>Quản lý hóa đơn</h2>
+    <button (click)="createInvoice()" class="btn btn-primary">
+      + Tạo hóa đơn
+    </button>
+  </div>
+
+  <div class="invoice-stats">
+    <div class="stat-card">
+      <h3>{{ totalInvoices }}</h3>
+      <p>Tổng hóa đơn</p>
+    </div>
+    <div class="stat-card">
+      <h3>{{ paidInvoices }}</h3>
+      <p>Đã thanh toán</p>
+    </div>
+    <div class="stat-card">
+      <h3>{{ unpaidInvoices }}</h3>
+      <p>Chưa thanh toán</p>
+    </div>
+    <div class="stat-card">
+      <h3>{{ formatCurrency(totalAmount) }}</h3>
+      <p>Tổng giá trị</p>
+    </div>
+  </div>
+
+  <div class="filters">
+    <input
+      type="text"
+      [(ngModel)]="searchKeyword"
+      (input)="applyFilters()"
+      placeholder="Tìm kiếm hóa đơn..."
+      class="form-control"
+    />
+    <select
+      [(ngModel)]="statusFilter"
+      (change)="applyFilters()"
+      class="form-select"
+    >
+      <option value="">Tất cả trạng thái</option>
+      <option value="PAID">Đã thanh toán</option>
+      <option value="UNPAID">Chưa thanh toán</option>
+      <option value="OVERDUE">Quá hạn</option>
+    </select>
+    <input
+      type="date"
+      [(ngModel)]="dateFilter"
+      (change)="applyFilters()"
+      class="form-control"
+    />
+  </div>
+
+  <div class="invoice-table" *ngIf="!loading">
+    <table>
+      <thead>
+        <tr>
+          <th>Số hóa đơn</th>
+          <th>Khách hàng</th>
+          <th>Ngày tạo</th>
+          <th>Hạn thanh toán</th>
+          <th>Tổng tiền</th>
+          <th>Trạng thái</th>
+          <th>Thao tác</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let invoice of filteredInvoices">
+          <td>
+            <strong>#{{ invoice.id }}</strong>
+          </td>
+          <td>{{ invoice.khachhang?.hoten || "N/A" }}</td>
+          <td>{{ formatDate(invoice.ngayxuathoadon) }}</td>
+          <td>{{ formatDate(invoice.ngayxuathoadon) }}</td>
+          <td class="price">{{ formatCurrency(invoice.tongtien || 0) }}</td>
+          <td>
+            <span
+              [ngClass]="
+                'status-' + (invoice.trangthai || 'unpaid').toLowerCase()
+              "
+            >
+              {{ getStatusLabel(invoice.trangthai || "UNPAID") }}
+            </span>
+          </td>
+          <td>
+            <div class="action-buttons">
+              <button
+                (click)="viewInvoice(invoice)"
+                class="btn btn-sm btn-info"
+              >
+                Xem
+              </button>
+              <button
+                (click)="printInvoice(invoice)"
+                class="btn btn-sm btn-primary"
+              >
+                In
+              </button>
+              <button
+                (click)="markAsPaid(invoice)"
+                class="btn btn-sm btn-success"
+                *ngIf="invoice.trangthai !== 'PAID'"
+              >
+                Thanh toán
+              </button>
+              <button
+                (click)="deleteInvoice(invoice)"
+                class="btn btn-sm btn-danger"
+              >
+                Xóa
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="loading" class="loading">Đang tải dữ liệu...</div>
+  <div *ngIf="!loading && filteredInvoices.length === 0" class="no-data">
+    Không có hóa đơn nào
+  </div>
+</div>

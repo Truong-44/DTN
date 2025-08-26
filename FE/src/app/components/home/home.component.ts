@@ -1,16 +1,18 @@
-import {
-  Component,
-  AfterViewInit,
-  ElementRef,
-  ViewChild,
-  ChangeDetectionStrategy,
-} from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import gsap from 'gsap';
-import ScrollTrigger from 'gsap/ScrollTrigger';
-import ScrollSmoother from 'gsap/ScrollSmoother';
+import { Router } from '@angular/router';
+import { Subject, forkJoin, of, interval } from 'rxjs';
+import { takeUntil, catchError, finalize } from 'rxjs/operators';
 
-gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
+import { SanPhamService } from '../../core/services/sanpham.service';
+import { DanhMucService } from '../../core/services/danhmuc.service';
+import { GioHangService } from '../../core/services/giohang.service';
+import { AuthService } from '../../core/services/auth.service';
+import { NotificationService } from '../../core/services/notification.service';
+import { ImageService } from '../../core/services/image.service';
+import { SanPham } from '../../core/models/sanpham.model';
+import { DanhMuc } from '../../core/models/danhmuc.model';
+import { ChiTietSanPham } from '../../core/models/chitietsanpham.model';
 
 @Component({
   selector: 'app-home',
@@ -18,296 +20,328 @@ gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
   imports: [CommonModule],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HomeComponent implements AfterViewInit {
-  @ViewChild('wrapper', { static: true }) wrapperRef!: ElementRef;
-  @ViewChild('content', { static: true }) contentRef!: ElementRef;
+export class HomeComponent implements OnInit, OnDestroy {
+  private router = inject(Router);
+  private sanPhamService = inject(SanPhamService);
+  private danhMucService = inject(DanhMucService);
+  private gioHangService = inject(GioHangService);
+  private authService = inject(AuthService);
+  private notificationService = inject(NotificationService);
+  private imageService = inject(ImageService);
+  private destroy$ = new Subject<void>();
 
-  section1Images: string[] = [
-    'assets/img/BannerSlide/BS-01.jpg',
-    'assets/img/BannerSlide/BS-02.jpg',
-    'assets/img/BannerSlide/BS-03.jpg',
+  // Data
+  parentCategories: DanhMuc[] = [];
+  featuredProducts: SanPham[] = [];
+  newProducts: SanPham[] = [];
+  isLoading = true;
+  currentSlideIndex = 0;
+
+  // Hero slides
+  heroSlides = [
+    {
+      image: 'assets/img/BackGround/section1/BG101.webp',
+      title: 'Nội thất hiện đại cho ngôi nhà của bạn',
+      subtitle: 'Khám phá bộ sưu tập nội thất cao cấp với thiết kế độc đáo',
+      ctaText: 'Khám phá ngay',
+    },
+    {
+      image: 'assets/img/BackGround/section1/BG101.webp',
+      title: 'Ưu đãi đặc biệt - Giảm đến 50%',
+      subtitle: 'Cơ hội sở hữu nội thất chất lượng với giá tốt nhất',
+      ctaText: 'Mua ngay',
+    },
   ];
 
-  scrollImages: string[] = [
-    'assets/img/home/section2/s2-01.webp',
-    'assets/img/home/section2/s2-02.webp',
-    'assets/img/home/section2/s2-03.webp',
-    'assets/img/home/section2/s2-04.webp',
-    'assets/img/home/section2/s2-05.webp',
-  ];
-
-  products = [
-    { name: 'Red Ginseng', image: 'assets/img/home/section2/s2-01.webp' },
-    { name: 'Black Ginseng', image: 'assets/img/home/section2/s2-02.webp' },
-    { name: 'Extract Ginseng', image: 'assets/img/home/section2/s2-03.webp' },
-    { name: 'Tea Ginseng', image: 'assets/img/home/section2/s2-04.webp' },
-  ];
-
-  featuredProducts = [
+  // Static data
+  services = [
     {
-      badge: 'Bestseller',
-      name: 'Expose side table',
-      material: 'Aluminium',
-      image: 'assets/img/sanpham/ghe/netro.webp',
-      colors: ['#000000'],
-      price: 12290000,
-      original: 10390000,
+      icon: '🚚',
+      title: 'Giao hàng miễn phí',
+      desc: 'Miễn phí giao hàng cho đơn hàng trên 5 triệu',
     },
     {
-      badge: "Helena's Pick",
-      name: 'Nawabari footstool',
-      material: 'Fabric - Lacquered',
-      image: 'assets/img/home/products/slide2.jpg',
-      colors: ['#f2c0b9', '#000000'],
-      price: 13690000,
-      original: 13190000,
+      icon: '🔧',
+      title: 'Lắp đặt chuyên nghiệp',
+      desc: 'Đội ngũ thợ lành nghề, lắp đặt tận nơi',
     },
     {
-      name: 'Bornholm coffee table',
-      material: 'Wood',
-      image: 'assets/img/home/products/slide3.jpg',
-      colors: ['#d4aa6e'],
-      price: 8290000,
-      original: 5590000,
+      icon: '🛡️',
+      title: 'Bảo hành dài hạn',
+      desc: 'Bảo hành chính hãng lên đến 5 năm',
     },
     {
-      name: 'Bermuda footstool',
-      material: 'Fabric',
-      image: 'assets/img/home/products/slide4.jpg',
-      colors: ['#8c6d3f', '#000', '#fff'],
-      price: 23190000,
-      original: 10890000,
-    },
-    {
-      badge: "Editor's choice",
-      name: 'Tone mirror',
-      material: 'Glass - Wood',
-      image: 'assets/img/home/products/slide5.jpg',
-      colors: ['#8eb6bd'],
-      price: 12290000,
-      original: 7990000,
-    },
-    {
-      badge: "Helena's Pick",
-      name: 'Bolzano chair',
-      material: 'Fabric',
-      image: 'assets/img/home/products/slide6.jpg',
-      colors: ['#7d5c61'],
-      price: 50790000,
-      original: 39490000,
+      icon: '💬',
+      title: 'Tư vấn 24/7',
+      desc: 'Hỗ trợ khách hàng mọi lúc, mọi nơi',
     },
   ];
 
   blogs = [
     {
-      title: 'Benefits of Ginseng',
-      image: 'assets/img/home/section2/s2-04.webp',
+      image: 'assets/img/BackGround/section3/BG301.webp',
+      title: 'Xu hướng nội thất 2025',
+      summary: 'Khám phá các phong cách nội thất nổi bật năm nay',
     },
     {
-      title: 'How to Use Ginseng',
-      image: 'assets/img/home/section2/s2-04.webp',
-    },
-    {
-      title: 'Immune System Boost',
-      image: 'assets/img/home/section2/s2-04.webp',
-    },
-    {
-      title: 'Immune System Boost',
-      image: 'assets/img/home/section2/s2-04.webp',
-    },
-    {
-      title: 'Immune System Boost',
-      image: 'assets/img/home/section2/s2-04.webp',
-    },
-    {
-      title: 'Immune System Boost',
-      image: 'assets/img/home/section2/s2-04.webp',
+      image: 'assets/img/BackGround/section3/BG302.webp',
+      title: 'Bí quyết chọn sofa phù hợp',
+      summary: 'Những lưu ý khi chọn sofa cho phòng khách',
     },
   ];
 
-  ngAfterViewInit(): void {
-    this.initSmoothScroll();
-    this.revealSections();
-    this.initGallerySkew();
-    this.animateProducts();
-    this.animateBlogCards();
-    this.staggerTextEffects();
-    this.animateTestimonials();
-    this.animateProductShowcase();
+  ngOnInit(): void {
+    this.loadData();
+    this.startHeroSlider();
   }
 
-  //SECTION 1
-  heroImages = ['url("assets/img/BackGround/BG-01.jpg")'];
-  currentHeroImage = this.heroImages[0];
-
-  ngOnInit() {
-    let i = 0;
-    setInterval(() => {
-      i = (i + 1) % this.heroImages.length;
-      this.currentHeroImage = this.heroImages[i];
-    }, 6000);
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
-  scrollToSection(id: string) {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-  }
+  private loadData(): void {
+    this.isLoading = true;
 
-  private initSmoothScroll(): void {
-    ScrollSmoother.create({
-      wrapper: this.wrapperRef.nativeElement,
-      content: this.contentRef.nativeElement,
-      smooth: 1.3,
-      speed: 1,
-      effects: true,
-    });
-  }
+    forkJoin({
+      categories: this.danhMucService.getAll().pipe(catchError(() => of([]))),
+      products: this.sanPhamService
+        .getAllSanPham()
+        .pipe(catchError(() => of([]))),
+      chiTietSanPham: this.sanPhamService
+        .getAllChiTietSanPham()
+        .pipe(catchError(() => of([]))),
+    })
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => (this.isLoading = false))
+      )
+      .subscribe({
+        next: ({ categories, products, chiTietSanPham }) => {
+          console.log('Raw data loaded:', {
+            categories: categories.length,
+            products: products.length,
+            chiTietSanPham: chiTietSanPham.length,
+          });
+          console.log('Sample category:', categories[0]);
+          console.log('Sample product:', products[0]);
+          console.log('Sample chi tiet:', chiTietSanPham[0]);
 
-  private revealSections(): void {
-    gsap.utils.toArray<HTMLElement>('.section').forEach((el) => {
-      gsap.fromTo(
-        el,
-        { autoAlpha: 0, y: 100 },
-        {
-          autoAlpha: 1,
-          y: 0,
-          duration: 1.2,
-          ease: 'power2.out',
-          scrollTrigger: {
-            trigger: el,
-            start: 'top 85%',
-            toggleActions: 'play none none reverse',
-          },
-        }
-      );
-    });
-  }
+          // Xử lý danh mục - hiển thị tất cả danh mục (không chỉ parent)
+          this.parentCategories = categories; // Hiển thị tất cả danh mục
+          console.log('All categories:', this.parentCategories.length);
 
-  private initGallerySkew(): void {
-    const skewSetter = gsap.quickSetter('.gallery-grid div', 'skewY', 'deg');
-    const clamp = gsap.utils.clamp(-20, 20);
-    ScrollTrigger.create({
-      onUpdate: (self) => skewSetter(clamp(self.getVelocity() / -50)),
-    });
-  }
+          // Gán chi tiết sản phẩm vào từng sản phẩm (support both field names)
+          products.forEach((product) => {
+            product.chitietsanpham = chiTietSanPham.filter(
+              (ct) => ct.sanphamId === product.id || ct.sanphamid === product.id
+            );
+          });
 
-  private animateProducts(): void {
-    gsap.utils.toArray<HTMLElement>('.product-card').forEach((card, i) => {
-      gsap.fromTo(
-        card,
-        { opacity: 0, y: 50 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.9,
-          delay: i * 0.2,
-          ease: 'power2.out',
-          scrollTrigger: {
-            trigger: card,
-            start: 'top 90%',
-            toggleActions: 'play none none reverse',
-          },
-        }
-      );
-    });
-  }
+          // Hiển thị tất cả sản phẩm có trạng thái active
+          const activeProducts = products.filter((p) => p.trangthai);
+          console.log('Active products:', activeProducts.length);
 
-  private animateBlogCards(): void {
-    gsap.utils.toArray<HTMLElement>('.blog-card').forEach((card, i) => {
-      gsap.fromTo(
-        card,
-        { scale: 0.85, opacity: 0 },
-        {
-          scale: 1,
-          opacity: 1,
-          duration: 1,
-          delay: i * 0.2,
-          ease: 'back.out(1.7)',
-          scrollTrigger: {
-            trigger: card,
-            start: 'top 85%',
-            toggleActions: 'play none none reverse',
-          },
-        }
-      );
-    });
-  }
+          // Sản phẩm nổi bật - hiển thị tất cả sản phẩm có giảm giá trước
+          const discountedProducts = activeProducts.filter(
+            (p) => p.giacu && p.giamoi && p.giacu > p.giamoi
+          );
 
-  private animateTestimonials(): void {
-    gsap.utils.toArray<HTMLElement>('.testimonial-item').forEach((el, i) => {
-      gsap.fromTo(
-        el,
-        { opacity: 0, x: 50 },
-        {
-          opacity: 1,
-          x: 0,
-          duration: 1,
-          delay: i * 0.2,
-          ease: 'power2.out',
-          scrollTrigger: {
-            trigger: el,
-            start: 'top 85%',
-            toggleActions: 'play none none reverse',
-          },
-        }
-      );
-    });
-  }
+          // Hiển thị tối đa 12 sản phẩm nổi bật
+          this.featuredProducts =
+            discountedProducts.length >= 12
+              ? discountedProducts.slice(0, 12)
+              : [
+                  ...discountedProducts,
+                  ...activeProducts.filter(
+                    (p) => !discountedProducts.includes(p)
+                  ),
+                ].slice(0, 12);
 
-  private staggerTextEffects(): void {
-    gsap.utils
-      .toArray<HTMLElement>('h1.hero-title, p.hero-sub')
-      .forEach((el) => {
-        gsap.from(el, {
-          y: 40,
-          opacity: 0,
-          duration: 1,
-          ease: 'power4.out',
-          scrollTrigger: {
-            trigger: el,
-            start: 'top 80%',
-            toggleActions: 'play none none reverse',
-          },
-        });
+          // Sản phẩm mới - hiển thị tối đa 12 sản phẩm còn lại
+          this.newProducts = activeProducts
+            .sort((a, b) => {
+              if (a.ngaytao && b.ngaytao) {
+                const dateA = new Date(a.ngaytao).getTime();
+                const dateB = new Date(b.ngaytao).getTime();
+                return dateB - dateA;
+              }
+              // Fallback to ID if no ngaytao
+              return b.id - a.id;
+            })
+            .filter((p) => !this.featuredProducts.includes(p))
+            .slice(0, 12);
+
+          console.log('Processed data:', {
+            parentCategories: this.parentCategories.length,
+            featuredProducts: this.featuredProducts.length,
+            newProducts: this.newProducts.length,
+          });
+
+          // Debug first products
+          if (this.featuredProducts.length > 0) {
+            console.log('First featured product:', this.featuredProducts[0]);
+            console.log(
+              'First featured product chi tiet:',
+              this.featuredProducts[0].chitietsanpham
+            );
+          }
+        },
+        error: (error) => {
+          console.error('Error loading data:', error);
+          this.notificationService.error(
+            'Lỗi',
+            'Không thể tải dữ liệu trang chủ'
+          );
+        },
       });
   }
 
-  // scrollToSection(id: string): void {
-  //   const smoother = ScrollSmoother.get();
-  //   if (smoother) {
-  //     smoother.scrollTo(`#${id}`, true, 'top center');
-  //   } else {
-  //     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-  //   }
-  // }
-  private animateProductShowcase(): void {
-    const cards = gsap.utils.toArray<HTMLElement>('.product-slide');
-
-    gsap.set(cards, { opacity: 0, y: 80, scale: 0.9 });
-
-    ScrollTrigger.batch(cards, {
-      interval: 0.15,
-      batchMax: 3,
-      onEnter: (batch) => {
-        gsap.to(batch, {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          duration: 1,
-          ease: 'power3.out',
-          stagger: 0.2,
-        });
-      },
-      start: 'top 85%',
-      once: false,
-    });
-
-    // Enable smooth natural trackpad scroll
-    const slider = document.querySelector('.slider-wrapper') as HTMLElement;
-    if (slider) {
-      slider.style.scrollBehavior = 'smooth';
-      slider.style.touchAction = 'pan-x';
-    }
+  private startHeroSlider(): void {
+    interval(5000)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.currentSlideIndex =
+          (this.currentSlideIndex + 1) % this.heroSlides.length;
+      });
   }
+
+  // Navigation methods
+  goToProducts(): void {
+    this.router.navigate(['/products']);
+  }
+
+  goToCategory(category: DanhMuc): void {
+    this.router.navigate(['/products'], {
+      queryParams: { category: category.id },
+    });
+  }
+
+  goToProductDetail(id: number): void {
+    this.router.navigate(['/product', id]);
+  }
+
+  goToAllProducts(): void {
+    this.router.navigate(['/products-list']);
+  }
+
+  // Product methods
+  addToCart(product: SanPham, event: Event): void {
+    event.stopPropagation();
+
+    if (!this.authService.isAuthenticated()) {
+      this.notificationService.warning(
+        'Cảnh báo',
+        'Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng'
+      );
+      this.router.navigate(['/auth/login']);
+      return;
+    }
+
+    if (!product.trangthai) {
+      this.notificationService.warning(
+        'Cảnh báo',
+        'Sản phẩm hiện đang hết hàng'
+      );
+      return;
+    }
+
+    const detail = product.chitietsanpham?.[0];
+    if (!detail) {
+      this.notificationService.warning(
+        'Cảnh báo',
+        'Sản phẩm không có thông tin chi tiết'
+      );
+      return;
+    }
+
+    this.gioHangService
+      .addToCart({
+        chitietsanphamid: detail.id,
+        soluong: 1,
+        dongia: product.giamoi || 0,
+        tensanpham: product.tensanpham,
+        tenmau: detail.tenmau,
+        hinhchinh: detail.hinhchinh,
+      })
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (success) => {
+          if (success) {
+            this.notificationService.success(
+              'Thành công',
+              `Đã thêm ${product.tensanpham} vào giỏ hàng`
+            );
+          }
+        },
+        error: () =>
+          this.notificationService.error(
+            'Lỗi',
+            'Không thể thêm sản phẩm vào giỏ hàng'
+          ),
+      });
+  }
+
+  subscribeNewsletter(email: string): void {
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      this.notificationService.error(
+        'Lỗi',
+        !email ? 'Vui lòng nhập email' : 'Email không hợp lệ'
+      );
+      return;
+    }
+    this.notificationService.success(
+      'Thành công',
+      'Đăng ký nhận tin thành công!'
+    );
+  }
+
+  // Utility methods
+  getMainImage(product: SanPham): string {
+    return this.imageService.getMainImage(product);
+  }
+
+  getSubImages(product: SanPham): string[] {
+    return this.imageService.getSubImages(product);
+  }
+
+  getCategoryName(categoryId?: number): string {
+    if (!categoryId) return '';
+
+    // Check in all categories (not just parent categories) for category name
+    const allCategories = [...this.parentCategories]; // extend if we have all categories loaded
+    const category = allCategories.find((c) => c.id === categoryId);
+    return category ? category.tendanhmuc : '';
+  }
+
+  getCategoryImage(category: DanhMuc): string {
+    return `assets/img/categories/${category.id}.jpg`;
+  }
+
+  formatPrice(price: number): string {
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+    }).format(price);
+  }
+
+  getDiscountPercent(product: SanPham): number {
+    const giacu = product.giacu || 0;
+    const giamoi = product.giamoi || 0;
+    return giacu <= giamoi ? 0 : Math.round(((giacu - giamoi) / giacu) * 100);
+  }
+
+  onImageError(event: any): void {
+    this.imageService.onImageError(event);
+  }
+
+  get currentSlide() {
+    return this.heroSlides[this.currentSlideIndex];
+  }
+
+  // Track functions
+  trackByProduct = (index: number, product: SanPham) => product.id;
+  trackByCategory = (index: number, category: DanhMuc) => category.id;
+  trackByService = (index: number, service: any) => service.title;
 }

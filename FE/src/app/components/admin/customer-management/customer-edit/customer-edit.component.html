@@ -1,0 +1,247 @@
+<div class="customer-edit-container">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="spinner"></div>
+    <p>
+      {{
+        isEditMode
+          ? "Đang tải thông tin khách hàng..."
+          : "Đang khởi tạo form..."
+      }}
+    </p>
+  </div>
+
+  <!-- Edit Form -->
+  <div *ngIf="!loading" class="customer-edit-content">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="header-info">
+        <h1 class="page-title">
+          {{ isEditMode ? "Chỉnh sửa khách hàng" : "Thêm khách hàng mới" }}
+        </h1>
+        <p class="page-subtitle" *ngIf="isEditMode && customer">
+          Chỉnh sửa thông tin cho khách hàng:
+          <strong>{{ customer.hoten }}</strong>
+        </p>
+      </div>
+      <button type="button" class="btn btn-secondary" (click)="goBack()">
+        <i class="icon-arrow-left"></i>
+        Quay lại
+      </button>
+    </div>
+
+    <!-- Form Card -->
+    <div class="form-card">
+      <form [formGroup]="customerForm" (ngSubmit)="onSubmit()" novalidate>
+        <div class="form-sections">
+          <!-- Personal Information Section -->
+          <div class="form-section">
+            <h2 class="section-title">
+              <i class="icon-user"></i>
+              Thông tin cá nhân
+            </h2>
+
+            <div class="form-grid">
+              <!-- Full Name -->
+              <div class="form-group full-width">
+                <label class="form-label required">Họ và tên</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="hoten"
+                  [class.error]="isFieldInvalid('hoten')"
+                  placeholder="Nhập họ và tên đầy đủ"
+                  maxlength="100"
+                />
+                <div class="error-message" *ngIf="isFieldInvalid('hoten')">
+                  {{ getFieldError("hoten") }}
+                </div>
+              </div>
+
+              <!-- Gender -->
+              <div class="form-group">
+                <label class="form-label required">Giới tính</label>
+                <select
+                  class="form-control"
+                  formControlName="gioitinh"
+                  [class.error]="isFieldInvalid('gioitinh')"
+                >
+                  <option value="Nam">Nam</option>
+                  <option value="Nữ">Nữ</option>
+                  <option value="Khác">Khác</option>
+                </select>
+                <div class="error-message" *ngIf="isFieldInvalid('gioitinh')">
+                  {{ getFieldError("gioitinh") }}
+                </div>
+              </div>
+
+              <!-- Birth Date -->
+              <div class="form-group">
+                <label class="form-label">Ngày sinh</label>
+                <input
+                  type="date"
+                  class="form-control"
+                  formControlName="ngaysinh"
+                  [class.error]="isFieldInvalid('ngaysinh')"
+                />
+                <div class="error-message" *ngIf="isFieldInvalid('ngaysinh')">
+                  {{ getFieldError("ngaysinh") }}
+                </div>
+              </div>
+
+              <!-- Address -->
+              <div class="form-group full-width">
+                <label class="form-label">Địa chỉ</label>
+                <textarea
+                  class="form-control"
+                  formControlName="diachi"
+                  [class.error]="isFieldInvalid('diachi')"
+                  placeholder="Nhập địa chỉ"
+                  rows="3"
+                  maxlength="255"
+                ></textarea>
+                <div class="error-message" *ngIf="isFieldInvalid('diachi')">
+                  {{ getFieldError("diachi") }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Contact Information Section -->
+          <div class="form-section">
+            <h2 class="section-title">
+              <i class="icon-phone"></i>
+              Thông tin liên hệ
+            </h2>
+
+            <div class="form-grid">
+              <!-- Email -->
+              <div class="form-group">
+                <label class="form-label">Email</label>
+                <input
+                  type="email"
+                  class="form-control"
+                  formControlName="email"
+                  [class.error]="isFieldInvalid('email')"
+                  placeholder="example@email.com"
+                  maxlength="100"
+                />
+                <div class="error-message" *ngIf="isFieldInvalid('email')">
+                  {{ getFieldError("email") }}
+                </div>
+              </div>
+
+              <!-- Phone Number -->
+              <div class="form-group">
+                <label class="form-label">Số điện thoại</label>
+                <input
+                  type="tel"
+                  class="form-control"
+                  formControlName="sodienthoai"
+                  [class.error]="isFieldInvalid('sodienthoai')"
+                  placeholder="0123456789"
+                  maxlength="11"
+                />
+                <div
+                  class="error-message"
+                  *ngIf="isFieldInvalid('sodienthoai')"
+                >
+                  {{ getFieldError("sodienthoai") }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Account Information Section -->
+          <div class="form-section">
+            <h2 class="section-title">
+              <i class="icon-settings"></i>
+              Thông tin tài khoản
+            </h2>
+
+            <div class="form-grid">
+              <!-- Username -->
+              <div class="form-group">
+                <label class="form-label">Tên đăng nhập</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="tendangnhap"
+                  [class.error]="isFieldInvalid('tendangnhap')"
+                  placeholder="username"
+                  maxlength="50"
+                />
+                <div
+                  class="error-message"
+                  *ngIf="isFieldInvalid('tendangnhap')"
+                >
+                  {{ getFieldError("tendangnhap") }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Additional Information Section -->
+          <div class="form-section">
+            <h2 class="section-title">
+              <i class="icon-info"></i>
+              Thông tin bổ sung
+            </h2>
+
+            <div class="form-grid">
+              <!-- Notes -->
+              <div class="form-group full-width">
+                <label class="form-label">Ghi chú</label>
+                <textarea
+                  class="form-control"
+                  formControlName="ghichu"
+                  [class.error]="isFieldInvalid('ghichu')"
+                  placeholder="Nhập ghi chú (tùy chọn)"
+                  rows="4"
+                  maxlength="500"
+                ></textarea>
+                <div class="error-message" *ngIf="isFieldInvalid('ghichu')">
+                  {{ getFieldError("ghichu") }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <div class="action-left">
+            <button type="button" class="btn btn-secondary" (click)="goBack()">
+              Hủy bỏ
+            </button>
+            <button type="button" class="btn btn-outline" (click)="resetForm()">
+              <i class="icon-refresh"></i>
+              Đặt lại
+            </button>
+          </div>
+          <div class="action-right">
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="customerForm.invalid && submitted"
+            >
+              <i class="icon-save"></i>
+              {{ isEditMode ? "Cập nhật" : "Tạo mới" }}
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Form Validation Summary -->
+    <div *ngIf="submitted && customerForm.invalid" class="validation-summary">
+      <div class="validation-header">
+        <i class="icon-alert-triangle"></i>
+        <h3>Vui lòng kiểm tra lại thông tin</h3>
+      </div>
+      <ul class="validation-list">
+        <li *ngFor="let error of getFormErrors()">{{ error }}</li>
+      </ul>
+    </div>
+  </div>
+</div>

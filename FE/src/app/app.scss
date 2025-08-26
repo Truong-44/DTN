@@ -1,7 +1,21 @@
-html,
-body {
+* {
   margin: 0;
   padding: 0;
-  overflow-x: hidden; /* NGĂN tràn toàn cục */
+  box-sizing: border-box;
+}
+
+html,
+body {
   width: 100%;
+  height: 100%;
+  background: #000;
+  overflow: auto;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+}
+
+/* Loại bỏ viền / scroll của trình duyệt */
+body::-webkit-scrollbar {
+  display: none;
 }

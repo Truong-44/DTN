@@ -1,0 +1,235 @@
+<div class="permission-management">
+  <div class="header">
+    <h2>Quản lý phân quyền</h2>
+    <button class="btn btn-primary" (click)="createRole()">
+      + Tạo vai trò mới
+    </button>
+  </div>
+
+  <div class="permission-stats">
+    <div class="stat-card">
+      <h3>{{ totalRoles }}</h3>
+      <p>Tổng vai trò</p>
+    </div>
+    <div class="stat-card">
+      <h3>{{ totalUsers }}</h3>
+      <p>Tổng người dùng</p>
+    </div>
+    <div class="stat-card">
+      <h3>{{ totalPermissions }}</h3>
+      <p>Tổng quyền hạn</p>
+    </div>
+    <div class="stat-card">
+      <h3>{{ activeUsers }}</h3>
+      <p>Người dùng hoạt động</p>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button
+      class="tab-btn"
+      [class.active]="activeTab === 'roles'"
+      (click)="activeTab = 'roles'"
+    >
+      Vai trò
+    </button>
+    <button
+      class="tab-btn"
+      [class.active]="activeTab === 'users'"
+      (click)="activeTab = 'users'"
+    >
+      Người dùng
+    </button>
+    <button
+      class="tab-btn"
+      [class.active]="activeTab === 'permissions'"
+      (click)="activeTab = 'permissions'"
+    >
+      Quyền hạn
+    </button>
+  </div>
+
+  <!-- Roles Tab -->
+  <div class="tab-content" *ngIf="activeTab === 'roles'">
+    <div class="roles-grid">
+      <div class="role-card" *ngFor="let role of roles">
+        <div class="role-header">
+          <div class="role-info">
+            <h3>{{ role.ten }}</h3>
+            <p>{{ role.mota || "Không có mô tả" }}</p>
+          </div>
+          <div class="role-actions">
+            <button class="btn btn-edit" (click)="editRole(role)">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button
+              class="btn btn-delete"
+              (click)="deleteRole(role.id)"
+              *ngIf="role.id !== 1"
+            >
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="role-stats">
+          <div class="stat">
+            <span class="label">Người dùng:</span>
+            <span class="value">{{ getUserCountByRole(role.id) }}</span>
+          </div>
+          <div class="stat">
+            <span class="label">Trạng thái:</span>
+            <span class="badge active"> Hoạt động </span>
+          </div>
+        </div>
+
+        <div class="role-permissions">
+          <h4>Quyền hạn:</h4>
+          <div class="permissions-list">
+            <span
+              class="permission-tag"
+              *ngFor="let permission of getRolePermissions(role.id)"
+            >
+              {{ permission }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Users Tab -->
+  <div class="tab-content" *ngIf="activeTab === 'users'">
+    <div class="filters">
+      <input
+        type="text"
+        [(ngModel)]="userSearchKeyword"
+        (input)="filterUsers()"
+        placeholder="Tìm kiếm người dùng..."
+        class="form-control"
+      />
+      <select
+        [(ngModel)]="roleFilter"
+        (change)="filterUsers()"
+        class="form-select"
+      >
+        <option value="">Tất cả vai trò</option>
+        <option *ngFor="let role of roles" [value]="role.id">
+          {{ role.ten }}
+        </option>
+      </select>
+      <select
+        [(ngModel)]="statusFilter"
+        (change)="filterUsers()"
+        class="form-select"
+      >
+        <option value="">Tất cả trạng thái</option>
+        <option value="true">Hoạt động</option>
+        <option value="false">Vô hiệu</option>
+      </select>
+    </div>
+
+    <div class="users-table" *ngIf="!loading">
+      <table>
+        <thead>
+          <tr>
+            <th>Người dùng</th>
+            <th>Email</th>
+            <th>Vai trò</th>
+            <th>Trạng thái</th>
+            <th>Ngày tạo</th>
+            <th>Thao tác</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of filteredUsers">
+            <td>
+              <div class="user-info">
+                <div class="user-avatar">
+                  {{ (user.tendangnhap || "N").charAt(0).toUpperCase() }}
+                </div>
+                <div>
+                  <strong>{{ user.tendangnhap }}</strong>
+                  <small>{{ user.sodienthoai || "Chưa có SĐT" }}</small>
+                </div>
+              </div>
+            </td>
+            <td>{{ user.email || "Chưa có email" }}</td>
+            <td>
+              <span
+                class="role-badge"
+                [ngClass]="getRoleBadgeClass(user.quyenid)"
+              >
+                {{ getRoleName(user.quyenid) }}
+              </span>
+            </td>
+            <td>
+              <span
+                class="status-badge"
+                [ngClass]="user.trangthai ? 'active' : 'inactive'"
+              >
+                {{ user.trangthai ? "Hoạt động" : "Vô hiệu" }}
+              </span>
+            </td>
+            <td>{{ formatDate(user.ngaytao) }}</td>
+            <td>
+              <div class="action-buttons">
+                <button class="btn btn-edit" (click)="editUser(user)">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button
+                  class="btn btn-toggle"
+                  (click)="toggleUserStatus(user.id, !user.trangthai)"
+                  [ngClass]="user.trangthai ? 'btn-disable' : 'btn-enable'"
+                >
+                  <i
+                    [class]="user.trangthai ? 'fas fa-ban' : 'fas fa-check'"
+                  ></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Permissions Tab -->
+  <div class="tab-content" *ngIf="activeTab === 'permissions'">
+    <div class="permissions-matrix">
+      <h3>Ma trận quyền hạn</h3>
+      <div class="matrix-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Chức năng</th>
+              <th *ngFor="let role of roles">{{ role.ten }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let permission of systemPermissions">
+              <td class="permission-name">{{ permission.name }}</td>
+              <td *ngFor="let role of roles" class="permission-cell">
+                <label class="permission-toggle">
+                  <input
+                    type="checkbox"
+                    [checked]="hasPermission(role.id, permission.key)"
+                    (change)="togglePermission(role.id, permission.key)"
+                    [disabled]="role.id === 1"
+                  />
+                  <span class="checkmark"></span>
+                </label>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>Đang tải dữ liệu...</p>
+  </div>
+</div>

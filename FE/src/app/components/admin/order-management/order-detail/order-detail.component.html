@@ -1,0 +1,110 @@
+<div class="admin-order-detail">
+  <div class="header">
+    <button (click)="goBack()" class="btn btn-secondary">← Quay lại</button>
+    <h2>Chi tiết đơn hàng #{{ order?.id }}</h2>
+    <div class="actions" *ngIf="order">
+      <select
+        [(ngModel)]="selectedStatus"
+        (change)="updateStatus()"
+        class="form-select"
+      >
+        <option value="CHO_XAC_NHAN">Chờ xác nhận</option>
+        <option value="DA_XAC_NHAN">Đã xác nhận</option>
+        <option value="DANG_GIAO">Đang giao</option>
+        <option value="DA_GIAO">Đã giao</option>
+        <option value="DA_HUY">Đã hủy</option>
+      </select>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading">Đang tải...</div>
+
+  <div *ngIf="!loading && order" class="order-content">
+    <!-- Order Status Card -->
+    <div class="status-card">
+      <h3>Trạng thái đơn hàng</h3>
+      <div class="status-timeline">
+        <div
+          class="status-item"
+          [class.active]="isStatusActive('CHO_XAC_NHAN')"
+          [class.completed]="isStatusCompleted('CHO_XAC_NHAN')"
+        >
+          <div class="status-icon">1</div>
+          <div class="status-text">Chờ xác nhận</div>
+        </div>
+        <div
+          class="status-item"
+          [class.active]="isStatusActive('DA_XAC_NHAN')"
+          [class.completed]="isStatusCompleted('DA_XAC_NHAN')"
+        >
+          <div class="status-icon">2</div>
+          <div class="status-text">Đã xác nhận</div>
+        </div>
+        <div
+          class="status-item"
+          [class.active]="isStatusActive('DANG_GIAO')"
+          [class.completed]="isStatusCompleted('DANG_GIAO')"
+        >
+          <div class="status-icon">3</div>
+          <div class="status-text">Đang giao</div>
+        </div>
+        <div
+          class="status-item"
+          [class.active]="isStatusActive('DA_GIAO')"
+          [class.completed]="isStatusCompleted('DA_GIAO')"
+        >
+          <div class="status-icon">4</div>
+          <div class="status-text">Đã giao</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Customer Info -->
+    <div class="info-card">
+      <h3>Thông tin khách hàng</h3>
+      <div class="info-grid">
+        <div class="info-item">
+          <label>Họ tên:</label>
+          <span>{{ order.khachhang?.hoten || "N/A" }}</span>
+        </div>
+        <div class="info-item">
+          <label>Số điện thoại:</label>
+          <span>{{ getPhoneNumber(order) }}</span>
+        </div>
+        <div class="info-item">
+          <label>Email:</label>
+          <span>{{ order.khachhang?.taikhoan?.email || "N/A" }}</span>
+        </div>
+        <div class="info-item">
+          <label>Địa chỉ nhận hàng:</label>
+          <span>{{ order.diachinhan }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Order Info -->
+    <div class="info-card">
+      <h3>Thông tin đơn hàng</h3>
+      <div class="info-grid">
+        <div class="info-item">
+          <label>Ngày đặt:</label>
+          <span>{{ formatDateTime(order.ngaydat) }}</span>
+        </div>
+        <div class="info-item">
+          <label>Phương thức thanh toán:</label>
+          <span>{{
+            getPaymentMethodLabel(order.phuongthucthanhtoan || "")
+          }}</span>
+        </div>
+        <div class="info-item">
+          <label>Trạng thái thanh toán:</label>
+          <span
+            [class]="order.trangthaithanhtoan ? 'status-paid' : 'status-unpaid'"
+          >
+            {{ order.trangthaithanhtoan ? "Đã thanh toán" : "Chưa thanh toán" }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

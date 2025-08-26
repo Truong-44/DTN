@@ -1,0 +1,178 @@
+<!-- Chat Toggle Button -->
+<div
+  class="chat-toggle-btn"
+  [class.active]="isOpen"
+  (click)="toggleChat()"
+  *ngIf="!isOpen && shouldShowChatBot()"
+  title="Mở chat hỗ trợ"
+>
+  <i class="chat-icon">💬</i>
+  <span class="chat-text">AI Assistant</span>
+  <div class="pulse-ring"></div>
+  <div class="notification-badge" *ngIf="!isInitialized">!</div>
+</div>
+
+<!-- Chat Window -->
+<div class="chat-window" [class.open]="isOpen" [class.minimized]="isMinimized">
+  <!-- Chat Header -->
+  <div class="chat-header">
+    <div class="chat-header-info">
+      <div class="bot-avatar">🤖</div>
+      <div class="bot-info">
+        <h4>DTN AI Assistant</h4>
+        <span
+          class="status"
+          [class.active]="isInitialized"
+          [class.loading]="isLoading"
+        >
+          {{ sessionStatus }}
+        </span>
+      </div>
+    </div>
+    <div class="chat-header-actions">
+      <button class="btn-action" (click)="minimizeChat()" *ngIf="!isMinimized">
+        <i class="icon">🗗</i>
+      </button>
+      <button class="btn-action" (click)="closeChat()">
+        <i class="icon">✕</i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Chat Body -->
+  <div class="chat-body" *ngIf="!isMinimized">
+    <!-- Messages Container -->
+    <div class="messages-container" #messagesContainer>
+      <!-- Loading State -->
+      <div class="loading-state" *ngIf="isLoading && !hasMessages">
+        <div class="loading-spinner"></div>
+        <p>Đang khởi tạo chat...</p>
+      </div>
+
+      <!-- Messages -->
+      <div class="messages-list" *ngIf="hasMessages">
+        <div
+          class="message"
+          *ngFor="let message of messages; trackBy: trackByMessageId"
+          [class.user]="message.messageType === 'USER'"
+          [class.bot]="message.messageType === 'BOT'"
+        >
+          <div class="message-avatar" *ngIf="message.messageType === 'BOT'">
+            🤖
+          </div>
+
+          <div class="message-content">
+            <div class="message-bubble">
+              <p [innerHTML]="formatMessageContent(message.content)"></p>
+              <span class="message-time">{{
+                formatTimestamp(message.timestamp)
+              }}</span>
+            </div>
+          </div>
+
+          <div class="message-avatar" *ngIf="message.messageType === 'USER'">
+            👤
+          </div>
+        </div>
+      </div>
+
+      <!-- Typing Indicator -->
+      <div class="typing-indicator" *ngIf="isTyping">
+        <div class="typing-avatar">🤖</div>
+        <div class="typing-bubble">
+          <div class="typing-dots">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product Suggestions -->
+      <div class="product-suggestions" *ngIf="productSuggestions.length > 0">
+        <h5>Sản phẩm gợi ý:</h5>
+        <div class="product-cards">
+          <div
+            class="product-card"
+            *ngFor="let suggestion of productSuggestions"
+          >
+            <img
+              [src]="suggestion.sanpham?.chitietsanpham?.[0]?.hinhchinh ? 'assets/img/sanpham/' + suggestion.sanpham.chitietsanpham[0].hinhchinh : 'assets/img/placeholder/product.jpg'"
+              [alt]="suggestion.sanpham?.tensanpham || 'Sản phẩm'"
+              onerror="this.src='assets/img/placeholder/product.jpg'"
+            />
+            <div class="product-info">
+              <h6>{{ suggestion.sanpham?.tensanpham || "Sản phẩm" }}</h6>
+              <p class="price">
+                {{
+                  formatPrice(
+                    suggestion.sanpham?.giamoi || suggestion.sanpham?.giacu || 0
+                  )
+                }}
+              </p>
+              <small>{{ suggestion.reason }}</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions (only show when no messages) -->
+    <div class="quick-actions" *ngIf="!hasMessages && isInitialized">
+      <h5>Chọn nhanh:</h5>
+      <div class="action-buttons">
+        <button
+          class="action-btn"
+          *ngFor="let action of quickActions"
+          (click)="handleQuickAction(action)"
+        >
+          <span class="action-icon">{{ action.icon }}</span>
+          <span class="action-text">{{ action.text }}</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Bot Suggestions -->
+    <div class="bot-suggestions" *ngIf="suggestions.length > 0 && hasMessages">
+      <h5>Gợi ý câu hỏi:</h5>
+      <div class="suggestion-chips">
+        <button
+          class="suggestion-chip"
+          *ngFor="let suggestion of suggestions"
+          (click)="selectSuggestion(suggestion)"
+        >
+          {{ suggestion.content }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chat Input -->
+  <div class="chat-input" *ngIf="!isMinimized">
+    <div class="input-container">
+      <textarea
+        #messageInput
+        [(ngModel)]="newMessage"
+        (keypress)="onKeyPress($event)"
+        (focus)="onInputFocus()"
+        placeholder="Nhập tin nhắn..."
+        rows="1"
+        [disabled]="isLoading"
+        class="message-input"
+      ></textarea>
+
+      <button
+        class="send-btn"
+        (click)="sendMessage()"
+        [disabled]="!canSendMessage"
+        [class.loading]="isLoading"
+      >
+        <span *ngIf="!isLoading">🚀</span>
+        <div class="btn-spinner" *ngIf="isLoading"></div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Chat Overlay (for mobile) -->
+<div class="chat-overlay" *ngIf="isOpen" (click)="closeChat()"></div>
