@@ -11,10 +11,19 @@ public class ChiTietSanPhamMapper {
     public ChiTietSanPhamDTO toDTO(ChiTietSanPham entity) {
         if (entity == null) return null;
 
+        Long sanphamId = null;
+        String tensanpham = null;
+        
+        // Safely handle SanPham relationship
+        if (entity.getSanpham() != null) {
+            sanphamId = entity.getSanpham().getId();
+            tensanpham = entity.getSanpham().getTensanpham();
+        }
+
         return ChiTietSanPhamDTO.builder()
                 .id(entity.getId())
-                .sanphamId(entity.getSanpham().getId())
-                .tensanpham(entity.getSanpham().getTensanpham())
+                .sanphamId(sanphamId)
+                .tensanpham(tensanpham)
                 .tenmau(entity.getTenmau())
                 .mamau(entity.getMamau())
                 .chatlieu(entity.getChatlieu())

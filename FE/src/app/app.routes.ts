@@ -5,7 +5,6 @@ import { AdminGuard } from './components/shared/guards/admin.guard';
 import { authGuard } from './core/guards/auth.guard';
 import { LoginComponent } from './components/auth/login/login.component';
 import { RegisterComponent } from './components/auth/register/register.component';
-import { ProductListComponent } from './components/product-list/product-list.component';
 import { OrderListComponent } from './components/shared/order-list/order-list.component';
 import { OrderDetailComponent } from './components/shared/order-detail/order-detail.component';
 import { ProfileComponent } from './components/shared/profile/profile.component';
@@ -20,7 +19,6 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'search', component: SearchComponent },
-  { path: 'products-list', component: ProductListComponent },
   {
     path: 'product/:id',
     loadComponent: () =>
@@ -97,8 +95,8 @@ export const routes: Routes = [
             path: 'product-management',
             loadComponent: () =>
               import(
-                './components/admin/product-management/product-list/product-list.component'
-              ).then((m) => m.ProductListComponent),
+                './components/admin/product-management/product-management.component'
+              ).then((m) => m.ProductManagementComponent),
           },
           {
             path: 'customer-management',

@@ -99,7 +99,7 @@ export class OrderManagerService {
       chitietdonhang: chitietdonhang,
       khachhang: {
         id: orderRequest.khachhangid || newOrderId,
-        taikhoanid: orderRequest.khachhangid || newOrderId,
+        taikhoanId: orderRequest.khachhangid || newOrderId,
         hoten: orderRequest.customerName,
         taikhoan: {
           id: orderRequest.khachhangid || newOrderId,

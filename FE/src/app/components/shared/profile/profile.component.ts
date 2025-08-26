@@ -134,7 +134,7 @@ export class ProfileComponent implements OnInit {
             }
           : {
               id: Date.now(), // Temporary ID
-              taikhoanid: this.taiKhoan.id,
+              taikhoanId: this.taiKhoan.id,
               hoten: this.profileForm.hoten,
               diachi: this.profileForm.diachi,
               ngaysinh: this.profileForm.ngaysinh

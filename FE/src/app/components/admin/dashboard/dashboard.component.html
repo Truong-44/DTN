@@ -1,54 +1,236 @@
-<div class="dashboard-dark">
-  <div class="dashboard-row">
-    <div class="dashboard-card green">
-      <div class="card-header">
-        <span class="icon">&#128179;</span>
-        <span>Tổng số đơn hàng</span>
-      </div>
-      <div class="card-value">{{ totalSales | number }}</div>
-    </div>
-    <div class="dashboard-card orange">
-      <div class="card-header">
-        <span class="icon">&#36;</span>
-        <span>Tổng doanh thu</span>
-      </div>
-      <div class="card-value">{{ totalIncome | number }} đ</div>
-    </div>
-    <div class="dashboard-card gray">
-      <div class="card-header">
-        <span class="icon">&#128196;</span>
-        <span>Đơn hàng đã thanh toán</span>
-      </div>
-      <div class="card-value">{{ ordersPaid | number }}</div>
-    </div>
-    <div class="dashboard-card blue">
-      <div class="card-header">
-        <span class="icon">&#128100;</span>
-        <span>Tổng khách hàng</span>
-      </div>
-      <div class="card-value">{{ totalVisitor | number }}</div>
+<div class="dashboard-container">
+  <!-- Header Section -->
+  <div class="dashboard-header">
+    <div class="header-content">
+      <h1 class="dashboard-title">
+        <i class="fas fa-tachometer-alt"></i>
+        Dashboard Quản Trị
+      </h1>
+      <button class="refresh-btn" (click)="refreshData()" [disabled]="isLoading">
+        <i class="fas fa-sync-alt" [class.fa-spin]="isLoading"></i>
+        Làm mới
+      </button>
     </div>
   </div>
 
-  <div class="dashboard-row">
-    <div class="dashboard-panel wide">
-      <div class="panel-title">Đơn hàng gần đây</div>
-      <div class="panel-chart">
-        <!-- Placeholder: bạn có thể tích hợp chart thực tế sau -->
-        <div *ngFor="let d of recentOrderChartData">
-          {{ d.month }}: {{ d.value }}
+  <!-- Stats Cards Section -->
+  <div class="stats-section">
+    <div class="stats-grid">
+      <div class="stat-card orange-card">
+        <div class="card-icon">
+          <i class="fas fa-shopping-cart"></i>
+        </div>
+        <div class="card-content">
+          <h3>Tổng Đơn Hàng</h3>
+          <p class="stat-number">{{ formatNumber(stats.totalOrders) }}</p>
+          <span class="stat-change positive">
+            <i class="fas fa-arrow-up"></i> +5.2%
+          </span>
+        </div>
+      </div>
+
+      <div class="stat-card revenue-card">
+        <div class="card-icon">
+          <i class="fas fa-dollar-sign"></i>
+        </div>
+        <div class="card-content">
+          <h3>Tổng Doanh Thu</h3>
+          <p class="stat-number">{{ formatCurrency(stats.totalRevenue) }}</p>
+          <span class="stat-change positive">
+            <i class="fas fa-arrow-up"></i> +12.8%
+          </span>
+        </div>
+      </div>
+
+      <div class="stat-card product-card">
+        <div class="card-icon">
+          <i class="fas fa-box"></i>
+        </div>
+        <div class="card-content">
+          <h3>Tổng Sản Phẩm</h3>
+          <p class="stat-number">{{ formatNumber(stats.totalProducts) }}</p>
+          <span class="stat-change neutral">
+            <i class="fas fa-minus"></i> 0%
+          </span>
+        </div>
+      </div>
+
+      <div class="stat-card customer-card">
+        <div class="card-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <div class="card-content">
+          <h3>Tổng Khách Hàng</h3>
+          <p class="stat-number">{{ formatNumber(stats.totalCustomers) }}</p>
+          <span class="stat-change positive">
+            <i class="fas fa-arrow-up"></i> +8.1%
+          </span>
         </div>
       </div>
     </div>
-    <div class="dashboard-panel">
-      <div class="panel-title">Sản phẩm bán chạy</div>
-      <ul class="top-products">
-        <li *ngFor="let p of topProducts">
-          <img [src]="p.image" alt="product" width="32" height="32" />
-          <span class="prod-name">{{ p.name }}</span>
-          <span class="prod-qty">{{ p.quantity }} sản phẩm</span>
-        </li>
-      </ul>
+  </div>
+
+  <!-- Charts Section -->
+  <div class="charts-section">
+    <div class="charts-grid">
+      <!-- Revenue Chart -->
+      <div class="chart-panel large-panel">
+        <div class="panel-header">
+          <h3>
+            <i class="fas fa-chart-line"></i>
+            Biểu Đồ Doanh Thu
+          </h3>
+          <div class="panel-actions">
+            <select class="time-filter">
+              <option value="month">Theo tháng</option>
+              <option value="quarter">Theo quý</option>
+              <option value="year">Theo năm</option>
+            </select>
+          </div>
+        </div>
+        <div class="chart-container">
+          <canvas baseChart
+                  [data]="revenueChartData"
+                  [options]="revenueChartOptions"
+                  type="line">
+          </canvas>
+        </div>
+      </div>
+
+      <!-- Orders Chart -->
+      <div class="chart-panel">
+        <div class="panel-header">
+          <h3>
+            <i class="fas fa-chart-bar"></i>
+            Đơn Hàng Theo Tháng
+          </h3>
+        </div>
+        <div class="chart-container">
+          <canvas baseChart
+                  [data]="ordersChartData"
+                  [options]="ordersChartOptions"
+                  type="bar">
+          </canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Data Tables Section -->
+  <div class="data-section">
+    <div class="data-grid">
+      <!-- Top Products -->
+      <div class="data-panel">
+        <div class="panel-header">
+          <h3>
+            <i class="fas fa-star"></i>
+            Sản Phẩm Bán Chạy
+          </h3>
+          <a href="#" class="view-all-link">Xem tất cả</a>
+        </div>
+        <div class="panel-content">
+          <div class="product-list">
+            <div *ngFor="let product of topProducts; trackBy: trackByProductId" 
+                 class="product-item">
+              <div class="product-image">
+                <img [src]="getProductImageUrl(product.hinhchinh)" 
+                     [alt]="product.name"
+                     (error)="onImageError($event)">
+              </div>
+              <div class="product-info">
+                <h4 class="product-name">{{ product.name }}</h4>
+                <p class="product-stats">
+                  <span class="quantity">{{ formatNumber(product.quantity) }} đã bán</span>
+                  <span class="revenue">{{ formatCurrency(product.revenue) }}</span>
+                </p>
+              </div>
+              <div class="product-rank">
+                <span class="rank-badge">#{{ topProducts.indexOf(product) + 1 }}</span>
+              </div>
+            </div>
+            
+            <div *ngIf="topProducts.length === 0" class="empty-state">
+              <i class="fas fa-box-open"></i>
+              <p>Chưa có dữ liệu sản phẩm</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Orders -->
+      <div class="data-panel">
+        <div class="panel-header">
+          <h3>
+            <i class="fas fa-clock"></i>
+            Đơn Hàng Gần Đây
+          </h3>
+          <a href="#" class="view-all-link">Xem tất cả</a>
+        </div>
+        <div class="panel-content">
+          <div class="orders-table">
+            <div class="table-header">
+              <div class="header-cell">Mã ĐH</div>
+              <div class="header-cell">Khách hàng</div>
+              <div class="header-cell">Tổng tiền</div>
+              <div class="header-cell">Trạng thái</div>
+              <div class="header-cell">Ngày</div>
+            </div>
+            
+            <div *ngFor="let order of recentOrders; trackBy: trackByOrderId" 
+                 class="table-row">
+              <div class="table-cell">
+                <span class="order-id">#{{ order.id }}</span>
+              </div>
+              <div class="table-cell">
+                <span class="customer-name">{{ order.customerName }}</span>
+              </div>
+              <div class="table-cell">
+                <span class="order-total">{{ formatCurrency(order.total) }}</span>
+              </div>
+              <div class="table-cell">
+                <span class="status-badge" [ngClass]="getStatusClass(order.status)">
+                  {{ order.status }}
+                </span>
+              </div>
+              <div class="table-cell">
+                <span class="order-date">{{ order.createdDate | date:'dd/MM/yyyy' }}</span>
+              </div>
+            </div>
+            
+            <div *ngIf="recentOrders.length === 0" class="empty-state">
+              <i class="fas fa-receipt"></i>
+              <p>Chưa có đơn hàng nào</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Category Distribution -->
+      <div class="data-panel">
+        <div class="panel-header">
+          <h3>
+            <i class="fas fa-chart-pie"></i>
+            Phân Bố Danh Mục
+          </h3>
+        </div>
+        <div class="panel-content">
+          <div class="chart-container small">
+            <canvas baseChart
+                    [data]="categoryChartData"
+                    [options]="categoryChartOptions"
+                    type="doughnut">
+            </canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div *ngIf="isLoading" class="loading-overlay">
+    <div class="loading-spinner">
+      <i class="fas fa-spinner fa-spin"></i>
+      <p>Đang tải dữ liệu...</p>
     </div>
   </div>
 </div>

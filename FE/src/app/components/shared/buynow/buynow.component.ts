@@ -57,7 +57,7 @@ export class BuynowComponent implements OnInit, OnDestroy {
 
   customer: KhachHang = {
     id: 0,
-    taikhoanid: 0,
+    taikhoanId: 0,
     hoten: '',
     diachi: '',
   };
@@ -82,7 +82,7 @@ export class BuynowComponent implements OnInit, OnDestroy {
         if (user) {
           this.customer = {
             id: user.khachhang?.id || 0,
-            taikhoanid: user.id,
+            taikhoanId: user.id,
             hoten: user.khachhang?.hoten || user.tendangnhap,
             diachi: user.khachhang?.diachi || '',
           };
@@ -91,7 +91,7 @@ export class BuynowComponent implements OnInit, OnDestroy {
         } else {
           this.customer = {
             id: 0,
-            taikhoanid: 0,
+            taikhoanId: 0,
             hoten: '',
             diachi: '',
           };

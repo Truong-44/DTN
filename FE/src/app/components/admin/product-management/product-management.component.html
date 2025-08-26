@@ -1,0 +1,284 @@
+    <div class="product-management">
+      <!-- Header -->
+      <div class="header">
+        <h1>🛍️ Quản Lý Sản Phẩm</h1>
+        <button class="btn-add" (click)="openAddForm()">
+          ➕ Thêm Sản Phẩm
+        </button>
+      </div>
+
+      <!-- Loading -->
+      <div *ngIf="loading" class="loading">
+        <div class="spinner"></div>
+        <p>Đang tải dữ liệu...</p>
+      </div>
+
+      <!-- Error -->
+      <div *ngIf="error" class="error">
+        <h3>❌ Lỗi kết nối:</h3>
+        <pre>{{ error | json }}</pre>
+        <button class="btn-retry" (click)="loadProducts()">🔄 Thử lại</button>
+      </div>
+
+      <!-- Success State -->
+      <div *ngIf="!loading && !error && products.length > 0" class="content">
+        <!-- Stats -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-number">{{ products.length }}</div>
+            <div class="stat-label">Tổng sản phẩm</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">{{ getActiveProducts() }}</div>
+            <div class="stat-label">Đang hiển thị</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">{{ getTotalVariants() }}</div>
+            <div class="stat-label">Biến thể</div>
+          </div>
+        </div>
+
+        <!-- Search & Filter -->
+        <div class="filters">
+          <input 
+            type="text" 
+            [(ngModel)]="searchTerm" 
+            (input)="filterProducts()"
+            placeholder="🔍 Tìm kiếm sản phẩm..."
+            class="search-input"
+          >
+          <select [(ngModel)]="statusFilter" (change)="filterProducts()" class="filter-select">
+            <option value="">Tất cả trạng thái</option>
+            <option value="true">Đang hiển thị</option>
+            <option value="false">Đã ẩn</option>
+          </select>
+        </div>
+
+        <!-- Products Table -->
+        <div class="table-container">
+          <table class="products-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Hình ảnh</th>
+                <th>Tên sản phẩm</th>
+                <th>Biến thể</th>
+                <th>Giá</th>
+                <th>Trạng thái</th>
+                <th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let product of filteredProducts" class="product-row">
+                <td>{{ product.id }}</td>
+                <td>
+                  <img 
+                    [src]="getProductImage(product)" 
+                    [alt]="product.tensanpham"
+                    class="product-image"
+                    (error)="onImageError($event)"
+                  >
+                </td>
+                <td>
+                  <div class="product-name">{{ product.tensanpham }}</div>
+                  <div class="product-description">{{ product.mota | slice:0:100 }}...</div>
+                </td>
+                <td>
+                  <div class="variants">
+                    <span *ngIf="product.chitietsanpham?.length" class="variant-count">
+                      {{ product.chitietsanpham?.length }} biến thể
+                    </span>
+                    <span *ngIf="!product.chitietsanpham?.length" class="no-variants">
+                      Chưa có biến thể
+                    </span>
+                  </div>
+                </td>
+                <td>
+                  <div *ngIf="product.chitietsanpham?.length" class="price-range">
+                    {{ formatPrice(getMinPrice(product)) }} - {{ formatPrice(getMaxPrice(product)) }}
+                  </div>
+                  <div *ngIf="!product.chitietsanpham?.length" class="no-price">
+                    Chưa có giá
+                  </div>
+                </td>
+                <td>
+                  <span [class]="'status ' + (product.trangthai ? 'active' : 'inactive')">
+                    {{ product.trangthai ? '✅ Hiển thị' : '❌ Ẩn' }}
+                  </span>
+                </td>
+                <td>
+                  <div class="actions">
+                    <button class="btn-view" (click)="viewProduct(product)" title="Xem chi tiết">👁️</button>
+                    <button class="btn-edit" (click)="editProduct(product)" title="Chỉnh sửa">✏️</button>
+                    <button class="btn-toggle" (click)="toggleProduct(product)" 
+                            [title]="product.trangthai ? 'Ẩn sản phẩm' : 'Hiển thị sản phẩm'">
+                      {{ product.trangthai ? '🔴' : '🟢' }}
+                    </button>
+                    <button class="btn-delete" (click)="deleteProduct(product)" title="Xóa">🗑️</button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- No results -->
+        <div *ngIf="filteredProducts.length === 0 && products.length > 0" class="no-results">
+          <p>🔍 Không tìm thấy sản phẩm nào phù hợp</p>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="!loading && !error && products.length === 0" class="empty-state">
+        <div class="empty-icon">📦</div>
+        <h3>Chưa có sản phẩm nào</h3>
+        <p>Hãy thêm sản phẩm đầu tiên của bạn</p>
+        <button class="btn-add-first" (click)="openAddForm()">➕ Thêm sản phẩm đầu tiên</button>
+      </div>
+
+      <!-- Add/Edit Product Modal -->
+      <div *ngIf="showAddForm || showEditForm" class="modal-overlay" (click)="closeModals()">
+        <div class="modal-content" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h2>{{ showEditForm ? '✏️ Chỉnh sửa sản phẩm' : '➕ Thêm sản phẩm mới' }}</h2>
+            <button class="btn-close" (click)="closeModals()">✖️</button>
+          </div>
+          
+          <form class="product-form" (ngSubmit)="saveProduct()">
+            <div class="form-group">
+              <label for="tensanpham">Tên sản phẩm *</label>
+              <input 
+                type="text" 
+                id="tensanpham"
+                [(ngModel)]="productForm.tensanpham" 
+                name="tensanpham"
+                class="form-control"
+                placeholder="Nhập tên sản phẩm..."
+                required
+              >
+            </div>
+
+            <div class="form-group">
+              <label for="mota">Mô tả *</label>
+              <textarea 
+                id="mota"
+                [(ngModel)]="productForm.mota" 
+                name="mota"
+                class="form-control"
+                placeholder="Nhập mô tả sản phẩm..."
+                rows="4"
+                required
+              ></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="danhmucId">Danh mục</label>
+              <select 
+                id="danhmucId"
+                [(ngModel)]="productForm.danhmucId" 
+                name="danhmucId"
+                class="form-control"
+              >
+                <option value="0">Chọn danh mục</option>
+                <option *ngFor="let category of categories" [value]="category.id">
+                  {{ category.tendanhmuc }}
+                </option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="checkbox-label">
+                <input 
+                  type="checkbox" 
+                  [(ngModel)]="productForm.trangthai" 
+                  name="trangthai"
+                >
+                <span>Hiển thị sản phẩm</span>
+              </label>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="btn-cancel" (click)="closeModals()">Hủy</button>
+              <button type="submit" class="btn-save">
+                {{ showEditForm ? '💾 Cập nhật' : '➕ Thêm mới' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- View Product Modal -->
+      <div *ngIf="showViewModal && currentProduct" class="modal-overlay" (click)="closeModals()">
+        <div class="modal-content view-modal" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h2>👁️ Chi tiết sản phẩm</h2>
+            <button class="btn-close" (click)="closeModals()">✖️</button>
+          </div>
+          
+          <div class="product-details">
+            <div class="detail-group">
+              <strong>ID:</strong> {{ currentProduct.id }}
+            </div>
+            <div class="detail-group">
+              <strong>Tên sản phẩm:</strong> {{ currentProduct.tensanpham }}
+            </div>
+            <div class="detail-group">
+              <strong>Mô tả:</strong> 
+              <p>{{ currentProduct.mota }}</p>
+            </div>
+            <div class="detail-group">
+              <strong>Danh mục:</strong> {{ getCategoryName(currentProduct.danhmucId) }}
+            </div>
+            <div class="detail-group">
+              <strong>Trạng thái:</strong> 
+              <span [class]="'status ' + (currentProduct.trangthai ? 'active' : 'inactive')">
+                {{ currentProduct.trangthai ? '✅ Hiển thị' : '❌ Ẩn' }}
+              </span>
+            </div>
+            <div class="detail-group" *ngIf="currentProduct.chitietsanpham?.length">
+              <strong>Biến thể:</strong>
+              <div class="variants-list">
+                <div *ngFor="let variant of currentProduct.chitietsanpham || []" class="variant-item">
+                  <img [src]="getVariantImage(variant)" [alt]="currentProduct.tensanpham" 
+                       class="variant-image" (error)="onImageError($event)">
+                  <div class="variant-info">
+                    <div><strong>Màu:</strong> {{ variant.mausac }}</div>
+                    <div><strong>Size:</strong> {{ variant.kichthuoc }}</div>
+                    <div><strong>Giá:</strong> {{ formatPrice(variant.giamoi) }}</div>
+                    <div><strong>Số lượng:</strong> {{ variant.soluong }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="modal-footer">
+            <button class="btn-edit" (click)="editProduct(currentProduct)">✏️ Chỉnh sửa</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Delete Confirmation Modal -->
+      <div *ngIf="showDeleteConfirm && currentProduct" class="modal-overlay" (click)="closeModals()">
+        <div class="modal-content delete-modal" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h2>🗑️ Xác nhận xóa</h2>
+            <button class="btn-close" (click)="closeModals()">✖️</button>
+          </div>
+          
+          <div class="delete-content">
+            <div class="warning-icon">⚠️</div>
+            <p>Bạn có chắc chắn muốn xóa sản phẩm này?</p>
+            <div class="product-info">
+              <strong>{{ currentProduct.tensanpham }}</strong>
+            </div>
+            <p class="warning-text">Hành động này không thể hoàn tác!</p>
+          </div>
+          
+          <div class="modal-footer">
+            <button class="btn-cancel" (click)="closeModals()">Hủy</button>
+            <button class="btn-delete-confirm" (click)="confirmDelete()">🗑️ Xóa</button>
+          </div>
+        </div>
+      </div>
+    </div>

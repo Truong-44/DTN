@@ -6,6 +6,7 @@ import com.noithat.backend.entity.SanPham;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 @Component
@@ -17,20 +18,31 @@ public class SanPhamMapper {
     public SanPhamDTO toDTO(SanPham entity) {
         if (entity == null) return null;
 
-        return SanPhamDTO.builder()
+        SanPhamDTO.SanPhamDTOBuilder builder = SanPhamDTO.builder()
                 .id(entity.getId())
                 .tensanpham(entity.getTensanpham())
                 .mota(entity.getMota())
-                .danhmucId(entity.getDanhmuc().getId())
-                .danhmucTen(entity.getDanhmuc().getTendanhmuc())
                 .tenloai(entity.getTenloai())
                 .giacu(entity.getGiacu())
                 .giamoi(entity.getGiamoi())
-                .trangthai(entity.getTrangthai())
-                .chitietsanpham(entity.getChiTietSanPhams().stream()
-                        .map(chiTietSanPhamMapper::toDTO)
-                        .collect(Collectors.toList()))
-                .build();
+                .trangthai(entity.getTrangthai());
+
+        // Safely handle danhmuc
+        if (entity.getDanhmuc() != null) {
+            builder.danhmucId(entity.getDanhmuc().getId())
+                   .danhmucTen(entity.getDanhmuc().getTendanhmuc());
+        }
+
+        // Safely handle chiTietSanPhams collection
+        if (entity.getChiTietSanPhams() != null && !entity.getChiTietSanPhams().isEmpty()) {
+            builder.chitietsanpham(entity.getChiTietSanPhams().stream()
+                    .map(chiTietSanPhamMapper::toDTO)
+                    .collect(Collectors.toList()));
+        } else {
+            builder.chitietsanpham(Collections.emptyList());
+        }
+
+        return builder.build();
     }
 
     public SanPham toEntity(SanPhamDTO dto, DanhMuc danhmuc) {
