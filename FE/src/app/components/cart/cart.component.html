@@ -49,7 +49,8 @@
                 <button 
                   (click)="decreaseQuantity(item)"
                   [disabled]="item.soluong <= 1"
-                  title="Giảm số lượng">
+                  title="Giảm số lượng"
+                  class="qty-btn">
                   -
                 </button>
                 <input 
@@ -57,14 +58,17 @@
                   [value]="item.soluong" 
                   (input)="onQuantityChange(item, $event)"
                   (blur)="validateQuantity(item)"
+                  (keydown.enter)="onEnterKey($event)"
                   min="1" 
                   max="99"
                   class="qty-input"
+                  placeholder="1"
                 />
                 <button 
                   (click)="increaseQuantity(item)"
                   [disabled]="item.soluong >= 99"
-                  title="Tăng số lượng">
+                  title="Tăng số lượng"
+                  class="qty-btn">
                   +
                 </button>
               </div>
@@ -88,7 +92,6 @@
     </div>
   </div>
 
-  <!-- Clear Cart Confirmation Modal -->
   <div
     class="modal-overlay"
     *ngIf="showClearCartModal"
@@ -111,7 +114,6 @@
     </div>
   </div>
 
-  <!-- Remove Item Modal -->
   <div
     class="modal-overlay"
     *ngIf="showRemoveModal"

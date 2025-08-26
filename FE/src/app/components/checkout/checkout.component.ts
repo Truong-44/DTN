@@ -102,10 +102,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       email: ['', [Validators.required, Validators.email]],
 
       // Địa chỉ giao hàng
-      address: ['', [Validators.required, Validators.minLength(10)]],
-      city: ['', Validators.required],
-      district: ['', Validators.required],
-      ward: ['', Validators.required],
+      address: ['', [Validators.required, Validators.minLength(20)]],
 
       // Phương thức thanh toán và giao hàng
       paymentMethod: ['cod', Validators.required],
@@ -169,10 +166,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         );
       case 2:
         return !!(
-          this.checkoutForm.get('address')?.valid &&
-          this.checkoutForm.get('city')?.valid &&
-          this.checkoutForm.get('district')?.valid &&
-          this.checkoutForm.get('ward')?.valid
+          this.checkoutForm.get('address')?.valid
         );
       default:
         return true;

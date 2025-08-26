@@ -49,49 +49,39 @@ export class CartComponent implements OnInit, OnDestroy {
   }
 
   increaseQuantity(item: CartItem): void {
-    if (item.soluong < 99) {
-      try {
-        this.gioHangService.updateQuantity(
-          item.chitietsanphamid,
-          item.soluong + 1
-        );
-        this.notificationService.success(
-          'Thành công',
-          'Đã tăng số lượng sản phẩm'
-        );
-      } catch (error) {
-        console.error('Error increasing quantity:', error);
-        this.notificationService.error(
-          'Lỗi',
-          'Không thể tăng số lượng sản phẩm'
-        );
-      }
-    } else {
+    if (item.soluong >= 99) {
       this.notificationService.warning('Cảnh báo', 'Số lượng tối đa là 99');
+      return;
     }
+
+    const newQuantity = item.soluong + 1;
+    this.updateItemQuantity(item, newQuantity);
   }
 
   decreaseQuantity(item: CartItem): void {
-    if (item.soluong > 1) {
-      try {
-        this.gioHangService.updateQuantity(
-          item.chitietsanphamid,
-          item.soluong - 1
-        );
-        this.notificationService.success(
-          'Thành công',
-          'Đã giảm số lượng sản phẩm'
-        );
-      } catch (error) {
-        this.notificationService.error(
-          'Lỗi',
-          'Không thể cập nhật số lượng sản phẩm'
-        );
-      }
-    } else {
+    if (item.soluong <= 1) {
       this.notificationService.warning(
         'Cảnh báo',
         'Số lượng tối thiểu là 1. Sử dụng nút xóa để xóa sản phẩm.'
+      );
+      return;
+    }
+
+    const newQuantity = item.soluong - 1;
+    this.updateItemQuantity(item, newQuantity);
+  }
+
+  private updateItemQuantity(item: CartItem, newQuantity: number): void {
+    try {
+      this.gioHangService.updateQuantity(item.chitietsanphamid, newQuantity);
+      // Update local item immediately for better UX
+      item.soluong = newQuantity;
+      this.updateTotalPrice();
+    } catch (error) {
+      console.error('Error updating quantity:', error);
+      this.notificationService.error(
+        'Lỗi',
+        'Không thể cập nhật số lượng sản phẩm'
       );
     }
   }
@@ -161,31 +151,42 @@ export class CartComponent implements OnInit, OnDestroy {
   }
 
   onQuantityChange(item: CartItem, event: any): void {
-    const newQuantity = parseInt(event.target.value, 10);
-    if (!isNaN(newQuantity) && newQuantity > 0 && newQuantity <= 99) {
-      if (newQuantity !== item.soluong) {
-        try {
-          this.gioHangService.updateQuantity(item.chitietsanphamid, newQuantity);
-        } catch (error) {
-          console.error('Error updating quantity:', error);
-          // Reset to original value on error
-          event.target.value = item.soluong;
-          this.notificationService.error(
-            'Lỗi',
-            'Không thể cập nhật số lượng sản phẩm'
-          );
-        }
-      }
+    const input = event.target;
+    const newQuantity = parseInt(input.value, 10);
+    
+    // Validate input
+    if (isNaN(newQuantity) || newQuantity < 1) {
+      input.value = item.soluong; // Reset to current value
+      this.notificationService.warning('Cảnh báo', 'Số lượng phải là số nguyên dương');
+      return;
+    }
+    
+    if (newQuantity > 99) {
+      input.value = 99;
+      this.notificationService.warning('Cảnh báo', 'Số lượng tối đa là 99');
+      this.updateItemQuantity(item, 99);
+      return;
+    }
+
+    if (newQuantity !== item.soluong) {
+      this.updateItemQuantity(item, newQuantity);
+    }
+  }
+
+  onEnterKey(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    if (target) {
+      target.blur();
     }
   }
 
   validateQuantity(item: CartItem): void {
-    // This method can be used to validate quantity on blur
+    // Ensure quantity is within valid range on blur
     if (item.soluong < 1) {
-      this.gioHangService.updateQuantity(item.chitietsanphamid, 1);
+      this.updateItemQuantity(item, 1);
       this.notificationService.warning('Cảnh báo', 'Số lượng tối thiểu là 1');
     } else if (item.soluong > 99) {
-      this.gioHangService.updateQuantity(item.chitietsanphamid, 99);
+      this.updateItemQuantity(item, 99);
       this.notificationService.warning('Cảnh báo', 'Số lượng tối đa là 99');
     }
   }

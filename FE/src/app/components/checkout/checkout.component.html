@@ -91,74 +91,18 @@
 
             <div class="form-row">
               <div class="form-group">
-                <label for="address">Địa chỉ cụ thể *</label>
-                <input
-                  type="text"
+                <label for="address">Địa chỉ đầy đủ *</label>
+                <textarea
                   id="address"
                   formControlName="address"
-                  placeholder="Số nhà, tên đường"
+                  rows="3"
+                  placeholder="Nhập địa chỉ đầy đủ (số nhà, tên đường, phường/xã, quận/huyện, thành phố)"
                   [class.error]="
                     checkoutForm.get('address')?.invalid &&
                     checkoutForm.get('address')?.touched
                   "
-                />
+                ></textarea>
                 <span class="error-text">{{ getFieldError("address") }}</span>
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group third">
-                <label for="city">Thành phố *</label>
-                <select
-                  id="city"
-                  formControlName="city"
-                  [class.error]="
-                    checkoutForm.get('city')?.invalid &&
-                    checkoutForm.get('city')?.touched
-                  "
-                >
-                  <option value="">Chọn thành phố</option>
-                  <option value="ho-chi-minh">TP. Hồ Chí Minh</option>
-                  <option value="ha-noi">Hà Nội</option>
-                  <option value="da-nang">Đà Nẵng</option>
-                </select>
-                <span class="error-text">{{ getFieldError("city") }}</span>
-              </div>
-
-              <div class="form-group third">
-                <label for="district">Quận/Huyện *</label>
-                <select
-                  id="district"
-                  formControlName="district"
-                  [class.error]="
-                    checkoutForm.get('district')?.invalid &&
-                    checkoutForm.get('district')?.touched
-                  "
-                >
-                  <option value="">Chọn quận/huyện</option>
-                  <option value="quan-1">Quận 1</option>
-                  <option value="quan-2">Quận 2</option>
-                  <option value="quan-3">Quận 3</option>
-                </select>
-                <span class="error-text">{{ getFieldError("district") }}</span>
-              </div>
-
-              <div class="form-group third">
-                <label for="ward">Phường/Xã *</label>
-                <select
-                  id="ward"
-                  formControlName="ward"
-                  [class.error]="
-                    checkoutForm.get('ward')?.invalid &&
-                    checkoutForm.get('ward')?.touched
-                  "
-                >
-                  <option value="">Chọn phường/xã</option>
-                  <option value="phuong-1">Phường 1</option>
-                  <option value="phuong-2">Phường 2</option>
-                  <option value="phuong-3">Phường 3</option>
-                </select>
-                <span class="error-text">{{ getFieldError("ward") }}</span>
               </div>
             </div>
 

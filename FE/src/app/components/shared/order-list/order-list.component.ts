@@ -151,53 +151,6 @@ export class OrderListComponent implements OnInit, OnDestroy {
     return methodMap[method] || method;
   }
 
-  createTestOrder(): void {
-    console.log('🧪 Creating test order manually...');
-    this.notificationService.info('Thông báo', 'Đang tạo đơn hàng test...');
-
-    // Force create sample order
-    const sampleOrderRequest = {
-      diachinhan: '123 Test Street, Test City',
-      phuongthucthanhtoan: 'COD',
-      customerName: 'Test Customer',
-      customerPhone: '0987654321',
-      ghichu: 'Test order created manually',
-      chitietdonhang: [
-        {
-          chitietsanphamid: Math.floor(Math.random() * 1000),
-          soluong: 2,
-          dongia: 750000,
-          productDetail: {
-            id: Math.floor(Math.random() * 1000),
-            sanphamId: 1,
-            tensanpham: 'Test Product',
-            tenmau: 'Blue',
-            soluong: 2,
-            hinhchinh: 'test.jpg',
-            hinhphu: undefined,
-            mamau: undefined,
-            chatlieu: undefined,
-            kichthuoc: undefined,
-            trongluong: undefined,
-          },
-        },
-      ],
-    };
-
-    this.orderManagerService.createOrder(sampleOrderRequest).subscribe({
-      next: (order) => {
-        console.log('✅ Test order created:', order);
-        this.notificationService.success('Thành công', 'Đã tạo đơn hàng test!');
-        // Reload orders
-        this.loadOrders();
-      },
-      error: (err) => {
-        console.error('❌ Error creating test order:', err);
-        this.notificationService.error('Lỗi', 'Không thể tạo đơn hàng test');
-      },
-    });
-  }
-
   viewOrderDetail(order: DonHang): void {
     this.selectedOrder = order;
     this.showOrderDetailModal = true;

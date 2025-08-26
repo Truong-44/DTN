@@ -282,12 +282,18 @@ export class GioHangService {
   }
 
   updateQuantity(chiTietSanPhamId: number, newQuantity: number): void {
-    const isAuthenticated = this.authService.isAuthenticated();
+    if (newQuantity < 1 || newQuantity > 99) {
+      console.warn('[CartService] Invalid quantity:', newQuantity);
+      return;
+    }
 
+    // Update local cart immediately for better UX
+    this.updateLocalCartQuantity(chiTietSanPhamId, newQuantity);
+
+    // Then sync with server if authenticated
+    const isAuthenticated = this.authService?.isAuthenticated();
     if (isAuthenticated) {
       this.updateServerCartQuantity(chiTietSanPhamId, newQuantity);
-    } else {
-      this.updateLocalCartQuantity(chiTietSanPhamId, newQuantity);
     }
   }
 
@@ -348,7 +354,7 @@ export class GioHangService {
     chiTietSanPhamId: number,
     newQuantity: number
   ): void {
-    const currentUser = this.authService.getCurrentUser();
+    const currentUser = this.authService?.getCurrentUser();
     if (!currentUser || !currentUser.khachhang) {
       console.error(
         '[CartService] Cannot update server cart: No customer data'
@@ -391,11 +397,15 @@ export class GioHangService {
         }),
         catchError((error) => {
           console.error('[CartService] Error updating server cart:', error);
+          // On server error, revert local change if needed
+          console.warn('[CartService] Server update failed, keeping local change');
           return of(null);
         })
       )
-      .subscribe(() => {
-        this.loadCartFromServer();
+      .subscribe((result) => {
+        if (result) {
+          console.log('[CartService] Server cart updated successfully');
+        }
       });
   }
 
