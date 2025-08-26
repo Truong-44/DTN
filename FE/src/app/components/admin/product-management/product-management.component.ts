@@ -1252,10 +1252,10 @@ export class ProductManagementComponent implements OnInit {
   createProductDetail(productId: number) {
     const detailData = {
       sanphamId: productId,
-      tenmau: this.productDetailForm.tenmau || 'Mặc định',
+      tenmau: this.productDetailForm.tenmau || 'Mac dinh',
       mamau: this.productDetailForm.mamau || '#FFFFFF',
-      kichthuoc: this.productDetailForm.kichthuoc || 'Tiêu chuẩn',
-      chatlieu: this.productDetailForm.chatlieu || 'Gỗ tự nhiên',
+      kichthuoc: this.productDetailForm.kichthuoc || 'Tieu chuan',
+      chatlieu: this.productDetailForm.chatlieu || 'Go tu nhien',
       trongluong: this.productDetailForm.trongluong || 1.0,
       soluong: this.productDetailForm.soluong || 1,
       hinhchinh: this.productDetailForm.hinhanh || 'placeholder.jpg',
