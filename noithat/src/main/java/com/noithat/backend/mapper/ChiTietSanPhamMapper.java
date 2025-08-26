@@ -11,7 +11,7 @@ public class ChiTietSanPhamMapper {
     public ChiTietSanPhamDTO toDTO(ChiTietSanPham entity) {
         if (entity == null) return null;
 
-        Long sanphamId = null;
+        Integer sanphamId = null;
         String tensanpham = null;
         
         // Safely handle SanPham relationship
