@@ -19,6 +19,7 @@ export class CartComponent implements OnInit, OnDestroy {
   isLoading = true;
   error: string | null = null;
   showRemoveModal = false;
+  showClearCartModal = false;
   itemToRemove: CartItem | null = null;
   private sub?: Subscription;
 
@@ -49,14 +50,22 @@ export class CartComponent implements OnInit, OnDestroy {
 
   increaseQuantity(item: CartItem): void {
     if (item.soluong < 99) {
-      this.gioHangService.updateQuantity(
-        item.chitietsanphamid,
-        item.soluong + 1
-      );
-      this.notificationService.success(
-        'Thành công',
-        'Đã tăng số lượng sản phẩm'
-      );
+      try {
+        this.gioHangService.updateQuantity(
+          item.chitietsanphamid,
+          item.soluong + 1
+        );
+        this.notificationService.success(
+          'Thành công',
+          'Đã tăng số lượng sản phẩm'
+        );
+      } catch (error) {
+        console.error('Error increasing quantity:', error);
+        this.notificationService.error(
+          'Lỗi',
+          'Không thể tăng số lượng sản phẩm'
+        );
+      }
     } else {
       this.notificationService.warning('Cảnh báo', 'Số lượng tối đa là 99');
     }
@@ -117,12 +126,67 @@ export class CartComponent implements OnInit, OnDestroy {
   }
 
   clearCart(): void {
-    if (confirm('Bạn có chắc muốn xóa toàn bộ giỏ hàng?')) {
+    if (this.cartItems.length === 0) {
+      this.notificationService.warning(
+        'Giỏ hàng trống',
+        'Không có sản phẩm nào để xóa'
+      );
+      return;
+    }
+
+    this.showClearCartModal = true;
+  }
+
+  confirmClearCart(): void {
+    try {
       this.gioHangService.clearCart();
+      // No need to manually reload as we're subscribed to cartItems$
       this.notificationService.success(
         'Đã xóa giỏ hàng',
         'Toàn bộ sản phẩm đã được xóa khỏi giỏ hàng'
       );
+    } catch (error) {
+      console.error('Error clearing cart:', error);
+      this.notificationService.error(
+        'Lỗi',
+        'Không thể xóa giỏ hàng. Vui lòng thử lại.'
+      );
+    } finally {
+      this.closeClearCartModal();
+    }
+  }
+
+  closeClearCartModal(): void {
+    this.showClearCartModal = false;
+  }
+
+  onQuantityChange(item: CartItem, event: any): void {
+    const newQuantity = parseInt(event.target.value, 10);
+    if (!isNaN(newQuantity) && newQuantity > 0 && newQuantity <= 99) {
+      if (newQuantity !== item.soluong) {
+        try {
+          this.gioHangService.updateQuantity(item.chitietsanphamid, newQuantity);
+        } catch (error) {
+          console.error('Error updating quantity:', error);
+          // Reset to original value on error
+          event.target.value = item.soluong;
+          this.notificationService.error(
+            'Lỗi',
+            'Không thể cập nhật số lượng sản phẩm'
+          );
+        }
+      }
+    }
+  }
+
+  validateQuantity(item: CartItem): void {
+    // This method can be used to validate quantity on blur
+    if (item.soluong < 1) {
+      this.gioHangService.updateQuantity(item.chitietsanphamid, 1);
+      this.notificationService.warning('Cảnh báo', 'Số lượng tối thiểu là 1');
+    } else if (item.soluong > 99) {
+      this.gioHangService.updateQuantity(item.chitietsanphamid, 99);
+      this.notificationService.warning('Cảnh báo', 'Số lượng tối đa là 99');
     }
   }
 
@@ -142,7 +206,7 @@ export class CartComponent implements OnInit, OnDestroy {
   }
 
   getProductImage(item: CartItem): string {
-    return item.hinhchinh || '/assets/img/default-product.jpg';
+    return item.hinhchinh || 'assets/img/default-product.jpg';
   }
 
   trackByItem(index: number, item: CartItem): number {

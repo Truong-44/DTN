@@ -1,0 +1,351 @@
+<div class="employee-management">
+  <!-- Page Header -->
+  <div class="page-header">
+    <h1>Quản lý nhân viên</h1>
+    <div class="header-actions">
+      <button class="btn btn-primary" (click)="openAddForm()">Thêm nhân viên</button>
+      <button class="btn btn-secondary" (click)="refreshData()">Làm mới</button>
+      <button class="btn btn-outline" (click)="exportEmployees()">Xuất Excel</button>
+    </div>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-value">{{ totalEmployees }}</div>
+      <div class="stat-label">Tổng nhân viên</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ activeEmployees }}</div>
+      <div class="stat-label">Đang làm việc</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ inactiveEmployees }}</div>
+      <div class="stat-label">Nghỉ việc</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ formatCurrency(averageSalary) }}</div>
+      <div class="stat-label">Lương trung bình</div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-section">
+    <div class="filter-group">
+      <input 
+        type="text" 
+        [(ngModel)]="searchTerm" 
+        (ngModelChange)="onSearchChange()"
+        placeholder="Tìm kiếm theo tên, email, SĐT hoặc chức vụ..."
+        class="search-input">
+    </div>
+    
+    <div class="filter-group">
+      <select [(ngModel)]="statusFilter" (ngModelChange)="onStatusFilterChange()" class="filter-select">
+        <option value="">Tất cả trạng thái</option>
+        <option value="true">Đang làm việc</option>
+        <option value="false">Nghỉ việc</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <select [(ngModel)]="positionFilter" (ngModelChange)="onPositionFilterChange()" class="filter-select">
+        <option value="">Tất cả chức vụ</option>
+        <option *ngFor="let position of getUniquePositions()" [value]="position">{{ position }}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Đang tải dữ liệu...</p>
+  </div>
+
+  <!-- Employees Table -->
+  <div *ngIf="!isLoading" class="table-container">
+    <table class="data-table" *ngIf="filteredEmployees.length > 0">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Họ tên</th>
+          <th>Email</th>
+          <th>Số điện thoại</th>
+          <th>Chức vụ</th>
+          <th>Lương</th>
+          <th>Giới tính</th>
+          <th>Trạng thái</th>
+          <th>Ngày tạo</th>
+          <th>Thao tác</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let employee of filteredEmployees; trackBy: trackByEmployeeId">
+          <td>{{ employee.id }}</td>
+          <td class="employee-name">{{ employee.hovaten }}</td>
+          <td>{{ employee.email }}</td>
+          <td>{{ employee.sodienthoai }}</td>
+          <td>{{ employee.chucvu || 'Chưa có' }}</td>
+          <td class="salary">{{ formatCurrency(employee.luong) }}</td>
+          <td>{{ getGenderLabel(employee.gioitinh) }}</td>
+          <td>
+            <span [class]="getStatusClass(employee.trangthai)">
+              {{ getStatusLabel(employee.trangthai) }}
+            </span>
+          </td>
+          <td>{{ formatDate(employee.ngaytao) }}</td>
+          <td class="actions">
+            <button class="btn btn-sm btn-info" (click)="openViewModal(employee)">Xem</button>
+            <button class="btn btn-sm btn-primary" (click)="openEditForm(employee)">Sửa</button>
+            <button class="btn btn-sm" 
+                    [class.btn-warning]="employee.trangthai" 
+                    [class.btn-success]="!employee.trangthai"
+                    (click)="toggleEmployeeStatus(employee)">
+              {{ employee.trangthai ? 'Nghỉ việc' : 'Kích hoạt' }}
+            </button>
+            <button class="btn btn-sm btn-danger" (click)="openDeleteConfirm(employee)">Xóa</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Empty State -->
+    <div *ngIf="filteredEmployees.length === 0" class="empty-state">
+      <p>Không tìm thấy nhân viên nào phù hợp với bộ lọc.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Add Employee Modal -->
+<div *ngIf="showAddForm" class="modal-overlay" (click)="closeModals()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Thêm nhân viên mới</h2>
+      <button class="close-btn" (click)="closeModals()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form class="employee-form" (ngSubmit)="saveEmployee()">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Họ tên *</label>
+            <input type="text" [(ngModel)]="employeeForm.hovaten" name="hovaten" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label>Email *</label>
+            <input type="email" [(ngModel)]="employeeForm.email" name="email" class="form-control" required>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Số điện thoại *</label>
+            <input type="tel" [(ngModel)]="employeeForm.sodienthoai" name="sodienthoai" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label>Chức vụ *</label>
+            <input type="text" [(ngModel)]="employeeForm.chucvu" name="chucvu" class="form-control" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Giới tính</label>
+            <select [(ngModel)]="employeeForm.gioitinh" name="gioitinh" class="form-control">
+              <option value="">Chọn giới tính</option>
+              <option value="Nam">Nam</option>
+              <option value="Nữ">Nữ</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Ngày sinh</label>
+            <input type="date" [(ngModel)]="employeeForm.ngaysinh" name="ngaysinh" class="form-control">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Lương (VNĐ)</label>
+            <input type="number" [(ngModel)]="employeeForm.luong" name="luong" class="form-control" min="0">
+          </div>
+          <div class="form-group">
+            <label>Trạng thái</label>
+            <select [(ngModel)]="employeeForm.trangthai" name="trangthai" class="form-control">
+              <option [value]="true">Đang làm việc</option>
+              <option [value]="false">Nghỉ việc</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group full-width">
+          <label>Địa chỉ</label>
+          <textarea [(ngModel)]="employeeForm.diachi" name="diachi" class="form-control" rows="3"></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" (click)="closeModals()">Hủy</button>
+          <button type="submit" class="btn btn-primary">Thêm nhân viên</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Employee Modal -->
+<div *ngIf="showEditForm" class="modal-overlay" (click)="closeModals()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Chỉnh sửa nhân viên</h2>
+      <button class="close-btn" (click)="closeModals()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form class="employee-form" (ngSubmit)="saveEmployee()">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Họ tên *</label>
+            <input type="text" [(ngModel)]="employeeForm.hovaten" name="hovaten" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label>Email *</label>
+            <input type="email" [(ngModel)]="employeeForm.email" name="email" class="form-control" required>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Số điện thoại *</label>
+            <input type="tel" [(ngModel)]="employeeForm.sodienthoai" name="sodienthoai" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label>Chức vụ *</label>
+            <input type="text" [(ngModel)]="employeeForm.chucvu" name="chucvu" class="form-control" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Giới tính</label>
+            <select [(ngModel)]="employeeForm.gioitinh" name="gioitinh" class="form-control">
+              <option value="">Chọn giới tính</option>
+              <option value="Nam">Nam</option>
+              <option value="Nữ">Nữ</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Ngày sinh</label>
+            <input type="date" [(ngModel)]="employeeForm.ngaysinh" name="ngaysinh" class="form-control">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Lương (VNĐ)</label>
+            <input type="number" [(ngModel)]="employeeForm.luong" name="luong" class="form-control" min="0">
+          </div>
+          <div class="form-group">
+            <label>Trạng thái</label>
+            <select [(ngModel)]="employeeForm.trangthai" name="trangthai" class="form-control">
+              <option [value]="true">Đang làm việc</option>
+              <option [value]="false">Nghỉ việc</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group full-width">
+          <label>Địa chỉ</label>
+          <textarea [(ngModel)]="employeeForm.diachi" name="diachi" class="form-control" rows="3"></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" (click)="closeModals()">Hủy</button>
+          <button type="submit" class="btn btn-primary">Cập nhật</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- View Employee Modal -->
+<div *ngIf="showViewModal && currentEmployee" class="modal-overlay" (click)="closeModals()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Thông tin nhân viên</h2>
+      <button class="close-btn" (click)="closeModals()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="employee-details">
+        <div class="detail-group">
+          <label>ID:</label>
+          <span>{{ currentEmployee.id }}</span>
+        </div>
+        <div class="detail-group">
+          <label>Họ tên:</label>
+          <span>{{ currentEmployee.hovaten }}</span>
+        </div>
+        <div class="detail-group">
+          <label>Email:</label>
+          <span>{{ currentEmployee.email }}</span>
+        </div>
+        <div class="detail-group">
+          <label>Số điện thoại:</label>
+          <span>{{ currentEmployee.sodienthoai }}</span>
+        </div>
+        <div class="detail-group">
+          <label>Chức vụ:</label>
+          <span>{{ currentEmployee.chucvu || 'Chưa có' }}</span>
+        </div>
+        <div class="detail-group">
+          <label>Lương:</label>
+          <span class="salary-highlight">{{ formatCurrency(currentEmployee.luong) }}</span>
+        </div>
+        <div class="detail-group">
+          <label>Giới tính:</label>
+          <span>{{ getGenderLabel(currentEmployee.gioitinh) }}</span>
+        </div>
+        <div class="detail-group">
+          <label>Ngày sinh:</label>
+          <span>{{ formatDate(currentEmployee.ngaysinh) }}</span>
+        </div>
+        <div class="detail-group">
+          <label>Địa chỉ:</label>
+          <span>{{ currentEmployee.diachi || 'Chưa có' }}</span>
+        </div>
+        <div class="detail-group">
+          <label>Trạng thái:</label>
+          <span [class]="getStatusClass(currentEmployee.trangthai)">
+            {{ getStatusLabel(currentEmployee.trangthai) }}
+          </span>
+        </div>
+        <div class="detail-group">
+          <label>Ngày tạo:</label>
+          <span>{{ formatDate(currentEmployee.ngaytao) }}</span>
+        </div>
+        <div class="detail-group" *ngIf="currentEmployee.ngaycapnhat">
+          <label>Ngày cập nhật:</label>
+          <span>{{ formatDate(currentEmployee.ngaycapnhat) }}</span>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" (click)="closeModals()">Đóng</button>
+        <button class="btn btn-primary" (click)="openEditForm(currentEmployee); closeModals()">Chỉnh sửa</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div *ngIf="showDeleteConfirm && currentEmployee" class="modal-overlay" (click)="closeModals()">
+  <div class="modal-content small" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Xác nhận xóa</h2>
+      <button class="close-btn" (click)="closeModals()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p>Bạn có chắc chắn muốn xóa nhân viên <strong>{{ currentEmployee.hovaten }}</strong>?</p>
+      <p class="warning">Hành động này không thể hoàn tác!</p>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" (click)="closeModals()">Hủy</button>
+      <button class="btn btn-danger" (click)="deleteEmployee()">Xóa</button>
+    </div>
+  </div>
+</div>

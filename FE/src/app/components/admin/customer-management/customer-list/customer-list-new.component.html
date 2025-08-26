@@ -1,0 +1,320 @@
+<div class="customer-management">
+  <!-- Page Header -->
+  <div class="page-header">
+    <h1>Quản lý khách hàng</h1>
+    <div class="header-actions">
+      <button class="btn btn-primary" (click)="openAddForm()">Thêm khách hàng</button>
+      <button class="btn btn-secondary" (click)="refreshData()">Làm mới</button>
+      <button class="btn btn-outline" (click)="exportCustomers()">Xuất Excel</button>
+    </div>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-value">{{ totalCustomers }}</div>
+      <div class="stat-label">Tổng khách hàng</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ activeCustomers }}</div>
+      <div class="stat-label">Đang hoạt động</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ inactiveCustomers }}</div>
+      <div class="stat-label">Ngừng hoạt động</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ getActivePercentage() }}%</div>
+      <div class="stat-label">Tỷ lệ hoạt động</div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-section">
+    <div class="filter-group">
+      <input 
+        type="text" 
+        [(ngModel)]="searchTerm" 
+        (ngModelChange)="onSearchChange()"
+        placeholder="Tìm kiếm theo tên, email hoặc số điện thoại..."
+        class="search-input">
+    </div>
+    
+    <div class="filter-group">
+      <select [(ngModel)]="statusFilter" (ngModelChange)="onStatusFilterChange()" class="filter-select">
+        <option value="">Tất cả trạng thái</option>
+        <option value="true">Hoạt động</option>
+        <option value="false">Ngừng hoạt động</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <select [(ngModel)]="genderFilter" (ngModelChange)="onGenderFilterChange()" class="filter-select">
+        <option value="">Tất cả giới tính</option>
+        <option value="Nam">Nam</option>
+        <option value="Nữ">Nữ</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Đang tải dữ liệu...</p>
+  </div>
+
+  <!-- Customers Table -->
+  <div *ngIf="!isLoading" class="table-container">
+    <table class="data-table" *ngIf="filteredCustomers.length > 0">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Họ tên</th>
+          <th>Email</th>
+          <th>Số điện thoại</th>
+          <th>Giới tính</th>
+          <th>Địa chỉ</th>
+          <th>Trạng thái</th>
+          <th>Ngày tạo</th>
+          <th>Thao tác</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let customer of filteredCustomers; trackBy: trackByCustomerId">
+          <td>{{ customer.id }}</td>
+          <td class="customer-name">{{ customer.hovaten }}</td>
+          <td>{{ customer.email }}</td>
+          <td>{{ customer.sodienthoai }}</td>
+          <td>{{ getGenderLabel(customer.gioitinh) }}</td>
+          <td>{{ customer.diachi || 'Chưa có' }}</td>
+          <td>
+            <span [class]="getStatusClass(customer.trangthai)">
+              {{ getStatusLabel(customer.trangthai) }}
+            </span>
+          </td>
+          <td>{{ formatDate(customer.ngaytao) }}</td>
+          <td class="actions">
+            <button class="btn btn-sm btn-info" (click)="openViewModal(customer)">Xem</button>
+            <button class="btn btn-sm btn-primary" (click)="openEditForm(customer)">Sửa</button>
+            <button class="btn btn-sm" 
+                    [class.btn-warning]="customer.trangthai" 
+                    [class.btn-success]="!customer.trangthai"
+                    (click)="toggleCustomerStatus(customer)">
+              {{ customer.trangthai ? 'Vô hiệu' : 'Kích hoạt' }}
+            </button>
+            <button class="btn btn-sm btn-danger" (click)="openDeleteConfirm(customer)">Xóa</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Empty State -->
+    <div *ngIf="filteredCustomers.length === 0" class="empty-state">
+      <p>Không tìm thấy khách hàng nào phù hợp với bộ lọc.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Add Customer Modal -->
+<div *ngIf="showAddForm" class="modal-overlay" (click)="closeModals()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Thêm khách hàng mới</h2>
+      <button class="close-btn" (click)="closeModals()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form class="customer-form" (ngSubmit)="saveCustomer()">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Họ tên *</label>
+            <input type="text" [(ngModel)]="customerForm.hovaten" name="hovaten" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label>Email *</label>
+            <input type="email" [(ngModel)]="customerForm.email" name="email" class="form-control" required>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Số điện thoại *</label>
+            <input type="tel" [(ngModel)]="customerForm.sodienthoai" name="sodienthoai" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label>Giới tính</label>
+            <select [(ngModel)]="customerForm.gioitinh" name="gioitinh" class="form-control">
+              <option value="">Chọn giới tính</option>
+              <option value="Nam">Nam</option>
+              <option value="Nữ">Nữ</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Ngày sinh</label>
+            <input type="date" [(ngModel)]="customerForm.ngaysinh" name="ngaysinh" class="form-control">
+          </div>
+          <div class="form-group">
+            <label>Trạng thái</label>
+            <select [(ngModel)]="customerForm.trangthai" name="trangthai" class="form-control">
+              <option [value]="true">Hoạt động</option>
+              <option [value]="false">Ngừng hoạt động</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group full-width">
+          <label>Địa chỉ</label>
+          <textarea [(ngModel)]="customerForm.diachi" name="diachi" class="form-control" rows="3"></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" (click)="closeModals()">Hủy</button>
+          <button type="submit" class="btn btn-primary">Thêm khách hàng</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Customer Modal -->
+<div *ngIf="showEditForm" class="modal-overlay" (click)="closeModals()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Chỉnh sửa khách hàng</h2>
+      <button class="close-btn" (click)="closeModals()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form class="customer-form" (ngSubmit)="saveCustomer()">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Họ tên *</label>
+            <input type="text" [(ngModel)]="customerForm.hovaten" name="hovaten" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label>Email *</label>
+            <input type="email" [(ngModel)]="customerForm.email" name="email" class="form-control" required>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Số điện thoại *</label>
+            <input type="tel" [(ngModel)]="customerForm.sodienthoai" name="sodienthoai" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label>Giới tính</label>
+            <select [(ngModel)]="customerForm.gioitinh" name="gioitinh" class="form-control">
+              <option value="">Chọn giới tính</option>
+              <option value="Nam">Nam</option>
+              <option value="Nữ">Nữ</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Ngày sinh</label>
+            <input type="date" [(ngModel)]="customerForm.ngaysinh" name="ngaysinh" class="form-control">
+          </div>
+          <div class="form-group">
+            <label>Trạng thái</label>
+            <select [(ngModel)]="customerForm.trangthai" name="trangthai" class="form-control">
+              <option [value]="true">Hoạt động</option>
+              <option [value]="false">Ngừng hoạt động</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group full-width">
+          <label>Địa chỉ</label>
+          <textarea [(ngModel)]="customerForm.diachi" name="diachi" class="form-control" rows="3"></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" (click)="closeModals()">Hủy</button>
+          <button type="submit" class="btn btn-primary">Cập nhật</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- View Customer Modal -->
+<div *ngIf="showViewModal && currentCustomer" class="modal-overlay" (click)="closeModals()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Thông tin khách hàng</h2>
+      <button class="close-btn" (click)="closeModals()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="customer-details">
+        <div class="detail-group">
+          <label>ID:</label>
+          <span>{{ currentCustomer.id }}</span>
+        </div>
+        <div class="detail-group">
+          <label>Họ tên:</label>
+          <span>{{ currentCustomer.hovaten }}</span>
+        </div>
+        <div class="detail-group">
+          <label>Email:</label>
+          <span>{{ currentCustomer.email }}</span>
+        </div>
+        <div class="detail-group">
+          <label>Số điện thoại:</label>
+          <span>{{ currentCustomer.sodienthoai }}</span>
+        </div>
+        <div class="detail-group">
+          <label>Giới tính:</label>
+          <span>{{ getGenderLabel(currentCustomer.gioitinh) }}</span>
+        </div>
+        <div class="detail-group">
+          <label>Ngày sinh:</label>
+          <span>{{ formatDate(currentCustomer.ngaysinh) }}</span>
+        </div>
+        <div class="detail-group">
+          <label>Địa chỉ:</label>
+          <span>{{ currentCustomer.diachi || 'Chưa có' }}</span>
+        </div>
+        <div class="detail-group">
+          <label>Trạng thái:</label>
+          <span [class]="getStatusClass(currentCustomer.trangthai)">
+            {{ getStatusLabel(currentCustomer.trangthai) }}
+          </span>
+        </div>
+        <div class="detail-group">
+          <label>Ngày tạo:</label>
+          <span>{{ formatDate(currentCustomer.ngaytao) }}</span>
+        </div>
+        <div class="detail-group" *ngIf="currentCustomer.ngaycapnhat">
+          <label>Ngày cập nhật:</label>
+          <span>{{ formatDate(currentCustomer.ngaycapnhat) }}</span>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" (click)="closeModals()">Đóng</button>
+        <button class="btn btn-primary" (click)="openEditForm(currentCustomer); closeModals()">Chỉnh sửa</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div *ngIf="showDeleteConfirm && currentCustomer" class="modal-overlay" (click)="closeModals()">
+  <div class="modal-content small" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Xác nhận xóa</h2>
+      <button class="close-btn" (click)="closeModals()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p>Bạn có chắc chắn muốn xóa khách hàng <strong>{{ currentCustomer.hovaten }}</strong>?</p>
+      <p class="warning">Hành động này không thể hoàn tác!</p>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" (click)="closeModals()">Hủy</button>
+      <button class="btn btn-danger" (click)="deleteCustomer()">Xóa</button>
+    </div>
+  </div>
+</div>

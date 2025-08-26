@@ -1,11 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { VanChuyen } from '../../../../core/models/vanchuyen.model';
-import { DonHang } from '../../../../core/models/donhang.model';
-import { ApiService } from '../../../../core/services/api.service';
-import { NotificationService } from '../../../../core/services/notification.service';
-import { catchError, forkJoin, of } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+
+interface VanChuyen {
+  id: number;
+  mavanchuyen: string;
+  donhangid: number;
+  donvivanchuyen: string;
+  trangthai: string;
+  ngaygui?: string;
+  ngaygiaodk?: string;
+  ngaygiaothucte?: string;
+  phivanchuyen: number;
+  ghichu?: string;
+}
 
 @Component({
   selector: 'app-shipping-list',
@@ -15,26 +24,22 @@ import { catchError, forkJoin, of } from 'rxjs';
   styleUrls: ['./shipping-list.component.scss'],
 })
 export class ShippingListComponent implements OnInit {
-  shipments: (VanChuyen & { donhang?: DonHang })[] = [];
-  filteredShipments: (VanChuyen & { donhang?: DonHang })[] = [];
-  loading = false;
+  shipments: VanChuyen[] = [];
+  filteredShipments: VanChuyen[] = [];
+  loading = true;
+  
+  private apiUrl = 'http://localhost:8080/api';
 
   searchKeyword = '';
   statusFilter = '';
   carrierFilter = '';
-
-  showUpdateModal = false;
-  editingShipment: any = {};
 
   totalShipments = 0;
   pendingShipments = 0;
   inTransitShipments = 0;
   deliveredShipments = 0;
 
-  constructor(
-    private apiService: ApiService,
-    private notificationService: NotificationService
-  ) {}
+  constructor(private http: HttpClient) {}
 
   ngOnInit() {
     this.loadShipments();
@@ -43,64 +48,70 @@ export class ShippingListComponent implements OnInit {
   loadShipments() {
     this.loading = true;
 
-    // Load shipments and orders from backend
-    forkJoin({
-      vanChuyens: this.apiService.get<VanChuyen[]>('/api/vanchuyen').pipe(
-        catchError((error) => {
+    this.http.get<any>(`${this.apiUrl}/vanchuyen`)
+      .subscribe({
+        next: (response) => {
+          this.shipments = response.data || response || [];
+          this.calculateStats();
+          this.applyFilters();
+          this.loading = false;
+        },
+        error: (error: any) => {
           console.error('Error loading shipments:', error);
-          return of([]);
-        })
-      ),
-      donHangs: this.apiService.get<DonHang[]>('/api/donhang').pipe(
-        catchError((error) => {
-          console.error('Error loading orders:', error);
-          return of([]);
-        })
-      ),
-    }).subscribe({
-      next: (data) => {
-        // Combine shipment data with order data
-        this.shipments = data.vanChuyens.map((vanChuyen) => {
-          const donHang = data.donHangs.find(
-            (dh) => dh.id === vanChuyen.donhangid
-          );
-          return {
-            ...vanChuyen,
-            donhang: donHang,
-          };
-        });
-        this.calculateStats();
-        this.applyFilters();
-        this.loading = false;
+          this.shipments = this.getMockShipments();
+          this.calculateStats();
+          this.applyFilters();
+          this.loading = false;
+        }
+      });
+  }
+
+  getMockShipments(): VanChuyen[] {
+    return [
+      {
+        id: 1,
+        mavanchuyen: 'VC001',
+        donhangid: 1,
+        donvivanchuyen: 'GHN',
+        trangthai: 'Đang giao',
+        ngaygui: '2025-08-25T10:00:00',
+        ngaygiaodk: '2025-08-27T16:00:00',
+        phivanchuyen: 30000,
+        ghichu: 'Giao hàng nhanh'
       },
-      error: (error) => {
-        console.error('Error loading shipment data:', error);
-        this.notificationService.error(
-          'Lỗi',
-          'Không thể tải dữ liệu vận chuyển'
-        );
-        this.loading = false;
+      {
+        id: 2,
+        mavanchuyen: 'VC002',
+        donhangid: 2,
+        donvivanchuyen: 'GHTK',
+        trangthai: 'Đã giao',
+        ngaygui: '2025-08-24T14:30:00',
+        ngaygiaodk: '2025-08-26T10:00:00',
+        ngaygiaothucte: '2025-08-26T09:30:00',
+        phivanchuyen: 25000
       },
-    });
+      {
+        id: 3,
+        mavanchuyen: 'VC003',
+        donhangid: 3,
+        donvivanchuyen: 'VNPOST',
+        trangthai: 'Đang chờ',
+        ngaygui: '2025-08-26T08:00:00',
+        ngaygiaodk: '2025-08-28T17:00:00',
+        phivanchuyen: 20000,
+        ghichu: 'Hàng dễ vỡ'
+      }
+    ];
   }
 
   applyFilters() {
     this.filteredShipments = this.shipments.filter((shipment) => {
-      const matchesSearch =
-        !this.searchKeyword ||
-        shipment.mavanchuyen
-          ?.toLowerCase()
-          .includes(this.searchKeyword.toLowerCase()) ||
-        shipment.id?.toString().includes(this.searchKeyword) ||
-        shipment.donhang?.khachhang?.hoten
-          ?.toLowerCase()
-          .includes(this.searchKeyword.toLowerCase());
+      const matchesSearch = !this.searchKeyword ||
+        shipment.mavanchuyen.toLowerCase().includes(this.searchKeyword.toLowerCase()) ||
+        shipment.id.toString().includes(this.searchKeyword);
 
-      const matchesStatus =
-        !this.statusFilter || shipment.trangthai === this.statusFilter;
-
-      const matchesCarrier =
-        !this.carrierFilter || shipment.donvivanchuyen === this.carrierFilter;
+      const matchesStatus = !this.statusFilter || shipment.trangthai === this.statusFilter;
+      const matchesCarrier = !this.carrierFilter || shipment.donvivanchuyen === this.carrierFilter;
 
       return matchesSearch && matchesStatus && matchesCarrier;
     });
@@ -108,154 +119,55 @@ export class ShippingListComponent implements OnInit {
 
   calculateStats() {
     this.totalShipments = this.shipments.length;
-    this.pendingShipments = this.shipments.filter(
-      (s) => s.trangthai === 'PENDING'
-    ).length;
-    this.inTransitShipments = this.shipments.filter(
-      (s) => s.trangthai === 'IN_TRANSIT'
-    ).length;
-    this.deliveredShipments = this.shipments.filter(
-      (s) => s.trangthai === 'DELIVERED'
-    ).length;
+    this.pendingShipments = this.shipments.filter(s => s.trangthai === 'Đang chờ').length;
+    this.inTransitShipments = this.shipments.filter(s => s.trangthai === 'Đang giao').length;
+    this.deliveredShipments = this.shipments.filter(s => s.trangthai === 'Đã giao').length;
   }
 
   createShipment() {
-    // Navigate to shipment creation page or open modal
-    this.notificationService.info(
-      'Thông báo',
-      'Tính năng tạo đơn vận chuyển đang được phát triển'
-    );
+    console.log('Tính năng tạo đơn vận chuyển đang được phát triển!');
+    alert('Tính năng tạo đơn vận chuyển đang được phát triển!');
   }
 
   trackShipment(shipment: VanChuyen) {
-    // Track shipment functionality
-    this.notificationService.info(
-      'Theo dõi',
-      `Tracking: ${shipment.mavanchuyen || 'Chưa có mã vận chuyển'}`
-    );
+    console.log('Tracking:', shipment.mavanchuyen);
+    alert(`Tracking: ${shipment.mavanchuyen}`);
   }
 
   updateShipment(shipment: VanChuyen) {
-    this.editingShipment = { ...shipment };
-    this.showUpdateModal = true;
+    console.log('Tính năng cập nhật đang được phát triển!', shipment);
+    alert('Tính năng cập nhật đang được phát triển!');
   }
 
-  saveShipmentUpdate() {
-    if (!this.editingShipment.id) {
-      this.notificationService.error('Lỗi', 'Không tìm thấy ID vận chuyển');
-      return;
-    }
-
-    const updateData = {
-      trangthai: this.editingShipment.trangthai,
-      donvivanchuyen: this.editingShipment.donvivanchuyen,
-      mavanchuyen: this.editingShipment.mavanchuyen,
-      ngaygiaodk: this.editingShipment.ngaygiaodk,
-    };
-
-    this.apiService
-      .put(`/api/vanchuyen/${this.editingShipment.id}`, updateData)
-      .subscribe({
-        next: () => {
-          // Update local data
-          const index = this.shipments.findIndex(
-            (s) => s.id === this.editingShipment.id
-          );
-          if (index !== -1) {
-            Object.assign(this.shipments[index], updateData);
-          }
-          this.calculateStats();
-          this.applyFilters();
-          this.showUpdateModal = false;
-          this.notificationService.success(
-            'Thành công',
-            'Đã cập nhật thông tin vận chuyển'
-          );
-        },
-        error: (error) => {
-          console.error('Error updating shipment:', error);
-          this.notificationService.error(
-            'Lỗi',
-            'Không thể cập nhật thông tin vận chuyển'
-          );
-        },
-      });
+  formatDate(dateString?: string): string {
+    if (!dateString) return 'Chưa có';
+    return new Date(dateString).toLocaleDateString('vi-VN', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   }
 
-  cancelShipment(shipment: VanChuyen) {
-    if (confirm('Bạn có chắc muốn hủy đơn vận chuyển này?')) {
-      const updateData = { trangthai: 'CANCELLED' };
+  formatCurrency(amount: number): string {
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND'
+    }).format(amount);
+  }
 
-      this.apiService
-        .put(`/api/vanchuyen/${shipment.id}`, updateData)
-        .subscribe({
-          next: () => {
-            shipment.trangthai = 'CANCELLED';
-            this.calculateStats();
-            this.applyFilters();
-            this.notificationService.success(
-              'Thành công',
-              'Đã hủy đơn vận chuyển'
-            );
-          },
-          error: (error) => {
-            console.error('Error cancelling shipment:', error);
-            this.notificationService.error(
-              'Lỗi',
-              'Không thể hủy đơn vận chuyển'
-            );
-          },
-        });
+  getStatusClass(status: string): string {
+    switch (status) {
+      case 'Đã giao': return 'status-delivered';
+      case 'Đang giao': return 'status-shipping';
+      case 'Đang chờ': return 'status-pending';
+      case 'Đã hủy': return 'status-cancelled';
+      default: return 'status-pending';
     }
   }
 
-  deleteShipment(shipment: VanChuyen) {
-    if (
-      confirm(
-        'Bạn có chắc muốn xóa đơn vận chuyển này? Hành động này không thể hoàn tác.'
-      )
-    ) {
-      this.apiService.delete(`/api/vanchuyen/${shipment.id}`).subscribe({
-        next: () => {
-          this.shipments = this.shipments.filter((s) => s.id !== shipment.id);
-          this.calculateStats();
-          this.applyFilters();
-          this.notificationService.success(
-            'Thành công',
-            'Đã xóa đơn vận chuyển'
-          );
-        },
-        error: (error) => {
-          console.error('Error deleting shipment:', error);
-          this.notificationService.error('Lỗi', 'Không thể xóa đơn vận chuyển');
-        },
-      });
-    }
-  }
-
-  closeModal(event: Event) {
-    if (event.target === event.currentTarget) {
-      this.showUpdateModal = false;
-    }
-  }
-
-  formatDate(dateString: string | Date | undefined): string {
-    if (!dateString) return 'N/A';
-    return new Date(dateString).toLocaleDateString('vi-VN');
-  }
-
-  getStatusLabel(status: string): string {
-    const statusMap: { [key: string]: string } = {
-      PENDING: 'Đang chờ',
-      IN_TRANSIT: 'Đang giao',
-      DELIVERED: 'Đã giao',
-      CANCELLED: 'Đã hủy',
-    };
-    return statusMap[status] || 'Đang chờ';
-  }
-
-  getCarrierLabel(carrier: string | undefined): string {
-    if (!carrier) return 'N/A';
+  getCarrierLabel(carrier: string): string {
     const carrierMap: { [key: string]: string } = {
       GHN: 'Giao Hàng Nhanh',
       GHTK: 'Giao Hàng Tiết Kiệm',
@@ -263,5 +175,22 @@ export class ShippingListComponent implements OnInit {
       VIETTEL_POST: 'Viettel Post',
     };
     return carrierMap[carrier] || carrier;
+  }
+
+  refreshData(): void {
+    this.loadShipments();
+  }
+
+  exportData(): void {
+    console.log('Tính năng xuất dữ liệu đang được phát triển!');
+    alert('Tính năng xuất dữ liệu đang được phát triển!');
+  }
+
+  trackByShipmentId(index: number, shipment: VanChuyen): number {
+    return shipment.id;
+  }
+
+  getStatusLabel(status: string): string {
+    return status;
   }
 }

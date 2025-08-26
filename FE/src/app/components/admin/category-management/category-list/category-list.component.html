@@ -1,182 +1,290 @@
-<div class="category-management">
+<div class="category-management-container">
   <!-- Header Section -->
-  <div class="page-header">
-    <div class="header-content">
-      <h1 class="page-title">
-        <span class="icon">📂</span>
-        Quản lý danh mục
-      </h1>
-      <p class="page-subtitle">Quản lý danh mục sản phẩm của cửa hàng</p>
+  <div class="header-section">
+    <div class="title-section">
+      <h1>Quản lý danh mục</h1>
+      <p class="subtitle">Quản lý các danh mục sản phẩm của cửa hàng</p>
     </div>
     <div class="header-actions">
-      <button
-        class="btn btn-primary"
-        (click)="openAddModal()"
-        title="Thêm danh mục mới"
-      >
-        <span class="btn-icon">➕</span>
-        Thêm danh mục
-      </button>
-      <button
-        class="btn btn-secondary"
-        (click)="loadCategories()"
-        [disabled]="loading"
-        title="Làm mới danh sách"
-      >
-        <span class="btn-icon">🔄</span>
+      <button type="button" class="btn btn-secondary" (click)="refreshData()">
         Làm mới
+      </button>
+      <button type="button" class="btn btn-primary" (click)="openAddForm()">
+        Thêm danh mục
       </button>
     </div>
   </div>
 
-  <!-- Search and Filter Section -->
-  <div class="filter-section">
-    <div class="search-container">
-      <div class="search-box">
-        <span class="search-icon">🔍</span>
-        <input
-          type="text"
-          [(ngModel)]="searchTerm"
-          (input)="onSearchChange()"
-          placeholder="Tìm kiếm theo tên danh mục..."
-          class="search-input"
-        />
-        <button
-          *ngIf="searchTerm"
-          class="clear-search"
-          (click)="searchTerm = ''; onSearchChange()"
-          title="Xóa tìm kiếm"
-        >
-          ✕
-        </button>
+  <!-- Statistics Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">📁</div>
+      <div class="stat-content">
+        <div class="stat-number">{{totalCategories}}</div>
+        <div class="stat-label">Tổng danh mục</div>
       </div>
     </div>
+    <div class="stat-card">
+      <div class="stat-icon">✅</div>
+      <div class="stat-content">
+        <div class="stat-number">{{activeCategories}}</div>
+        <div class="stat-label">Đang hoạt động</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">❌</div>
+      <div class="stat-content">
+        <div class="stat-number">{{inactiveCategories}}</div>
+        <div class="stat-label">Vô hiệu hóa</div>
+      </div>
+    </div>
+    <div class="stat-card revenue-card">
+      <div class="stat-icon">📊</div>
+      <div class="stat-content">
+        <div class="stat-number">{{getActivePercentage()}}%</div>
+        <div class="stat-label">Tỷ lệ hoạt động</div>
+      </div>
+    </div>
+  </div>
 
-    <div class="filter-info">
-      <span class="result-count">
-        Hiển thị {{ filteredCategories.length }} / {{ categories.length }} danh
-        mục
-      </span>
+  <!-- Filters Section -->
+  <div class="filters-section">
+    <div class="filter-group">
+      <label>Tìm kiếm:</label>
+      <input 
+        type="text" 
+        class="form-control" 
+        placeholder="Tìm theo tên danh mục, mô tả..."
+        [(ngModel)]="searchTerm"
+        (input)="onSearchChange()">
+    </div>
+    <div class="filter-group">
+      <label>Trạng thái:</label>
+      <select 
+        class="form-control" 
+        [(ngModel)]="statusFilter"
+        (change)="onStatusFilterChange()">
+        <option value="">Tất cả trạng thái</option>
+        <option value="true">Đang hoạt động</option>
+        <option value="false">Vô hiệu hóa</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Thao tác:</label>
+      <button type="button" class="btn btn-secondary" (click)="exportCategories()">
+        Xuất dữ liệu
+      </button>
     </div>
   </div>
 
   <!-- Loading State -->
-  <div *ngIf="loading" class="loading-container">
+  <div *ngIf="isLoading" class="loading-container">
     <div class="loading-spinner"></div>
-    <p>Đang tải danh sách danh mục...</p>
-  </div>
-
-  <!-- Empty State -->
-  <div *ngIf="!loading && categories.length === 0" class="empty-state">
-    <div class="empty-icon">📂</div>
-    <h3>Chưa có danh mục nào</h3>
-    <p>Bạn chưa tạo danh mục nào. Hãy thêm danh mục đầu tiên!</p>
-    <button class="btn btn-primary" (click)="openAddModal()">
-      <span class="btn-icon">➕</span>
-      Thêm danh mục đầu tiên
-    </button>
-  </div>
-
-  <!-- No Results State -->
-  <div
-    *ngIf="!loading && categories.length > 0 && filteredCategories.length === 0"
-    class="no-results"
-  >
-    <div class="no-results-icon">🔍</div>
-    <h3>Không tìm thấy kết quả</h3>
-    <p>Không có danh mục nào phù hợp với từ khóa "{{ searchTerm }}"</p>
-    <button
-      class="btn btn-secondary"
-      (click)="searchTerm = ''; onSearchChange()"
-    >
-      Xóa bộ lọc
-    </button>
+    <p>Đang tải dữ liệu...</p>
   </div>
 
   <!-- Categories Table -->
-  <div
-    *ngIf="!loading && filteredCategories.length > 0"
-    class="table-container"
-  >
-    <table class="categories-table">
-      <thead>
-        <tr>
-          <th class="col-id">ID</th>
-          <th class="col-name">Tên danh mục</th>
-          <th class="col-description">Mô tả</th>
-          <th class="col-actions">Thao tác</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          *ngFor="let category of filteredCategories; trackBy: trackByCategory"
-          class="category-row"
-        >
-          <td class="col-id">
-            <span class="category-id">#{{ category.id }}</span>
-          </td>
-          <td class="col-name">
-            <div class="category-name">
-              <span class="name-text">{{ category.tendanhmuc }}</span>
-            </div>
-          </td>
-          <td class="col-description">
-            <div class="category-description">
-              <span *ngIf="category.mota" class="description-text">{{
-                category.mota
-              }}</span>
-              <span *ngIf="!category.mota" class="no-description"
-                >Chưa có mô tả</span
-              >
-            </div>
-          </td>
-          <td class="col-actions">
-            <div class="action-buttons">
-              <button
-                class="btn btn-sm btn-primary"
-                (click)="openEditModal(category)"
-                title="Chỉnh sửa danh mục"
-              >
-                <span class="btn-icon">✏️</span>
-                Sửa
-              </button>
-              <button
-                class="btn btn-sm btn-danger"
-                (click)="deleteCategory(category)"
-                title="Xóa danh mục"
-              >
-                <span class="btn-icon">🗑️</span>
-                Xóa
-              </button>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+  <div *ngIf="!isLoading" class="table-container">
+    <div *ngIf="filteredCategories.length === 0" class="empty-state">
+      <div class="empty-icon">📁</div>
+      <h3>Không có danh mục nào</h3>
+      <p>Hiện tại không có danh mục nào phù hợp với bộ lọc của bạn.</p>
+      <button type="button" class="btn btn-primary" (click)="openAddForm()">
+        Thêm danh mục đầu tiên
+      </button>
+    </div>
 
-  <!-- Add Modal -->
-  <div class="modal-overlay" *ngIf="showAddModal" (click)="closeAddModal()">
-    <div class="modal-content" (click)="$event.stopPropagation()">
-      <app-category-add
-        (added)="closeAddModal(true)"
-        (cancel)="closeAddModal()"
-      ></app-category-add>
+    <div *ngIf="filteredCategories.length > 0" class="categories-table">
+      <div class="table-header">
+        <div class="header-cell">ID</div>
+        <div class="header-cell">Tên danh mục</div>
+        <div class="header-cell">Mô tả</div>
+        <div class="header-cell">Trạng thái</div>
+        <div class="header-cell">Ngày tạo</div>
+        <div class="header-cell">Thao tác</div>
+      </div>
+
+      <div 
+        *ngFor="let category of filteredCategories; trackBy: trackByCategoryId" 
+        class="table-row">
+        <div class="table-cell">
+          <span class="category-id">#{{category.id}}</span>
+        </div>
+        <div class="table-cell">
+          <div class="category-name">{{category.tendanhmuc}}</div>
+        </div>
+        <div class="table-cell">
+          <div class="category-description">
+            {{category.mota || 'Chưa có mô tả'}}
+          </div>
+        </div>
+        <div class="table-cell">
+          <span class="status-badge" [ngClass]="getStatusClass(category.trangthai)">
+            {{getStatusLabel(category.trangthai)}}
+          </span>
+        </div>
+        <div class="table-cell">
+          <span class="date">{{formatDate(category.ngaytao)}}</span>
+        </div>
+        <div class="table-cell actions-cell">
+          <div class="action-buttons">
+            <button 
+              type="button" 
+              class="btn btn-sm btn-secondary"
+              (click)="openViewModal(category)">
+              Xem
+            </button>
+            <button 
+              type="button" 
+              class="btn btn-sm btn-primary"
+              (click)="openEditForm(category)">
+              Sửa
+            </button>
+            <button 
+              type="button" 
+              class="btn btn-sm"
+              [ngClass]="category.trangthai ? 'btn-warning' : 'btn-success'"
+              (click)="toggleCategoryStatus(category)">
+              {{category.trangthai ? 'Vô hiệu hóa' : 'Kích hoạt'}}
+            </button>
+            <button 
+              type="button" 
+              class="btn btn-sm btn-danger"
+              (click)="openDeleteConfirm(category)">
+              Xóa
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Edit Modal -->
-  <div
-    class="modal-overlay"
-    *ngIf="showEditModal && editCategory"
-    (click)="closeEditModal()"
-  >
-    <div class="modal-content" (click)="$event.stopPropagation()">
-      <app-category-edit
-        [category]="editCategory"
-        (updated)="closeEditModal(true)"
-        (cancel)="closeEditModal()"
-      ></app-category-edit>
+  <!-- Results Summary -->
+  <div *ngIf="!isLoading && filteredCategories.length > 0" class="results-summary">
+    <span>Hiển thị {{filteredCategories.length}} trong tổng số {{totalCategories}} danh mục</span>
+  </div>
+</div>
+
+<!-- Add/Edit Category Modal -->
+<div *ngIf="showAddForm || showEditForm" class="modal-overlay" (click)="closeModals()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>{{showEditForm ? 'Chỉnh sửa danh mục' : 'Thêm danh mục mới'}}</h2>
+      <button type="button" class="btn-close" (click)="closeModals()">×</button>
+    </div>
+    <form class="category-form" (ngSubmit)="saveCategory()">
+      <div class="form-group">
+        <label for="tendanhmuc">Tên danh mục *</label>
+        <input 
+          type="text" 
+          id="tendanhmuc"
+          class="form-control"
+          [(ngModel)]="categoryForm.tendanhmuc"
+          name="tendanhmuc"
+          placeholder="Nhập tên danh mục..."
+          required>
+      </div>
+      <div class="form-group">
+        <label for="mota">Mô tả</label>
+        <textarea 
+          id="mota"
+          class="form-control"
+          [(ngModel)]="categoryForm.mota"
+          name="mota"
+          placeholder="Nhập mô tả danh mục..."
+          rows="4"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="checkbox-label">
+          <input 
+            type="checkbox" 
+            [(ngModel)]="categoryForm.trangthai"
+            name="trangthai">
+          <span>Kích hoạt danh mục</span>
+        </label>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" (click)="closeModals()">
+          Hủy
+        </button>
+        <button type="submit" class="btn btn-primary">
+          {{showEditForm ? 'Cập nhật' : 'Thêm mới'}}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- View Category Modal -->
+<div *ngIf="showViewModal && currentCategory" class="modal-overlay" (click)="closeModals()">
+  <div class="modal-content view-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Chi tiết danh mục</h2>
+      <button type="button" class="btn-close" (click)="closeModals()">×</button>
+    </div>
+    <div class="category-details">
+      <div class="info-grid">
+        <div class="info-item">
+          <label>ID:</label>
+          <span>{{currentCategory.id}}</span>
+        </div>
+        <div class="info-item">
+          <label>Tên danh mục:</label>
+          <span>{{currentCategory.tendanhmuc}}</span>
+        </div>
+        <div class="info-item">
+          <label>Trạng thái:</label>
+          <span class="status-badge" [ngClass]="getStatusClass(currentCategory.trangthai)">
+            {{getStatusLabel(currentCategory.trangthai)}}
+          </span>
+        </div>
+        <div class="info-item" *ngIf="currentCategory.ngaytao">
+          <label>Ngày tạo:</label>
+          <span>{{formatDate(currentCategory.ngaytao)}}</span>
+        </div>
+        <div class="info-item" *ngIf="currentCategory.ngaycapnhat">
+          <label>Ngày cập nhật:</label>
+          <span>{{formatDate(currentCategory.ngaycapnhat)}}</span>
+        </div>
+      </div>
+      <div class="info-item description" *ngIf="currentCategory.mota">
+        <label>Mô tả:</label>
+        <div class="description-content">{{currentCategory.mota}}</div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-primary" (click)="openEditForm(currentCategory)">
+        Chỉnh sửa
+      </button>
+      <button type="button" class="btn btn-secondary" (click)="closeModals()">
+        Đóng
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div *ngIf="showDeleteConfirm && currentCategory" class="modal-overlay" (click)="closeModals()">
+  <div class="modal-content delete-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Xác nhận xóa</h2>
+      <button type="button" class="btn-close" (click)="closeModals()">×</button>
+    </div>
+    <div class="delete-content">
+      <div class="warning-icon">⚠️</div>
+      <p>Bạn có chắc chắn muốn xóa danh mục này?</p>
+      <div class="category-info">
+        <strong>{{currentCategory.tendanhmuc}}</strong>
+      </div>
+      <p class="warning-text">Hành động này không thể hoàn tác và có thể ảnh hưởng đến các sản phẩm thuộc danh mục này!</p>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-secondary" (click)="closeModals()">
+        Hủy
+      </button>
+      <button type="button" class="btn btn-danger" (click)="deleteCategory()">
+        Xóa
+      </button>
     </div>
   </div>
 </div>

@@ -7,8 +7,10 @@ export interface VanChuyen {
   donvivanchuyen?: string;
   trangthai?: string;
   ngaytao?: Date;
+  ngaygui?: Date; // Added missing property
   ngaygiaodk?: Date;
   ngaygiaothucte?: Date;
+  phivanchuyen?: number; // Added missing property
   ghichu?: string;
   donhang?: DonHang;
 }

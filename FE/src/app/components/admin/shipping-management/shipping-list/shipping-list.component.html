@@ -1,211 +1,110 @@
 <div class="shipping-management">
-  <div class="header">
-    <h2>Quản lý vận chuyển</h2>
-    <button (click)="createShipment()" class="btn btn-primary">
-      + Tạo đơn vận chuyển
-    </button>
-  </div>
-
-  <div class="shipping-stats">
-    <div class="stat-card">
-      <h3>{{ totalShipments }}</h3>
-      <p>Tổng đơn vận chuyển</p>
-    </div>
-    <div class="stat-card">
-      <h3>{{ pendingShipments }}</h3>
-      <p>Đang chờ</p>
-    </div>
-    <div class="stat-card">
-      <h3>{{ inTransitShipments }}</h3>
-      <p>Đang giao</p>
-    </div>
-    <div class="stat-card">
-      <h3>{{ deliveredShipments }}</h3>
-      <p>Đã giao</p>
+  <!-- Page Header -->
+  <div class="page-header">
+    <h1>Quản lý vận chuyển</h1>
+    <div class="header-actions">
+      <button class="btn btn-primary" (click)="createShipment()">Tạo đơn vận chuyển</button>
+      <button class="btn btn-secondary" (click)="refreshData()">Làm mới</button>
+      <button class="btn btn-outline" (click)="exportData()">Xuất Excel</button>
     </div>
   </div>
 
-  <div class="filters">
-    <input
-      type="text"
-      [(ngModel)]="searchKeyword"
-      (input)="applyFilters()"
-      placeholder="Tìm kiếm mã vận đơn..."
-      class="form-control"
-    />
-    <select
-      [(ngModel)]="statusFilter"
-      (change)="applyFilters()"
-      class="form-select"
-    >
-      <option value="">Tất cả trạng thái</option>
-      <option value="PENDING">Đang chờ</option>
-      <option value="IN_TRANSIT">Đang giao</option>
-      <option value="DELIVERED">Đã giao</option>
-      <option value="CANCELLED">Đã hủy</option>
-    </select>
-    <select
-      [(ngModel)]="carrierFilter"
-      (change)="applyFilters()"
-      class="form-select"
-    >
-      <option value="">Tất cả đơn vị vận chuyển</option>
-      <option value="GHN">Giao Hàng Nhanh</option>
-      <option value="GHTK">Giao Hàng Tiết Kiệm</option>
-      <option value="VNPOST">VNPost</option>
-      <option value="VIETTEL_POST">Viettel Post</option>
-    </select>
+  <!-- Statistics Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-value">{{ totalShipments }}</div>
+      <div class="stat-label">Tổng đơn vận chuyển</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ pendingShipments }}</div>
+      <div class="stat-label">Đang chờ</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ inTransitShipments }}</div>
+      <div class="stat-label">Đang giao</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ deliveredShipments }}</div>
+      <div class="stat-label">Đã giao</div>
+    </div>
   </div>
 
-  <div class="shipping-table" *ngIf="!loading">
-    <table>
+  <!-- Filters -->
+  <div class="filters-section">
+    <div class="filter-group">
+      <input 
+        type="text" 
+        [(ngModel)]="searchKeyword" 
+        (ngModelChange)="applyFilters()"
+        placeholder="Tìm kiếm mã vận đơn..."
+        class="search-input">
+    </div>
+    <div class="filter-group">
+      <select [(ngModel)]="statusFilter" (ngModelChange)="applyFilters()" class="filter-select">
+        <option value="">Tất cả trạng thái</option>
+        <option value="Đang chờ">Đang chờ</option>
+        <option value="Đang giao">Đang giao</option>
+        <option value="Đã giao">Đã giao</option>
+        <option value="Đã hủy">Đã hủy</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <select [(ngModel)]="carrierFilter" (ngModelChange)="applyFilters()" class="filter-select">
+        <option value="">Tất cả đơn vị vận chuyển</option>
+        <option value="GHN">GHN</option>
+        <option value="GHTK">GHTK</option>
+        <option value="VNPOST">VNPost</option>
+        <option value="VIETTEL_POST">Viettel Post</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Đang tải dữ liệu...</p>
+  </div>
+
+  <!-- Shipments Table -->
+  <div *ngIf="!loading" class="table-container">
+    <table class="data-table" *ngIf="filteredShipments.length > 0">
       <thead>
         <tr>
           <th>Mã vận đơn</th>
-          <th>Khách hàng</th>
-          <th>Địa chỉ giao hàng</th>
+          <th>Đơn hàng</th>
           <th>Đơn vị vận chuyển</th>
           <th>Trạng thái</th>
-          <th>Ngày tạo</th>
+          <th>Ngày gửi</th>
           <th>Ngày giao dự kiến</th>
+          <th>Phí vận chuyển</th>
           <th>Thao tác</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let shipment of filteredShipments">
-          <td>
-            <strong>{{ shipment.mavanchuyen || "#" + shipment.id }}</strong>
-          </td>
-          <td>{{ shipment.donhang?.khachhang?.hoten || "N/A" }}</td>
-          <td class="address">{{ shipment.donhang?.diachinhan || "N/A" }}</td>
+        <tr *ngFor="let shipment of filteredShipments; trackBy: trackByShipmentId">
+          <td class="shipment-code">{{ shipment.mavanchuyen }}</td>
+          <td>Đơn hàng #{{ shipment.donhangid }}</td>
           <td>{{ getCarrierLabel(shipment.donvivanchuyen) }}</td>
           <td>
-            <span
-              [ngClass]="
-                'status-' +
-                (shipment.trangthai || 'pending')
-                  .toLowerCase()
-                  .replace('_', '-')
-              "
-            >
-              {{ getStatusLabel(shipment.trangthai || "PENDING") }}
+            <span [class]="getStatusClass(shipment.trangthai)">
+              {{ getStatusLabel(shipment.trangthai || 'PENDING') }}
             </span>
           </td>
-          <td>{{ formatDate(shipment.ngaytao) }}</td>
+          <td>{{ formatDate(shipment.ngaygui) }}</td>
           <td>{{ formatDate(shipment.ngaygiaodk) }}</td>
-          <td>
-            <div class="action-buttons">
-              <button
-                (click)="trackShipment(shipment)"
-                class="btn btn-sm btn-info"
-              >
-                Theo dõi
-              </button>
-              <button
-                (click)="updateShipment(shipment)"
-                class="btn btn-sm btn-primary"
-              >
-                Cập nhật
-              </button>
-              <button
-                (click)="cancelShipment(shipment)"
-                class="btn btn-sm btn-warning"
-                *ngIf="shipment.trangthai === 'PENDING'"
-              >
-                Hủy
-              </button>
-              <button
-                (click)="deleteShipment(shipment)"
-                class="btn btn-sm btn-danger"
-              >
-                Xóa
-              </button>
-            </div>
+          <td class="amount">{{ formatCurrency(shipment.phivanchuyen) }}</td>
+          <td class="actions">
+            <button class="btn btn-sm btn-info" (click)="trackShipment(shipment)">Theo dõi</button>
+            <button class="btn btn-sm btn-primary" (click)="updateShipment(shipment)">Cập nhật</button>
           </td>
         </tr>
       </tbody>
     </table>
-  </div>
 
-  <div *ngIf="loading" class="loading">Đang tải dữ liệu...</div>
-  <div *ngIf="!loading && filteredShipments.length === 0" class="no-data">
-    Không có đơn vận chuyển nào
-  </div>
-
-  <!-- Update Shipment Modal -->
-  <div class="modal" *ngIf="showUpdateModal" (click)="closeModal($event)">
-    <div class="modal-content" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <h3>Cập nhật vận chuyển</h3>
-        <button (click)="showUpdateModal = false" class="close-btn">
-          &times;
-        </button>
-      </div>
-      <div class="modal-body">
-        <form (ngSubmit)="saveShipmentUpdate()" #updateForm="ngForm">
-          <div class="form-group">
-            <label>Trạng thái *</label>
-            <select
-              [(ngModel)]="editingShipment.trangthai"
-              name="trangthai"
-              required
-              class="form-select"
-            >
-              <option value="PENDING">Đang chờ</option>
-              <option value="IN_TRANSIT">Đang giao</option>
-              <option value="DELIVERED">Đã giao</option>
-              <option value="CANCELLED">Đã hủy</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Đơn vị vận chuyển</label>
-            <select
-              [(ngModel)]="editingShipment.donvivanchuyen"
-              name="donvivanchuyen"
-              class="form-select"
-            >
-              <option value="GHN">Giao Hàng Nhanh</option>
-              <option value="GHTK">Giao Hàng Tiết Kiệm</option>
-              <option value="VNPOST">VNPost</option>
-              <option value="VIETTEL_POST">Viettel Post</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Mã vận chuyển</label>
-            <input
-              type="text"
-              [(ngModel)]="editingShipment.mavanchuyen"
-              name="mavanchuyen"
-              class="form-control"
-            />
-          </div>
-          <div class="form-group">
-            <label>Ngày giao dự kiến</label>
-            <input
-              type="date"
-              [(ngModel)]="editingShipment.ngaygiaodk"
-              name="ngaygiaodk"
-              class="form-control"
-            />
-          </div>
-          <div class="form-actions">
-            <button
-              type="button"
-              (click)="showUpdateModal = false"
-              class="btn btn-secondary"
-            >
-              Hủy
-            </button>
-            <button
-              type="submit"
-              [disabled]="!updateForm.form.valid"
-              class="btn btn-primary"
-            >
-              Cập nhật
-            </button>
-          </div>
-        </form>
-      </div>
+    <!-- Empty State -->
+    <div *ngIf="filteredShipments.length === 0" class="empty-state">
+      <p>Không có đơn vận chuyển nào.</p>
+      <button class="btn btn-primary" (click)="createShipment()">Tạo đơn vận chuyển đầu tiên</button>
     </div>
   </div>
 </div>

@@ -1,11 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ApiService } from '../../../../core/services/api.service';
-import { TaiKhoanService } from '../../../../core/services/taikhoan.service';
-import { NotificationService } from '../../../../core/services/notification.service';
-import { Quyen } from '../../../../core/models/quyen.model';
-import { TaiKhoan } from '../../../../core/models/taikhoan.model';
+import { HttpClient } from '@angular/common/http';
 import { forkJoin } from 'rxjs';
 
 @Component({
@@ -16,10 +12,12 @@ import { forkJoin } from 'rxjs';
   styleUrls: ['./permission-list.component.scss'],
 })
 export class PermissionListComponent implements OnInit {
-  roles: Quyen[] = [];
-  users: TaiKhoan[] = [];
-  filteredUsers: TaiKhoan[] = [];
+  roles: any[] = [];
+  users: any[] = [];
+  filteredUsers: any[] = [];
   loading = false;
+  
+  private apiUrl = 'http://localhost:8080/api';
 
   // Tab management
   activeTab = 'roles';
@@ -47,11 +45,7 @@ export class PermissionListComponent implements OnInit {
     { key: 'employee_edit', name: 'Sửa nhân viên' },
   ];
 
-  constructor(
-    private apiService: ApiService,
-    private taiKhoanService: TaiKhoanService,
-    private notificationService: NotificationService
-  ) {}
+  constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
     this.loadData();
@@ -60,9 +54,10 @@ export class PermissionListComponent implements OnInit {
   loadData(): void {
     this.loading = true;
 
+    // Load roles and users from backend
     forkJoin({
-      roles: this.apiService.get<Quyen[]>('api/quyen'),
-      users: this.taiKhoanService.getAllTaiKhoan(),
+      roles: this.http.get<any[]>(`${this.apiUrl}/quyen`),
+      users: this.http.get<any[]>(`${this.apiUrl}/taikhoan`)
     }).subscribe({
       next: (data) => {
         this.roles = data.roles || [];
@@ -71,11 +66,26 @@ export class PermissionListComponent implements OnInit {
         this.filterUsers();
         this.loading = false;
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Lỗi tải dữ liệu:', error);
-        this.notificationService.error('Lỗi', 'Lỗi tải dữ liệu phân quyền');
         this.loading = false;
-      },
+        
+        // Fallback data
+        this.roles = [
+          { id: 1, ten: 'Admin', mota: 'Quản trị viên hệ thống' },
+          { id: 2, ten: 'Nhân viên', mota: 'Nhân viên bán hàng' },
+          { id: 3, ten: 'Khách hàng', mota: 'Khách hàng thường' }
+        ];
+        
+        this.users = [
+          { id: 1, tendangnhap: 'admin', email: 'admin@example.com', quyenid: 1, trangthai: true, created_at: new Date() },
+          { id: 2, tendangnhap: 'staff01', email: 'staff01@example.com', quyenid: 2, trangthai: true, created_at: new Date() },
+          { id: 3, tendangnhap: 'customer01', email: 'customer01@example.com', quyenid: 3, trangthai: true, created_at: new Date() }
+        ];
+        
+        this.calculateStats();
+        this.filterUsers();
+      }
     });
   }
 
@@ -150,71 +160,58 @@ export class PermissionListComponent implements OnInit {
 
   // Role Management Methods
   createRole(): void {
-    this.notificationService.info(
-      'Thông báo',
-      'Chức năng tạo vai trò đang phát triển'
-    );
+    console.log('Chức năng tạo vai trò đang phát triển');
+    alert('Chức năng tạo vai trò đang phát triển');
   }
 
-  editRole(role: Quyen): void {
-    this.notificationService.info(
-      'Thông báo',
-      'Chức năng sửa vai trò đang phát triển'
-    );
+  editRole(role: any): void {
+    console.log('Chức năng sửa vai trò đang phát triển', role);
+    alert('Chức năng sửa vai trò đang phát triển');
   }
 
   deleteRole(roleId: number): void {
     if (roleId === 1) {
-      this.notificationService.error('Lỗi', 'Không thể xóa vai trò Admin');
+      alert('Không thể xóa vai trò Admin');
       return;
     }
 
     if (confirm('Bạn có chắc chắn muốn xóa vai trò này?')) {
-      this.apiService.delete<void>(`api/quyen/${roleId}`).subscribe({
+      this.http.delete<void>(`${this.apiUrl}/quyen/${roleId}`).subscribe({
         next: () => {
           this.roles = this.roles.filter((r) => r.id !== roleId);
           this.calculateStats();
-          this.notificationService.success(
-            'Thành công',
-            'Xóa vai trò thành công'
-          );
+          alert('Xóa vai trò thành công');
         },
-        error: (error) => {
+        error: (error: any) => {
           console.error('Lỗi xóa vai trò:', error);
-          this.notificationService.error('Lỗi', 'Lỗi xóa vai trò');
+          alert('Lỗi xóa vai trò');
         },
       });
     }
   }
 
   // User Management Methods
-  editUser(user: TaiKhoan): void {
-    this.notificationService.info(
-      'Thông báo',
-      'Chức năng sửa người dùng đang phát triển'
-    );
+  editUser(user: any): void {
+    console.log('Chức năng sửa người dùng đang phát triển', user);
+    alert('Chức năng sửa người dùng đang phát triển');
   }
 
   toggleUserStatus(userId: number, newStatus: boolean): void {
-    this.taiKhoanService.updateTaiKhoanStatus(userId, newStatus).subscribe({
-      next: (updatedUser) => {
+    const updateData = { trangthai: newStatus };
+    
+    this.http.put<any>(`${this.apiUrl}/taikhoan/${userId}`, updateData).subscribe({
+      next: (updatedUser: any) => {
         const index = this.users.findIndex((u) => u.id === userId);
         if (index !== -1) {
           this.users[index] = updatedUser;
           this.calculateStats();
           this.filterUsers();
-          this.notificationService.success(
-            'Thành công',
-            `${newStatus ? 'Kích hoạt' : 'Vô hiệu hóa'} người dùng thành công`
-          );
+          alert(`${newStatus ? 'Kích hoạt' : 'Vô hiệu hóa'} người dùng thành công`);
         }
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Lỗi cập nhật trạng thái:', error);
-        this.notificationService.error(
-          'Lỗi',
-          'Lỗi cập nhật trạng thái người dùng'
-        );
+        alert('Lỗi cập nhật trạng thái người dùng');
       },
     });
   }
@@ -238,17 +235,12 @@ export class PermissionListComponent implements OnInit {
 
   togglePermission(roleId: number, permissionKey: string): void {
     if (roleId === 1) {
-      this.notificationService.error(
-        'Lỗi',
-        'Không thể thay đổi quyền của Admin'
-      );
+      alert('Không thể thay đổi quyền của Admin');
       return;
     }
 
     // In real app, this would call an API to update permissions
-    this.notificationService.info(
-      'Thông báo',
-      'Chức năng cập nhật quyền đang phát triển'
-    );
+    console.log('Chức năng cập nhật quyền đang phát triển', roleId, permissionKey);
+    alert('Chức năng cập nhật quyền đang phát triển');
   }
 }

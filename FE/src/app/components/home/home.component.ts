@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Subject, forkJoin, of, interval } from 'rxjs';
@@ -21,7 +21,10 @@ import { ChiTietSanPham } from '../../core/models/chitietsanpham.model';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
 })
-export class HomeComponent implements OnInit, OnDestroy {
+export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('featuredSlider') featuredSlider!: ElementRef;
+  @ViewChild('newSlider') newSlider!: ElementRef;
+  
   private router = inject(Router);
   private sanPhamService = inject(SanPhamService);
   private danhMucService = inject(DanhMucService);
@@ -37,6 +40,34 @@ export class HomeComponent implements OnInit, OnDestroy {
   newProducts: SanPham[] = [];
   isLoading = true;
   currentSlideIndex = 0;
+
+  // Fixed categories data - 4 main categories
+  fixedCategories = [
+    {
+      id: 1,
+      tendanhmuc: 'Ghế',
+      icon: '🪑',
+      image: 'assets/img/categories/ghe.jpg'
+    },
+    {
+      id: 2,
+      tendanhmuc: 'Tủ',
+      icon: '🗄️',
+      image: 'assets/img/categories/tu.jpg'
+    },
+    {
+      id: 3,
+      tendanhmuc: 'Giường',
+      icon: '🛏️',
+      image: 'assets/img/categories/giuong.jpg'
+    },
+    {
+      id: 4,
+      tendanhmuc: 'Bàn',
+      icon: '🪴',
+      image: 'assets/img/categories/ban.jpg'
+    }
+  ];
 
   // Hero slides
   heroSlides = [
@@ -101,11 +132,58 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  ngAfterViewInit(): void {
+    // Setup smooth scrolling for sliders
+    this.setupSliderScrolling();
+  }
+
+  private setupSliderScrolling(): void {
+    // Enable smooth scrolling with trackpad/mouse wheel
+    [this.featuredSlider, this.newSlider].forEach((sliderRef) => {
+      if (sliderRef?.nativeElement) {
+        const slider = sliderRef.nativeElement;
+        
+        // Enable horizontal scrolling with mouse wheel
+        slider.addEventListener('wheel', (e: WheelEvent) => {
+          e.preventDefault();
+          const scrollAmount = e.deltaY > 0 ? 300 : -300;
+          slider.scrollBy({
+            left: scrollAmount,
+            behavior: 'smooth'
+          });
+        });
+
+        // Enable touch/trackpad scrolling
+        slider.style.overflowX = 'auto';
+        slider.style.scrollBehavior = 'smooth';
+      }
+    });
+  }
+
+  // Slider navigation methods
+  scrollSlider(type: 'featured' | 'new', direction: 'left' | 'right'): void {
+    const slider = type === 'featured' ? this.featuredSlider : this.newSlider;
+    if (!slider?.nativeElement) return;
+
+    const scrollAmount = 325; // Width of one card + gap
+    const currentScroll = slider.nativeElement.scrollLeft;
+    const targetScroll = direction === 'left' 
+      ? currentScroll - scrollAmount 
+      : currentScroll + scrollAmount;
+
+    slider.nativeElement.scrollTo({
+      left: targetScroll,
+      behavior: 'smooth'
+    });
+  }
+
   private loadData(): void {
     this.isLoading = true;
 
+    // Use fixed categories instead of loading from API
+    this.parentCategories = this.fixedCategories as any[];
+
     forkJoin({
-      categories: this.danhMucService.getAll().pipe(catchError(() => of([]))),
       products: this.sanPhamService
         .getAllSanPham()
         .pipe(catchError(() => of([]))),
@@ -118,19 +196,11 @@ export class HomeComponent implements OnInit, OnDestroy {
         finalize(() => (this.isLoading = false))
       )
       .subscribe({
-        next: ({ categories, products, chiTietSanPham }) => {
+        next: ({ products, chiTietSanPham }) => {
           console.log('Raw data loaded:', {
-            categories: categories.length,
             products: products.length,
             chiTietSanPham: chiTietSanPham.length,
           });
-          console.log('Sample category:', categories[0]);
-          console.log('Sample product:', products[0]);
-          console.log('Sample chi tiet:', chiTietSanPham[0]);
-
-          // Xử lý danh mục - hiển thị tất cả danh mục (không chỉ parent)
-          this.parentCategories = categories; // Hiển thị tất cả danh mục
-          console.log('All categories:', this.parentCategories.length);
 
           // Gán chi tiết sản phẩm vào từng sản phẩm (support both field names)
           products.forEach((product) => {
@@ -174,7 +244,7 @@ export class HomeComponent implements OnInit, OnDestroy {
             .slice(0, 12);
 
           console.log('Processed data:', {
-            parentCategories: this.parentCategories.length,
+            fixedCategories: this.parentCategories.length,
             featuredProducts: this.featuredProducts.length,
             newProducts: this.newProducts.length,
           });
@@ -212,9 +282,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.router.navigate(['/products']);
   }
 
-  goToCategory(category: DanhMuc): void {
+  goToCategory(category: any): void {
+    // Navigate to products filtered by category name
     this.router.navigate(['/products'], {
-      queryParams: { category: category.id },
+      queryParams: { categoryName: category.tendanhmuc },
     });
   }
 
@@ -223,7 +294,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   goToAllProducts(): void {
-    this.router.navigate(['/products-list']);
+    this.router.navigate(['/products']);
   }
 
   // Product methods
@@ -315,8 +386,13 @@ export class HomeComponent implements OnInit, OnDestroy {
     return category ? category.tendanhmuc : '';
   }
 
-  getCategoryImage(category: DanhMuc): string {
-    return `assets/img/categories/${category.id}.jpg`;
+  getCategoryImage(category: any): string {
+    // Return icon instead of image for fixed categories
+    return category.icon || '🪑';
+  }
+
+  getCategoryIcon(category: any): string {
+    return category.icon || '🪑';
   }
 
   formatPrice(price: number): string {

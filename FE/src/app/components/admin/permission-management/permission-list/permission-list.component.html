@@ -60,14 +60,14 @@
           </div>
           <div class="role-actions">
             <button class="btn btn-edit" (click)="editRole(role)">
-              <i class="fas fa-edit"></i>
+              Sửa
             </button>
             <button
               class="btn btn-delete"
               (click)="deleteRole(role.id)"
               *ngIf="role.id !== 1"
             >
-              <i class="fas fa-trash"></i>
+              Xóa
             </button>
           </div>
         </div>
@@ -175,16 +175,14 @@
             <td>
               <div class="action-buttons">
                 <button class="btn btn-edit" (click)="editUser(user)">
-                  <i class="fas fa-edit"></i>
+                  Sửa
                 </button>
                 <button
                   class="btn btn-toggle"
                   (click)="toggleUserStatus(user.id, !user.trangthai)"
                   [ngClass]="user.trangthai ? 'btn-disable' : 'btn-enable'"
                 >
-                  <i
-                    [class]="user.trangthai ? 'fas fa-ban' : 'fas fa-check'"
-                  ></i>
+                  {{ user.trangthai ? 'Vô hiệu' : 'Kích hoạt' }}
                 </button>
               </div>
             </td>

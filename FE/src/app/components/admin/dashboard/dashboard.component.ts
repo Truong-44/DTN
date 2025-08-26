@@ -1,24 +1,38 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { BaseChartDirective } from 'ng2-charts';
-import { Chart, ChartConfiguration, ChartData, ChartEvent, ChartType, registerables } from 'chart.js';
+import { HttpClient } from '@angular/common/http';
 import { Subject, takeUntil, catchError, of } from 'rxjs';
-import { 
-  DashboardService, 
-  DashboardStats, 
-  TopProduct, 
-  RecentOrder,
-  ChartData as ServiceChartData 
-} from '../shared/services/dashboard.service';
-import { MockDashboardService } from '../shared/services/mock-dashboard.service';
 
-Chart.register(...registerables);
+interface DashboardStats {
+  totalOrders: number;
+  totalRevenue: number;
+  totalProducts: number;
+  totalCustomers: number;
+  ordersPaid: number;
+  pendingOrders: number;
+}
+
+interface TopProduct {
+  id: number;
+  tensanpham: string;
+  totalSold: number;
+  revenue: number;
+  hinhchinh?: string;
+}
+
+interface RecentOrder {
+  id: number;
+  customerName: string;
+  total: number;
+  status: string;
+  ngaytao: string;
+}
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, BaseChartDirective],
+  imports: [CommonModule, FormsModule],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
@@ -35,95 +49,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
     pendingOrders: 0
   };
 
-  // Charts Data
-  revenueChartData: ChartData<'line'> = {
-    labels: [],
-    datasets: []
-  };
-
-  ordersChartData: ChartData<'bar'> = {
-    labels: [],
-    datasets: []
-  };
-
-  categoryChartData: ChartData<'doughnut'> = {
-    labels: [],
-    datasets: []
-  };
-
-  // Chart Options
-  revenueChartOptions: ChartConfiguration<'line'>['options'] = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: true,
-        position: 'top'
-      },
-      title: {
-        display: true,
-        text: 'Doanh thu theo tháng'
-      }
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
-        ticks: {
-          callback: function(value) {
-            return new Intl.NumberFormat('vi-VN', {
-              style: 'currency',
-              currency: 'VND'
-            }).format(value as number);
-          }
-        }
-      }
-    }
-  };
-
-  ordersChartOptions: ChartConfiguration<'bar'>['options'] = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: true,
-        position: 'top'
-      },
-      title: {
-        display: true,
-        text: 'Số lượng đơn hàng'
-      }
-    },
-    scales: {
-      y: {
-        beginAtZero: true
-      }
-    }
-  };
-
-  categoryChartOptions: ChartConfiguration<'doughnut'>['options'] = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: true,
-        position: 'right'
-      },
-      title: {
-        display: true,
-        text: 'Sản phẩm theo danh mục'
-      }
-    }
-  };
-
   // Other Data
   topProducts: TopProduct[] = [];
   recentOrders: RecentOrder[] = [];
   isLoading = true;
 
-  constructor(
-    private dashboardService: DashboardService,
-    private mockDashboardService: MockDashboardService
-  ) {}
+  constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
     this.loadDashboardData();
@@ -137,19 +68,27 @@ export class DashboardComponent implements OnInit, OnDestroy {
   loadDashboardData(): void {
     this.isLoading = true;
 
-    // Load stats - Try real API first, fallback to mock
-    this.dashboardService.getDashboardStats()
+    // Load stats from real backend
+    this.http.get<any>('http://localhost:8080/api/admin/dashboard/stats')
       .pipe(
         takeUntil(this.destroy$),
         catchError((error) => {
-          console.warn('Backend API not available, using mock data for dashboard stats');
-          console.error('API Error:', error);
-          return this.mockDashboardService.getDashboardStats();
+          console.warn('Dashboard stats API not available, using mock data');
+          return of({
+            data: {
+              totalOrders: 156,
+              totalRevenue: 2450000000,
+              totalProducts: 89,
+              totalCustomers: 234,
+              ordersPaid: 142,
+              pendingOrders: 14
+            }
+          });
         })
       )
       .subscribe({
-        next: (stats) => {
-          this.stats = stats;
+        next: (response) => {
+          this.stats = response.data;
           this.isLoading = false;
         },
         error: (error) => {
@@ -158,110 +97,68 @@ export class DashboardComponent implements OnInit, OnDestroy {
         }
       });
 
-    // Load revenue chart
-    this.dashboardService.getRevenueChart()
+    // Load top products from real backend
+    this.http.get<any>('http://localhost:8080/api/admin/dashboard/top-products')
       .pipe(
         takeUntil(this.destroy$),
         catchError((error) => {
-          console.warn('Backend API not available, using mock data for revenue chart');
-          return this.mockDashboardService.getRevenueChart();
+          console.warn('Top products API not available, using mock data');
+          return of({
+            data: [
+              {
+                id: 1,
+                tensanpham: 'Ghế Sofa MOHO GIORGIO',
+                totalSold: 45,
+                revenue: 580500000,
+                hinhchinh: 'sanpham/ghe/sofa/giorgio_01.jpg'
+              },
+              {
+                id: 2,
+                tensanpham: 'Bàn Ăn Gỗ Tự Nhiên',
+                totalSold: 32,
+                revenue: 320000000,
+                hinhchinh: 'sanpham/ban/an/ban_an_01.jpg'
+              }
+            ]
+          });
         })
       )
       .subscribe({
-        next: (data) => {
-          this.revenueChartData = {
-            labels: data.labels,
-            datasets: data.datasets.map(dataset => ({
-              ...dataset,
-              borderColor: '#FF9800',
-              backgroundColor: 'rgba(255, 152, 0, 0.1)',
-              borderWidth: 3,
-              tension: 0.4
-            }))
-          };
-        },
-        error: (error) => console.error('Error loading revenue chart:', error)
-      });
-
-    // Load orders chart
-    this.dashboardService.getOrdersChart()
-      .pipe(
-        takeUntil(this.destroy$),
-        catchError((error) => {
-          console.warn('Backend API not available, using mock data for orders chart');
-          return this.mockDashboardService.getOrdersChart();
-        })
-      )
-      .subscribe({
-        next: (data) => {
-          this.ordersChartData = {
-            labels: data.labels,
-            datasets: data.datasets.map(dataset => ({
-              ...dataset,
-              backgroundColor: ['#FF9800', '#FFA726', '#FFB74D', '#FFCC02'],
-              borderColor: '#FF9800',
-              borderWidth: 1
-            }))
-          };
-        },
-        error: (error) => console.error('Error loading orders chart:', error)
-      });
-
-    // Load category chart
-    this.dashboardService.getCategoryChart()
-      .pipe(
-        takeUntil(this.destroy$),
-        catchError((error) => {
-          console.warn('Backend API not available, using mock data for category chart');
-          return this.mockDashboardService.getCategoryChart();
-        })
-      )
-      .subscribe({
-        next: (data) => {
-          this.categoryChartData = {
-            labels: data.labels,
-            datasets: data.datasets.map(dataset => ({
-              ...dataset,
-              backgroundColor: [
-                '#FF9800', '#FFA726', '#FFB74D', '#FFCC02', 
-                '#FF8F00', '#FF6F00', '#E65100', '#BF360C'
-              ],
-              borderWidth: 2,
-              borderColor: '#FFFFFF'
-            }))
-          };
-        },
-        error: (error) => console.error('Error loading category chart:', error)
-      });
-
-    // Load top products
-    this.dashboardService.getTopProducts()
-      .pipe(
-        takeUntil(this.destroy$),
-        catchError((error) => {
-          console.warn('Backend API not available, using mock data for top products');
-          return this.mockDashboardService.getTopProducts();
-        })
-      )
-      .subscribe({
-        next: (products) => {
-          this.topProducts = products;
+        next: (response) => {
+          this.topProducts = response.data;
         },
         error: (error) => console.error('Error loading top products:', error)
       });
 
-    // Load recent orders
-    this.dashboardService.getRecentOrders()
+    // Load recent orders from real backend
+    this.http.get<any>('http://localhost:8080/api/admin/dashboard/recent-orders')
       .pipe(
         takeUntil(this.destroy$),
         catchError((error) => {
-          console.warn('Backend API not available, using mock data for recent orders');
-          return this.mockDashboardService.getRecentOrders();
+          console.warn('Recent orders API not available, using mock data');
+          return of({
+            data: [
+              {
+                id: 1001,
+                customerName: 'Nguyễn Văn An',
+                total: 15000000,
+                status: 'Hoàn thành',
+                ngaytao: '2025-08-26T10:30:00'
+              },
+              {
+                id: 1002,
+                customerName: 'Trần Thị Bình',
+                total: 8500000,
+                status: 'Chờ xử lý',
+                ngaytao: '2025-08-26T09:15:00'
+              }
+            ]
+          });
         })
       )
       .subscribe({
-        next: (orders) => {
-          this.recentOrders = orders;
+        next: (response) => {
+          this.recentOrders = response.data;
         },
         error: (error) => console.error('Error loading recent orders:', error)
       });

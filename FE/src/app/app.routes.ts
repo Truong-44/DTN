@@ -26,6 +26,13 @@ export const routes: Routes = [
         (m) => m.ProductDetailComponent
       ),
   },
+  {
+    path: 'products',
+    loadComponent: () =>
+      import('./components/product-list/product-list.component').then(
+        (m) => m.ProductListComponent
+      ),
+  },
   { path: 'cart', component: CartComponent, canActivate: [authGuard] },
   { path: 'giohang', component: CartComponent, canActivate: [authGuard] },
   {
@@ -36,14 +43,6 @@ export const routes: Routes = [
       ),
     canActivate: [authGuard],
   },
-  // {
-  //   path: 'order-success',
-  //   loadComponent: () =>
-  //     import('./components/order-success/order-success.component').then(
-  //       (m) => m.OrderSuccessComponent
-  //     ),
-  //   canActivate: [authGuard],
-  // },
   {
     path: 'order-list',
     component: OrderListComponent,
@@ -102,7 +101,7 @@ export const routes: Routes = [
             path: 'customer-management',
             loadComponent: () =>
               import(
-                './components/admin/customer-management/customer-list/customer-list.component'
+                './components/admin/customer-management/customer-list/customer-list-new.component'
               ).then((m) => m.CustomerListComponent),
           },
           {
@@ -123,29 +122,29 @@ export const routes: Routes = [
             path: 'employee-management',
             loadComponent: () =>
               import(
-                './components/admin/employee-management/employee-list/employee-list.component'
+                './components/admin/employee-management/employee-list/employee-list-new.component'
               ).then((m) => m.EmployeeListComponent),
           },
           {
             path: 'invoice-management',
             loadComponent: () =>
               import(
-                './components/admin/invoice-management/invoice-list/invoice-list.component'
+                './components/admin/invoice-management/invoice-list/invoice-list-new.component'
               ).then((m) => m.InvoiceListComponent),
           },
           {
             path: 'shipping-management',
             loadComponent: () =>
               import(
-                './components/admin/shipping-management/shipping-list/shipping-list.component'
+                './components/admin/shipping-management/shipping-list/shipping-list-new.component'
               ).then((m) => m.ShippingListComponent),
           },
           {
             path: 'stock-management',
             loadComponent: () =>
               import(
-                './components/admin/stock-management/stock-list/stock-list.component'
-              ).then((m) => m.StockListComponent),
+                './components/admin/stock-management/stock-list/stock-list-new.component'
+              ).then((m) => m.StockListNewComponent),
           },
           {
             path: 'permission-management',
@@ -155,7 +154,6 @@ export const routes: Routes = [
               ).then((m) => m.PermissionListComponent),
           },
         ],
-        // canActivate: [AdminGuard]
       },
     ],
   },

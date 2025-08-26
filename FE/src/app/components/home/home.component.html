@@ -47,20 +47,17 @@
     </div>
 
     <!-- Categories grid -->
-    <div class="grid grid-3" *ngIf="!isLoading && parentCategories.length > 0">
-      <div
-        *ngFor="let category of parentCategories; trackBy: trackByCategory"
-        class="category-card"
-        (click)="goToCategory(category)"
-      >
-        <img
-          [src]="getCategoryImage(category)"
-          [alt]="category.tendanhmuc"
-          (error)="onImageError($event)"
-        />
-        <div class="category-info">
-          <h3>{{ category.tendanhmuc }}</h3>
-          <p>{{ category.mota }}</p>
+    <div class="categories-container" *ngIf="!isLoading && parentCategories.length > 0">
+      <div class="categories-grid">
+        <div
+          *ngFor="let category of parentCategories; trackBy: trackByCategory"
+          class="category-item"
+          (click)="goToCategory(category)"
+        >
+          <div class="category-icon">
+            <span class="icon-emoji">{{ getCategoryIcon(category) }}</span>
+          </div>
+          <span class="category-name">{{ category.tendanhmuc }}</span>
         </div>
       </div>
     </div>
@@ -75,14 +72,13 @@
   </div>
 </section>
 
-<section class="section products-slider">
-  <div class="container">
+<section class="section prducts-slider">
     <h2 class="section-title">Sản phẩm nổi bật</h2>
     <div
       class="slider-wrapper"
       *ngIf="featuredProducts.length > 0; else noFeaturedProducts"
     >
-      <div class="product-slider">
+      <div class="product-slider" #featuredSlider>
         <div
           *ngFor="let product of featuredProducts; trackBy: trackByProduct"
           class="product-card"
@@ -148,7 +144,6 @@
             </div>
           </div>
 
-          <!-- Action Button -->
           <button
             type="button"
             class="add-to-cart-btn"
@@ -161,7 +156,6 @@
       </div>
     </div>
 
-    <!-- View All Products Button -->
     <div class="view-all-container">
       <button class="view-all-btn" (click)="goToAllProducts()" type="button">
         <span>Xem tất cả sản phẩm</span>
@@ -174,7 +168,6 @@
         <p>Không có sản phẩm nổi bật để hiển thị</p>
       </div>
     </ng-template>
-  </div>
 </section>
 
 <section class="section content-dual">
@@ -208,11 +201,20 @@
 <section class="section products-slider">
   <div class="container">
     <h2 class="section-title">Sản phẩm mới nhất</h2>
+    <p class="section-subtitle">Kéo thanh trượt để xem thêm sản phẩm →</p>
     <div
       class="slider-wrapper"
       *ngIf="newProducts.length > 0; else noNewProducts"
     >
-      <div class="product-slider">
+      <div class="slider-controls">
+        <button class="slider-btn prev-btn" (click)="scrollSlider('new', 'left')" title="Trượt trái">
+          <i class="arrow-left">‹</i>
+        </button>
+        <button class="slider-btn next-btn" (click)="scrollSlider('new', 'right')" title="Trượt phải">
+          <i class="arrow-right">›</i>
+        </button>
+      </div>
+      <div class="product-slider" #newSlider>
         <div
           *ngFor="let product of newProducts; trackBy: trackByProduct"
           class="product-card"

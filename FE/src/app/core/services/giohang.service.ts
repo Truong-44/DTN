@@ -419,19 +419,25 @@ export class GioHangService {
   }
 
   clearCart(): void {
-    const isAuthenticated = this.authService.isAuthenticated();
+    const isAuthenticated = this.authService?.isAuthenticated();
 
     if (isAuthenticated) {
       this.clearServerCart();
     } else {
       this.clearLocalCart();
     }
+    
+    // Immediately update UI to show empty cart
+    this.cartItemsSubject.next([]);
+    this.updateCartCount();
   }
 
   private clearServerCart(): void {
-    const currentUser = this.authService.getCurrentUser();
+    const currentUser = this.authService?.getCurrentUser();
     if (!currentUser || !currentUser.khachhang) {
       console.error('[CartService] Cannot clear server cart: No customer data');
+      // Fallback to clearing local cart
+      this.clearLocalCart();
       return;
     }
 
@@ -456,11 +462,16 @@ export class GioHangService {
         }),
         catchError((error) => {
           console.error('[CartService] Error clearing server cart:', error);
+          // Fallback to clearing local cart if server fails
+          this.clearLocalCart();
           return of(null);
         })
       )
-      .subscribe(() => {
-        this.loadCartFromServer();
+      .subscribe((result) => {
+        if (result !== null) {
+          // Successfully cleared on server, reload from server
+          this.loadCartFromServer();
+        }
       });
   }
 

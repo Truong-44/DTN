@@ -227,9 +227,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           // Simulate order progress for demo
           this.orderManagerService.simulateOrderProgress(newOrder.id);
 
-          // Clear cart and navigate to order list
-          this.gioHangService.clearCart();
+          // Clear cart after successful order
+          setTimeout(() => {
+            this.gioHangService.clearCart();
+            console.log('🛒 Cart cleared after successful order');
+          }, 500);
 
+          // Navigate to order list after a short delay
           setTimeout(() => {
             this.router.navigate(['/order-list']);
           }, 1500);

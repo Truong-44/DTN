@@ -46,9 +46,27 @@
             <td>{{ formatCurrency(item.dongia) }}</td>
             <td>
               <div class="qty-control">
-                <button (click)="decreaseQuantity(item)">-</button>
-                <span>{{ item.soluong }}</span>
-                <button (click)="increaseQuantity(item)">+</button>
+                <button 
+                  (click)="decreaseQuantity(item)"
+                  [disabled]="item.soluong <= 1"
+                  title="Giảm số lượng">
+                  -
+                </button>
+                <input 
+                  type="number" 
+                  [value]="item.soluong" 
+                  (input)="onQuantityChange(item, $event)"
+                  (blur)="validateQuantity(item)"
+                  min="1" 
+                  max="99"
+                  class="qty-input"
+                />
+                <button 
+                  (click)="increaseQuantity(item)"
+                  [disabled]="item.soluong >= 99"
+                  title="Tăng số lượng">
+                  +
+                </button>
               </div>
             </td>
             <td>{{ formatCurrency(getItemSubtotal(item)) }}</td>
@@ -66,6 +84,29 @@
           Thanh toán
         </button>
         <button class="clear-btn" (click)="clearCart()">Xóa giỏ hàng</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Clear Cart Confirmation Modal -->
+  <div
+    class="modal-overlay"
+    *ngIf="showClearCartModal"
+    (click)="closeClearCartModal()"
+  >
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Xác nhận xóa toàn bộ giỏ hàng</h3>
+        <button class="close-btn" (click)="closeClearCartModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="warning-icon">⚠️</div>
+        <p>Bạn có chắc chắn muốn xóa toàn bộ {{ getTotalItems() }} sản phẩm trong giỏ hàng không?</p>
+        <p class="warning-text">Hành động này không thể hoàn tác.</p>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" (click)="closeClearCartModal()">Hủy</button>
+        <button class="btn-confirm btn-danger" (click)="confirmClearCart()">Xóa tất cả</button>
       </div>
     </div>
   </div>

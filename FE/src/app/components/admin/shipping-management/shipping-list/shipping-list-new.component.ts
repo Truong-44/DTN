@@ -264,4 +264,40 @@ export class ShippingListComponent implements OnInit {
     };
     return carrierMap[carrier] || carrier;
   }
+
+  // Add missing methods from template
+  refreshData() {
+    this.loadShipments();
+  }
+
+  exportData() {
+    this.notificationService.info('Thông báo', 'Tính năng xuất Excel đang được phát triển');
+  }
+
+  trackByShipmentId(index: number, shipment: VanChuyen): number {
+    return shipment.id;
+  }
+
+  getStatusClass(status: string | undefined): string {
+    if (!status) return 'status-pending';
+    const statusClassMap: { [key: string]: string } = {
+      'PENDING': 'status-pending',
+      'IN_TRANSIT': 'status-in-transit', 
+      'DELIVERED': 'status-delivered',
+      'CANCELLED': 'status-cancelled',
+      'Đang chờ': 'status-pending',
+      'Đang giao': 'status-in-transit',
+      'Đã giao': 'status-delivered',
+      'Đã hủy': 'status-cancelled'
+    };
+    return statusClassMap[status] || 'status-pending';
+  }
+
+  formatCurrency(amount: number | undefined): string {
+    if (!amount) return '0 ₫';
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND'
+    }).format(amount);
+  }
 }

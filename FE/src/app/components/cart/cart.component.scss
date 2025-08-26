@@ -114,7 +114,8 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 8px;
+        gap: 4px;
+        
         button {
           width: 32px;
           height: 32px;
@@ -127,11 +128,50 @@
           cursor: pointer;
           transition: all 0.2s ease;
 
-          &:hover {
+          &:hover:not(:disabled) {
             background: linear-gradient(135deg, #e55a00 0%, #ff6600 100%);
             transform: scale(1.1);
           }
+
+          &:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            opacity: 0.6;
+            transform: none;
+          }
         }
+
+        .qty-input {
+          width: 50px;
+          height: 32px;
+          border: 2px solid #ff6600;
+          border-radius: 6px;
+          text-align: center;
+          font-weight: 600;
+          font-size: 1rem;
+          background: #fff;
+          color: #333;
+          outline: none;
+          transition: all 0.2s ease;
+
+          &:focus {
+            border-color: #e55a00;
+            box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.1);
+          }
+
+          /* Remove spinner arrows */
+          &::-webkit-outer-spin-button,
+          &::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+          }
+
+          &[type=number] {
+            -moz-appearance: textfield;
+            appearance: textfield;
+          }
+        }
+
         span {
           min-width: 32px;
           display: inline-block;
@@ -322,6 +362,20 @@
           line-height: 1.5;
           text-align: center;
         }
+
+        .warning-icon {
+          font-size: 3rem;
+          text-align: center;
+          margin-bottom: 15px;
+        }
+
+        .warning-text {
+          color: #ff6600;
+          font-weight: 600;
+          font-size: 0.9rem;
+          text-align: center;
+          margin-top: 10px;
+        }
       }
 
       .modal-actions {
@@ -361,6 +415,14 @@
             background: linear-gradient(135deg, #cc0000 0%, #aa0000 100%);
             transform: translateY(-1px);
             box-shadow: 0 6px 20px rgba(255, 68, 68, 0.4);
+          }
+
+          &.btn-danger {
+            background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
+            
+            &:hover {
+              background: linear-gradient(135deg, #cc0000 0%, #990000 100%);
+            }
           }
         }
       }
