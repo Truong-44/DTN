@@ -1,0 +1,167 @@
+<div class="customer-detail-container">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="spinner"></div>
+    <p>Đang tải thông tin khách hàng...</p>
+  </div>
+
+  <!-- Customer Detail Content -->
+  <div *ngIf="!loading && customer" class="customer-detail-content">
+    <!-- Header -->
+    <div class="page-header">
+      <div class="header-actions">
+        <button type="button" class="btn btn-secondary" (click)="goBack()">
+          <i class="icon-arrow-left"></i>
+          Quay lại
+        </button>
+        <div class="action-buttons">
+          <button
+            type="button"
+            class="btn btn-primary"
+            (click)="editCustomer()"
+          >
+            <i class="icon-edit"></i>
+            Chỉnh sửa
+          </button>
+          <button
+            type="button"
+            class="btn btn-danger"
+            (click)="deleteCustomer()"
+          >
+            <i class="icon-trash"></i>
+            Xóa
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Customer Profile Card -->
+    <div class="customer-profile-card">
+      <div class="profile-header">
+        <div class="avatar-section">
+          <div class="customer-avatar">
+            {{ getInitials(customer.hoten) }}
+          </div>
+          <div class="customer-info">
+            <h1 class="customer-name">{{ customer.hoten || "Chưa có tên" }}</h1>
+            <p class="customer-id">ID: #{{ customer.id }}</p>
+            <div class="customer-status">
+              <span class="status-badge status-active">Hoạt động</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Customer Details Grid -->
+      <div class="details-grid">
+        <!-- Personal Information -->
+        <div class="detail-section">
+          <h2 class="section-title">
+            <i class="icon-user"></i>
+            Thông tin cá nhân
+          </h2>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <label class="detail-label">Họ và tên</label>
+              <span class="detail-value">{{
+                customer.hoten || "Chưa có"
+              }}</span>
+            </div>
+            <div class="detail-item">
+              <label class="detail-label">Giới tính</label>
+              <span class="detail-value">{{
+                getGenderDisplay(customer.gioitinh)
+              }}</span>
+            </div>
+            <div class="detail-item">
+              <label class="detail-label">Ngày sinh</label>
+              <span class="detail-value">{{
+                formatDate(customer.ngaysinh)
+              }}</span>
+            </div>
+            <div class="detail-item">
+              <label class="detail-label">Địa chỉ</label>
+              <span class="detail-value">{{
+                customer.diachi || "Chưa có"
+              }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Account Information -->
+        <div class="detail-section">
+          <h2 class="section-title">
+            <i class="icon-settings"></i>
+            Thông tin tài khoản
+          </h2>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <label class="detail-label">Tên đăng nhập</label>
+              <span class="detail-value">{{
+                customer.tendangnhap || "Chưa có"
+              }}</span>
+            </div>
+            <div class="detail-item">
+              <label class="detail-label">Email</label>
+              <span class="detail-value">{{
+                customer.email || "Chưa có"
+              }}</span>
+            </div>
+            <div class="detail-item">
+              <label class="detail-label">Số điện thoại</label>
+              <span class="detail-value">{{
+                customer.sodienthoai || "Chưa có"
+              }}</span>
+            </div>
+            <div class="detail-item">
+              <label class="detail-label">Ngày tạo</label>
+              <span class="detail-value">{{
+                formatDate(customer.ngaytao)
+              }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Additional Information -->
+        <div class="detail-section full-width">
+          <h2 class="section-title">
+            <i class="icon-info"></i>
+            Thông tin bổ sung
+          </h2>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <label class="detail-label">Ghi chú</label>
+              <span class="detail-value">{{
+                customer.ghichu || "Không có ghi chú"
+              }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Footer -->
+    <div class="action-footer">
+      <button type="button" class="btn btn-secondary" (click)="goBack()">
+        Quay lại danh sách
+      </button>
+      <div class="footer-actions">
+        <button type="button" class="btn btn-primary" (click)="editCustomer()">
+          Chỉnh sửa thông tin
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="!loading && !customer" class="error-container">
+    <div class="error-content">
+      <i class="icon-alert-circle"></i>
+      <h2>Không tìm thấy khách hàng</h2>
+      <p>Khách hàng không tồn tại hoặc đã bị xóa.</p>
+      <button type="button" class="btn btn-primary" (click)="goBack()">
+        Quay lại danh sách
+      </button>
+    </div>
+  </div>
+</div>

@@ -2,11 +2,10 @@ import { SanPham } from './sanpham.model';
 
 export interface DanhMuc {
   id: number;
-  danhmucChaId?: number; // Backend field name
-  danhmucchaid?: number; // Frontend field name for compatibility
   tendanhmuc: string;
   mota?: string;
-  danhmucChaTen?: string; // From backend
+  danhmucChaId?: number;
+  danhmucChaTen?: string;
   children?: DanhMuc[];
   parent?: DanhMuc;
   sanpham?: SanPham[];

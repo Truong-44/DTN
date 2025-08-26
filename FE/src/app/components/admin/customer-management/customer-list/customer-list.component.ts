@@ -1,29 +1,28 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { forkJoin, of } from 'rxjs';
+import { Router, RouterModule } from '@angular/router';
 import { catchError } from 'rxjs/operators';
-import { TaiKhoanService } from '../../../../core/services/taikhoan.service';
+import { of } from 'rxjs';
+import { KhachHangService } from '../../../../core/services/khachhang.service';
 import { KhachHang } from '../../../../core/models/khachhang.model';
-import { TaiKhoan } from '../../../../core/models/taikhoan.model';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LoadingService } from '../../../../core/services/loading.service';
 
 @Component({
   selector: 'app-customer-list',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './customer-list.component.html',
   styleUrls: ['./customer-list.component.scss'],
 })
 export class CustomerListComponent implements OnInit {
-  customers: (KhachHang & { taikhoan?: TaiKhoan })[] = [];
-  filteredCustomers: (KhachHang & { taikhoan?: TaiKhoan })[] = [];
+  customers: KhachHang[] = [];
+  filteredCustomers: KhachHang[] = [];
   loading = false;
 
   // Filters
   searchTerm = '';
-  statusFilter = '';
   genderFilter = '';
 
   // Pagination
@@ -36,15 +35,20 @@ export class CustomerListComponent implements OnInit {
   showEditModal = false;
   showAddModal = false;
   showDeleteModal = false;
-  selectedCustomer: (KhachHang & { taikhoan?: TaiKhoan }) | null = null;
+  selectedCustomer: KhachHang | null = null;
 
   // Form data
-  newCustomer: Partial<KhachHang> = {};
+  newCustomer: Partial<KhachHang> = {
+    hoten: '',
+    diachi: '',
+    gioitinh: 'Nam',
+  };
   editError = '';
   addError = '';
 
   constructor(
-    private taiKhoanService: TaiKhoanService,
+    private router: Router,
+    private khachHangService: KhachHangService,
     private notificationService: NotificationService,
     private loadingService: LoadingService
   ) {}
@@ -57,50 +61,35 @@ export class CustomerListComponent implements OnInit {
     this.loading = true;
     this.loadingService.show();
 
-    forkJoin({
-      khachhangs: this.taiKhoanService.getAllKhachHang().pipe(
+    this.khachHangService
+      .getAll()
+      .pipe(
         catchError((error) => {
           console.error('Error loading customers:', error);
+          this.notificationService.error(
+            'Lỗi',
+            'Không thể tải dữ liệu khách hàng'
+          );
           return of([]);
         })
-      ),
-      taikhoans: this.taiKhoanService.getAllTaiKhoan().pipe(
-        catchError((error) => {
-          console.error('Error loading accounts:', error);
-          return of([]);
-        })
-      ),
-    }).subscribe({
-      next: ({ khachhangs, taikhoans }) => {
-        // Handle different response types
-        const customerData = Array.isArray(khachhangs)
-          ? khachhangs
-          : (khachhangs as any).items || [];
-        const accountData = Array.isArray(taikhoans)
-          ? taikhoans
-          : (taikhoans as any).items || [];
-
-        this.customers = customerData.map((customer: KhachHang) => ({
-          ...customer,
-          taikhoan: accountData.find(
-            (account: TaiKhoan) => account.id === customer.taikhoanid
-          ),
-        }));
-
-        this.applyFilters();
-        this.loading = false;
-        this.loadingService.hide();
-      },
-      error: (error) => {
-        console.error('Error loading customer data:', error);
-        this.notificationService.error(
-          'Lỗi',
-          'Không thể tải dữ liệu khách hàng'
-        );
-        this.loading = false;
-        this.loadingService.hide();
-      },
-    });
+      )
+      .subscribe({
+        next: (customers) => {
+          this.customers = customers;
+          this.applyFilters();
+          this.loading = false;
+          this.loadingService.hide();
+        },
+        error: (error: any) => {
+          console.error('Error loading customer data:', error);
+          this.notificationService.error(
+            'Lỗi',
+            'Không thể tải dữ liệu khách hàng'
+          );
+          this.loading = false;
+          this.loadingService.hide();
+        },
+      });
   }
 
   applyFilters() {
@@ -108,42 +97,35 @@ export class CustomerListComponent implements OnInit {
       const matchesSearch =
         !this.searchTerm ||
         customer.hoten?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        customer.taikhoan?.email
+        customer.diachi
           ?.toLowerCase()
           .includes(this.searchTerm.toLowerCase()) ||
-        customer.taikhoan?.sodienthoai?.includes(this.searchTerm);
-
-      const matchesStatus =
-        !this.statusFilter ||
-        (this.statusFilter === 'active' && customer.taikhoan?.trangthai) ||
-        (this.statusFilter === 'inactive' && !customer.taikhoan?.trangthai);
+        customer.tendangnhap
+          ?.toLowerCase()
+          .includes(this.searchTerm.toLowerCase());
 
       const matchesGender =
         !this.genderFilter || customer.gioitinh === this.genderFilter;
 
-      return matchesSearch && matchesStatus && matchesGender;
+      return matchesSearch && matchesGender;
     });
 
     this.totalPages = Math.ceil(this.filteredCustomers.length / this.pageSize);
     this.currentPage = 1;
   }
 
-  onSearchChange() {
-    this.applyFilters();
+  get paginatedCustomers() {
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    return this.filteredCustomers.slice(startIndex, endIndex);
   }
 
-  onStatusFilterChange() {
+  onSearchChange() {
     this.applyFilters();
   }
 
   onGenderFilterChange() {
     this.applyFilters();
-  }
-
-  getPaginatedCustomers() {
-    const startIndex = (this.currentPage - 1) * this.pageSize;
-    const endIndex = startIndex + this.pageSize;
-    return this.filteredCustomers.slice(startIndex, endIndex);
   }
 
   goToPage(page: number) {
@@ -152,142 +134,66 @@ export class CustomerListComponent implements OnInit {
     }
   }
 
-  viewCustomerDetail(customer: KhachHang & { taikhoan?: TaiKhoan }) {
+  viewCustomerDetail(customer: KhachHang) {
     this.selectedCustomer = customer;
     this.showDetailModal = true;
   }
 
-  editCustomer(customer: KhachHang & { taikhoan?: TaiKhoan }) {
+  editCustomer(customer: KhachHang) {
     this.selectedCustomer = { ...customer };
     this.showEditModal = true;
+    this.editError = '';
   }
 
   updateCustomer() {
-    if (!this.selectedCustomer || !this.selectedCustomer.hoten) {
-      this.notificationService.error('Lỗi', 'Vui lòng nhập họ tên');
+    if (!this.selectedCustomer || !this.selectedCustomer.hoten?.trim()) {
+      this.editError = 'Vui lòng nhập họ tên';
       return;
     }
 
     this.loadingService.show();
 
-    const updateData = {
-      hoten: this.selectedCustomer.hoten,
-      diachi: this.selectedCustomer.diachi,
-      ngaysinh: this.selectedCustomer.ngaysinh,
-      gioitinh: this.selectedCustomer.gioitinh,
-    };
-
-    this.taiKhoanService
-      .updateKhachHang(this.selectedCustomer.id, updateData)
+    this.khachHangService
+      .update(this.selectedCustomer.id, this.selectedCustomer)
       .subscribe({
         next: () => {
-          // Update account info if exists
-          if (this.selectedCustomer?.taikhoan?.id) {
-            const accountUpdateData = {
-              email: this.selectedCustomer.taikhoan.email,
-              sodienthoai: this.selectedCustomer.taikhoan.sodienthoai,
-            };
-
-            this.taiKhoanService
-              .updateTaiKhoan(
-                this.selectedCustomer.taikhoan.id,
-                accountUpdateData
-              )
-              .subscribe({
-                next: () => {
-                  this.notificationService.success(
-                    'Thành công',
-                    'Đã cập nhật thông tin khách hàng'
-                  );
-                  this.showEditModal = false;
-                  this.loadCustomers();
-                },
-                error: (error) => {
-                  console.error('Error updating account:', error);
-                  this.notificationService.error(
-                    'Lỗi',
-                    'Không thể cập nhật tài khoản'
-                  );
-                  this.loadingService.hide();
-                },
-              });
-          } else {
-            this.notificationService.success(
-              'Thành công',
-              'Đã cập nhật thông tin khách hàng'
-            );
-            this.showEditModal = false;
-            this.loadCustomers();
-          }
-        },
-        error: (error) => {
-          console.error('Error updating customer:', error);
-          this.notificationService.error(
-            'Lỗi',
-            'Không thể cập nhật khách hàng'
+          this.notificationService.success(
+            'Thành công',
+            'Đã cập nhật thông tin khách hàng'
           );
+          this.showEditModal = false;
+          this.loadCustomers();
+        },
+        error: (error: any) => {
+          console.error('Error updating customer:', error);
+          this.editError = 'Không thể cập nhật khách hàng';
           this.loadingService.hide();
         },
       });
   }
 
-  toggleCustomerStatus(customer: KhachHang & { taikhoan?: TaiKhoan }) {
-    if (!customer.taikhoan?.id) {
-      this.notificationService.error('Lỗi', 'Không tìm thấy tài khoản');
-      return;
-    }
-
-    const action = customer.taikhoan.trangthai ? 'khóa' : 'mở khóa';
-    if (confirm(`Bạn có chắc muốn ${action} tài khoản này?`)) {
-      const updateData = { trangthai: !customer.taikhoan.trangthai };
-
-      this.taiKhoanService
-        .updateTaiKhoan(customer.taikhoan.id, updateData)
-        .subscribe({
-          next: () => {
-            customer.taikhoan!.trangthai = !customer.taikhoan!.trangthai;
-            this.notificationService.success(
-              'Thành công',
-              `Đã ${action} tài khoản`
-            );
-          },
-          error: (error) => {
-            console.error('Error updating account status:', error);
-            this.notificationService.error(
-              'Lỗi',
-              `Không thể ${action} tài khoản`
-            );
-          },
-        });
-    }
-  }
-
-  closeModal() {
-    this.showDetailModal = false;
-    this.showEditModal = false;
-    this.showAddModal = false;
-    this.showDeleteModal = false;
-    this.selectedCustomer = null;
-    this.newCustomer = {};
-    this.editError = '';
-    this.addError = '';
-  }
-
-  openAddModal() {
-    this.newCustomer = {};
-    this.addError = '';
-    this.showAddModal = true;
-  }
-
-  openDetailModal(customer: KhachHang & { taikhoan?: TaiKhoan }) {
+  deleteCustomer(customer: KhachHang) {
     this.selectedCustomer = customer;
-    this.showDetailModal = true;
+    this.showDeleteModal = true;
   }
 
-  openEditModal(customer: KhachHang & { taikhoan?: TaiKhoan }) {
-    this.selectedCustomer = { ...customer };
-    this.editError = '';
-    this.showEditModal = true;
+  confirmDelete() {
+    if (!this.selectedCustomer) return;
+
+    this.loadingService.show();
+
+    this.khachHangService.delete(this.selectedCustomer.id).subscribe({
+      next: () => {
+        this.notificationService.success('Thành công', 'Đã xóa khách hàng');
+        this.showDeleteModal = false;
+        this.loadCustomers();
+      },
+      error: (error: any) => {
+        console.error('Error deleting customer:', error);
+        this.notificationService.error('Lỗi', 'Không thể xóa khách hàng');
+        this.loadingService.hide();
+      },
+    });
   }
 
   addCustomer() {
@@ -298,16 +204,17 @@ export class CustomerListComponent implements OnInit {
 
     this.loadingService.show();
 
-    this.taiKhoanService.createKhachHang(this.newCustomer).subscribe({
+    this.khachHangService.create(this.newCustomer).subscribe({
       next: () => {
         this.notificationService.success(
           'Thành công',
           'Đã thêm khách hàng mới'
         );
-        this.closeModal();
+        this.showAddModal = false;
+        this.resetNewCustomer();
         this.loadCustomers();
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error creating customer:', error);
         this.addError = 'Không thể thêm khách hàng';
         this.loadingService.hide();
@@ -315,42 +222,83 @@ export class CustomerListComponent implements OnInit {
     });
   }
 
-  deleteCustomer(customerId: number) {
-    this.selectedCustomer =
-      this.customers.find((c) => c.id === customerId) || null;
-    this.showDeleteModal = true;
+  // Modal methods
+  openDetailModal(customer: KhachHang) {
+    this.viewCustomerDetail(customer);
   }
 
-  confirmDeleteCustomer() {
-    if (!this.selectedCustomer) return;
-
-    this.loadingService.show();
-
-    this.taiKhoanService.deleteKhachHang(this.selectedCustomer.id).subscribe({
-      next: () => {
-        this.notificationService.success('Thành công', 'Đã xóa khách hàng');
-        this.closeModal();
-        this.loadCustomers();
-      },
-      error: (error) => {
-        console.error('Error deleting customer:', error);
-        this.notificationService.error('Lỗi', 'Không thể xóa khách hàng');
-        this.loadingService.hide();
-      },
-    });
+  openEditModal(customer: KhachHang) {
+    this.editCustomer(customer);
   }
 
-  formatDate(date: string | Date | undefined): string {
-    if (!date) return 'N/A';
-    return new Date(date).toLocaleDateString('vi-VN');
+  openAddModal() {
+    this.resetNewCustomer();
+    this.showAddModal = true;
+    this.addError = '';
   }
 
-  getGenderLabel(gender: string | undefined): string {
-    const genderMap: { [key: string]: string } = {
-      Nam: 'Nam',
-      Nữ: 'Nữ',
-      Khác: 'Khác',
+  closeModal() {
+    this.showDetailModal = false;
+    this.showEditModal = false;
+    this.showAddModal = false;
+    this.showDeleteModal = false;
+    this.selectedCustomer = null;
+    this.editError = '';
+    this.addError = '';
+  }
+
+  resetNewCustomer() {
+    this.newCustomer = {
+      hoten: '',
+      diachi: '',
+      gioitinh: 'Nam',
     };
-    return genderMap[gender || ''] || 'N/A';
+  }
+
+  formatDate(date: Date | string | undefined): string {
+    if (!date) return 'Chưa có';
+
+    try {
+      const d = typeof date === 'string' ? new Date(date) : date;
+      return d.toLocaleDateString('vi-VN');
+    } catch {
+      return 'Không hợp lệ';
+    }
+  }
+
+  getGenderDisplay(gender: string | undefined): string {
+    return gender || 'Chưa xác định';
+  }
+
+  // Utility method for generating initials (used in template)
+  getInitials(name: string | undefined): string {
+    if (!name) return '?';
+
+    const words = name.trim().split(' ');
+    if (words.length === 1) {
+      return words[0].charAt(0).toUpperCase();
+    }
+
+    return (
+      words[0].charAt(0) + words[words.length - 1].charAt(0)
+    ).toUpperCase();
+  }
+
+  // Utility method for tracking table rows (performance optimization)
+  trackByCustomerId(index: number, customer: KhachHang): number {
+    return customer.id;
+  }
+
+  // Navigation methods
+  navigateToDetail(customerId: number) {
+    this.router.navigate(['/admin/customer-management/detail', customerId]);
+  }
+
+  navigateToEdit(customerId: number) {
+    this.router.navigate(['/admin/customer-management/edit', customerId]);
+  }
+
+  navigateToAdd() {
+    this.router.navigate(['/admin/customer-management/add']);
   }
 }

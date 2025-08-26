@@ -112,6 +112,7 @@ export class CacheService {
       BY_ID: (id: number) => `danhmuc_${id}`,
     },
     KHACHHANG: {
+      ALL: 'khachhang_all',
       BY_ID: (id: number) => `khachhang_${id}`,
     },
     GIOHANG: {

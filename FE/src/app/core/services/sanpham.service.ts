@@ -347,28 +347,74 @@ export class SanPhamService {
 
   // ===================== DANH MỤC =====================
   // GET /api/danhmuc
+  // ===================== DANH MỤC =====================
+  // GET /api/danhmuc - Lấy tất cả danh mục (backend trả về ApiResponse<List<DanhMucDTO>>)
   getAllDanhMuc(): Observable<DanhMuc[]> {
-    return this.apiService.get<DanhMuc[]>(_ENDPOINTS.DANHMUC);
+    const cacheKey = CacheService.CACHE_KEYS.DANHMUC?.ALL || 'danhmuc_all';
+
+    return this.cacheService.cacheObservable(
+      cacheKey,
+      this.apiService.get<ApiResponse<DanhMuc[]>>(_ENDPOINTS.DANHMUC).pipe(
+        map((response) => response.data || []),
+        catchError((error) => {
+          console.error('Error fetching danhmuc:', error);
+          return of([]);
+        })
+      ),
+      10 * 60 * 1000 // Cache for 10 minutes
+    );
   }
 
   // GET /api/danhmuc/{id}
   getDanhMucById(id: number): Observable<DanhMuc> {
-    return this.apiService.get<DanhMuc>(`${_ENDPOINTS.DANHMUC}/${id}`);
+    return this.apiService
+      .get<ApiResponse<DanhMuc>>(`${_ENDPOINTS.DANHMUC}/${id}`)
+      .pipe(
+        map((response) => response.data),
+        catchError((error) => {
+          console.error('Error fetching danhmuc by id:', error);
+          throw error;
+        })
+      );
   }
 
   // POST /api/danhmuc
   createDanhMuc(danhmuc: Partial<DanhMuc>): Observable<DanhMuc> {
-    return this.apiService.post<DanhMuc>(_ENDPOINTS.DANHMUC, danhmuc);
+    return this.apiService
+      .post<ApiResponse<DanhMuc>>(_ENDPOINTS.DANHMUC, danhmuc)
+      .pipe(
+        map((response) => response.data),
+        catchError((error) => {
+          console.error('Error creating danhmuc:', error);
+          throw error;
+        })
+      );
   }
 
   // PUT /api/danhmuc/{id}
   updateDanhMuc(id: number, danhmuc: Partial<DanhMuc>): Observable<DanhMuc> {
-    return this.apiService.put<DanhMuc>(`${_ENDPOINTS.DANHMUC}/${id}`, danhmuc);
+    return this.apiService
+      .put<ApiResponse<DanhMuc>>(`${_ENDPOINTS.DANHMUC}/${id}`, danhmuc)
+      .pipe(
+        map((response) => response.data),
+        catchError((error) => {
+          console.error('Error updating danhmuc:', error);
+          throw error;
+        })
+      );
   }
 
   // DELETE /api/danhmuc/{id}
   deleteDanhMuc(id: number): Observable<void> {
-    return this.apiService.delete<void>(`${_ENDPOINTS.DANHMUC}/${id}`);
+    return this.apiService
+      .delete<ApiResponse<void>>(`${_ENDPOINTS.DANHMUC}/${id}`)
+      .pipe(
+        map((response) => response.data),
+        catchError((error) => {
+          console.error('Error deleting danhmuc:', error);
+          throw error;
+        })
+      );
   }
 
   // ===================== KHO HÀNG =====================

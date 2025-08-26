@@ -5,6 +5,8 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { ProductListComponent } from './product-management/product-list/product-list.component';
 import { CategoryListComponent } from './category-management/category-list/category-list.component';
 import { CustomerListComponent } from './customer-management/customer-list/customer-list.component';
+import { CustomerDetailComponent } from './customer-management/customer-detail/customer-detail.component';
+import { CustomerEditComponent } from './customer-management/customer-edit/customer-edit.component';
 import { AdminLoginComponent } from './admin-login/admin-login.component';
 import { AdminOrderListComponent } from './order-management/order-list/order-list.component';
 import { AdminOrderDetailComponent } from './order-management/order-detail/order-detail.component';
@@ -24,6 +26,15 @@ const routes: Routes = [
       { path: 'product-management', component: ProductListComponent },
       { path: 'category-management', component: CategoryListComponent },
       { path: 'customer-management', component: CustomerListComponent },
+      {
+        path: 'customer-management/detail/:id',
+        component: CustomerDetailComponent,
+      },
+      {
+        path: 'customer-management/edit/:id',
+        component: CustomerEditComponent,
+      },
+      { path: 'customer-management/add', component: CustomerEditComponent },
       { path: 'order-management', component: AdminOrderListComponent },
       {
         path: 'order-management/detail/:id',
