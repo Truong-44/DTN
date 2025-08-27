@@ -325,11 +325,16 @@ export class ProductListComponent implements OnInit, OnDestroy {
   onSearchChange(): void {
     this.applyFilters();
   }
-
-  onCategoryChange(categoryId: number | null): void {
-    this.selectedCategoryId = categoryId;
-    this.applyFilters();
+onCategoryChange(categoryId: number | null) {
+  if (categoryId === null) {
+    console.log("Hiển thị tất cả sản phẩm");
+    // reset filter hoặc navigate về trang tổng
+    this.router.navigate(['/products']);
+  } else {
+    console.log("Đi tới categoryId:", categoryId);
+    this.navigateToCategory(categoryId);
   }
+}
 
   onPriceRangeChange(): void {
     this.applyFilters();
@@ -495,5 +500,9 @@ export class ProductListComponent implements OnInit, OnDestroy {
       this.currentPage = page;
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+  }
+
+  navigateToCategory(category: any):void {
+    this.router.navigate(['/products'], { queryParams: { categoryId: category } });
   }
 }

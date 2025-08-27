@@ -7,7 +7,7 @@
       <ul *ngIf="isDanhMucOpen">
         <li
           *ngFor="let cat of danhMucs; trackBy: trackByCategoryId"
-          (click)="navigateToCategory(cat.id)"
+          (click)="navigateToCategory(cat.tendanhmuc)"
         >
           {{ getCategoryName(cat) }}
           <ul *ngIf="cat.children?.length">

@@ -136,11 +136,13 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
 
   // Methods that template expects
   getCurrentImage(): string {
-    if (this.selectedDetail?.hinhchinh) {
-      return this.imageService.getImageUrl(this.selectedDetail.hinhchinh);
+    const images = this.getImageList();
+    if (images.length === 0) {
+      return this.imageService.getPlaceholderImage();
     }
-    return this.imageService.getPlaceholderImage();
+    return images[this.activeImageIndex] || this.imageService.getPlaceholderImage();
   }
+  
 
   getImageList(): string[] {
     const images: string[] = [];

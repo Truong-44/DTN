@@ -133,8 +133,8 @@ export class NavbarComponent {
     this.router.navigate(['/']);
     this.closeAllDropdowns();
   }
-  navigateToCategory(id: number) {
-    this.router.navigate(['/search'], { queryParams: { category: id } });
+  navigateToCategory(category: any):void {
+    this.router.navigate(['/products'], { queryParams: { categoryName: category } });
     this.closeAllDropdowns();
   }
   navigateToCart() {

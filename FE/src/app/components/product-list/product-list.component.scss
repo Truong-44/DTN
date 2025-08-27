@@ -435,121 +435,17 @@
   }
   
   .product-image {
-    position: relative;
-    height: 280px;
+    aspect-ratio: 4 / 3; /* hoặc 1/1 nếu muốn vuông */
+    width: 100%;
     overflow: hidden;
-    background: #f8fafc;
-    
-    img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.6s ease;
-    }
-    
-    .overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.7) 100%);
-      opacity: 0;
-      transition: opacity 0.4s ease;
-    }
-    
-    .product-badge {
-      position: absolute;
-      top: 16px;
-      left: 16px;
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      color: white;
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      z-index: 3;
-    }
-    
-    .wishlist-btn {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-      width: 40px;
-      height: 40px;
-      background: rgba(255, 255, 255, 0.9);
-      border: none;
-      border-radius: 50%;
-      color: #64748b;
-      cursor: pointer;
-      transition: all 0.3s;
-      z-index: 3;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      
-      &:hover {
-        background: white;
-        color: #ef4444;
-        transform: scale(1.1);
-      }
-      
-      &.active {
-        color: #ef4444;
-        background: white;
-      }
-    }
-    
-    .action-buttons {
-      position: absolute;
-      bottom: 20px;
-      left: 20px;
-      right: 20px;
-      display: flex;
-      gap: 12px;
-      opacity: 0;
-      transform: translateY(20px);
-      transition: all 0.4s ease;
-      z-index: 3;
-      
-      .action-btn {
-        flex: 1;
-        height: 44px;
-        border: none;
-        border-radius: 12px;
-        font-weight: 600;
-        font-size: 0.9rem;
-        cursor: pointer;
-        transition: all 0.3s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        
-        &.add-to-cart-btn {
-          background: linear-gradient(135deg, #ff8c00 0%, #ff6b35 100%);
-          color: white;
-          
-          &:hover {
-            transform: scale(1.02);
-            box-shadow: 0 4px 15px rgba(255, 140, 0, 0.4);
-          }
-        }
-        
-        &.view-details-btn {
-          background: rgba(255, 255, 255, 0.95);
-          color: #374151;
-          border: 2px solid rgba(255, 255, 255, 0.8);
-          
-          &:hover {
-            background: white;
-            border-color: white;
-            transform: scale(1.02);
-          }
-        }
-      }
-    }
   }
+  
+  .product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* crop ảnh nhưng lấp đầy khung */
+  }
+  
   
   .product-info {
     padding: 24px 20px;
@@ -744,4 +640,239 @@ html {
 button:focus-visible {
   outline: 2px solid #ff8c00;
   outline-offset: 2px;
+}
+
+/* ================================
+   Discount Badge
+================================ */
+.discount-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: linear-gradient(135deg, #ff4d4f, #d9363e);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: bold;
+  padding: 6px 10px;
+  border-radius: 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  animation: badge-pop 0.3s ease-in-out;
+
+  @keyframes badge-pop {
+    from {
+      transform: scale(0.7);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+}
+
+/* ================================
+   Product Actions Buttons
+================================ */
+.product-actions {
+  margin-top: 12px;
+  display: flex;
+  gap: 10px;
+
+  button {
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    i {
+      font-size: 1rem;
+    }
+
+    &:disabled {
+      background: #ccc;
+      color: #666;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+  }
+
+  .add-to-cart-btn {
+    background: #4caf50;
+    color: #fff;
+    border: none;
+
+    &:hover:not(:disabled) {
+      background: #43a047;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(67, 160, 71, 0.3);
+    }
+  }
+
+  .view-detail-btn {
+    background: #fff;
+    color: #333;
+    border: 1px solid #ddd;
+
+    &:hover {
+      background: #f9f9f9;
+      border-color: #bbb;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+  }
+}
+
+/* ================================
+   Filters Buttons
+================================ */
+.clear-filters-btn,
+.retry-btn {
+  background: #ff9800;
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.25s ease, transform 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background: #fb8c00;
+    transform: translateY(-2px);
+  }
+
+  &:disabled {
+    background: #e0e0e0;
+    color: #9e9e9e;
+    cursor: not-allowed;
+  }
+}
+
+/* ================================
+   Pagination
+================================ */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 24px;
+  gap: 8px;
+
+  .pagination-btn,
+  .page-number {
+    background: #fff;
+    border: 1px solid #ddd;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    font-size: 0.9rem;
+
+    &:hover:not(:disabled) {
+      background: #f0f0f0;
+    }
+
+    &:disabled {
+      color: #aaa;
+      cursor: not-allowed;
+    }
+  }
+
+  .page-number.active {
+    background: #1976d2;
+    color: #fff;
+    border-color: #1976d2;
+    font-weight: bold;
+  }
+}
+
+/* ================================
+   Product Info & Stock Status
+================================ */
+.product-info {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  .product-name {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #1e293b;
+    line-height: 1.4;
+    margin: 0;
+    transition: color 0.3s ease;
+
+    &:hover {
+      color: #ff8c00;
+    }
+  }
+
+  .product-category {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #ff8c00;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0;
+  }
+
+  .product-description {
+    font-size: 0.9rem;
+    color: #64748b;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .stock-status {
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 20px;
+    display: inline-block;
+    margin-bottom: 6px;
+    border: 1px solid transparent;
+  
+    &.in-stock {
+      background: rgba(16, 185, 129, 0.1);
+      color: #059669;
+      border-color: #10b981;
+    }
+  
+    &.out-of-stock {
+      background: rgba(239, 68, 68, 0.1);
+      color: #dc2626;
+      border-color: #ef4444;
+    }
+  }
+  
+  
+
+  /* Pricing */
+  .product-pricing {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-top: 8px;
+
+    .current-price {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #ff8c00;
+    }
+
+    .original-price {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #94a3b8;
+      text-decoration: line-through;
+    }
+  }
 }
