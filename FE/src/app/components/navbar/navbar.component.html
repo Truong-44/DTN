@@ -32,7 +32,6 @@
       (blur)="onBlur()"
       placeholder="Tìm sản phẩm..."
     />
-    <!-- <fa-icon [icon]="'search'"></fa-icon> -->
     <ul *ngIf="showSuggestions && suggestions.length">
       <li
         *ngFor="let sp of suggestions; trackBy: trackByProductId"
@@ -52,7 +51,6 @@
       </span>
     </div>
     <div class="navbar-user" (click)="toggleLoginDropdown()">
-      <fa-icon *ngIf="!isAuthenticated" [icon]="'user'"></fa-icon>
       <span>{{ isAuthenticated ? userDisplayName : "Đăng nhập" }}</span>
       <ul *ngIf="isLoginOpen">
         <li *ngIf="isAuthenticated" (click)="navigateToProfile()">

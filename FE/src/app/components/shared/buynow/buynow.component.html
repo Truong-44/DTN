@@ -14,17 +14,17 @@
         />
       </div>
       <div class="product-details">
-        <h3>{{ getSanPham()?.tensanpham }}</h3>
+        <h3>{{ getSanPham()?.tensanpham || productDetail?.tensanpham || 'Tên sản phẩm không có' }}</h3>
         <div class="price-section">
-          <span class="current-price">{{
-            formatCurrency(getCurrentPrice())
-          }}</span>
-          <span *ngIf="hasDiscount()" class="old-price">{{
-            formatCurrency(getOldPrice())
-          }}</span>
-          <span *ngIf="hasDiscount()" class="discount-badge"
-            >Giảm {{ getDiscountPercentage() }}%</span
-          >
+          <span class="current-price">
+            {{ formatCurrency(getCurrentPrice()) }}
+          </span>
+          <span *ngIf="hasDiscount()" class="old-price">
+            {{ formatCurrency(getOldPrice()) }}
+          </span>
+          <span *ngIf="hasDiscount()" class="discount-badge">
+            Giảm {{ getDiscountPercentage() }}%
+          </span>
         </div>
         <div class="stock-status">
           <span>{{ getStockStatusMessage() }}</span>

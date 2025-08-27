@@ -1,0 +1,328 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AdminNotificationService } from '../shared/services/admin-notification.service';
+import { AdminLoadingService } from '../shared/services/admin-loading.service';
+import { AdminDataService, DonHang, ChiTietDonHang, KhachHang } from '../shared/services/admin-data.service';
+
+@Component({
+  selector: 'app-order-management',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+  templateUrl: './order-management-new.component.html',
+  styleUrls: ['./order-management-new.component.scss']
+})
+export class OrderManagementComponent implements OnInit {
+  orders: DonHang[] = [];
+  filteredOrders: DonHang[] = [];
+  isLoading = true;
+
+  // Filters
+  searchTerm = '';
+  statusFilter = '';
+  paymentStatusFilter = '';
+  dateFromFilter = '';
+  dateToFilter = '';
+
+  // Statistics
+  totalOrders = 0;
+  completedOrders = 0;
+  pendingOrders = 0;
+  cancelledOrders = 0;
+  totalRevenue = 0;
+  paidOrders = 0;
+
+  // Order statuses
+  orderStatuses = [
+    'Chờ xử lý',
+    'Đã xác nhận',
+    'Đang chuẩn bị',
+    'Đang giao',
+    'Hoàn thành',
+    'Đã hủy'
+  ];
+
+  // Modals
+  showViewModal = false;
+  showUpdateStatusModal = false;
+  showCancelModal = false;
+  currentOrder: DonHang | null = null;
+  newStatus = '';
+
+  constructor(
+    private router: Router,
+    private adminDataService: AdminDataService,
+    private notificationService: AdminNotificationService,
+    private loadingService: AdminLoadingService
+  ) {}
+
+  ngOnInit(): void {
+    this.loadOrders();
+  }
+
+  loadOrders(): void {
+    this.isLoading = true;
+    this.loadingService.setLoading('order-management', true);
+
+    this.adminDataService.getAllOrders()
+      .subscribe({
+        next: (orders) => {
+          this.orders = orders || [];
+          this.calculateStatistics();
+          this.applyFilters();
+          this.isLoading = false;
+          this.loadingService.setLoading('order-management', false);
+        },
+        error: (error: any) => {
+          console.error('Error loading orders:', error);
+          this.notificationService.warning('Cảnh báo', 'Sử dụng dữ liệu mẫu cho đơn hàng');
+          this.isLoading = false;
+          this.loadingService.setLoading('order-management', false);
+        }
+      });
+  }
+
+  calculateStatistics(): void {
+    this.totalOrders = this.orders.length;
+    this.completedOrders = this.orders.filter(o => o.trangthaidonhang === 'Hoàn thành').length;
+    this.pendingOrders = this.orders.filter(o => 
+      ['Chờ xử lý', 'Đã xác nhận', 'Đang chuẩn bị', 'Đang giao'].includes(o.trangthaidonhang)
+    ).length;
+    this.cancelledOrders = this.orders.filter(o => o.trangthaidonhang === 'Đã hủy').length;
+    this.paidOrders = this.orders.filter(o => o.trangthaithanhtoan).length;
+    this.totalRevenue = this.orders
+      .filter(o => o.trangthaidonhang === 'Hoàn thành')
+      .reduce((sum, order) => sum + (order.tongtien || 0), 0);
+  }
+
+  applyFilters(): void {
+    this.filteredOrders = this.orders.filter(order => {
+      const matchesSearch = !this.searchTerm || 
+        order.id.toString().includes(this.searchTerm) ||
+        order.khachhang?.hoten?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        order.diachinhan?.toLowerCase().includes(this.searchTerm.toLowerCase());
+
+      const matchesStatus = !this.statusFilter || 
+        order.trangthaidonhang === this.statusFilter;
+
+      const matchesPaymentStatus = !this.paymentStatusFilter || 
+        order.trangthaithanhtoan.toString() === this.paymentStatusFilter;
+
+      const matchesDateFrom = !this.dateFromFilter || 
+        new Date(order.ngaydat) >= new Date(this.dateFromFilter);
+
+      const matchesDateTo = !this.dateToFilter || 
+        new Date(order.ngaydat) <= new Date(this.dateToFilter);
+
+      return matchesSearch && matchesStatus && matchesPaymentStatus && 
+             matchesDateFrom && matchesDateTo;
+    });
+  }
+
+  onSearchChange(): void {
+    this.applyFilters();
+  }
+
+  onStatusFilterChange(): void {
+    this.applyFilters();
+  }
+
+  onPaymentStatusFilterChange(): void {
+    this.applyFilters();
+  }
+
+  onDateFilterChange(): void {
+    this.applyFilters();
+  }
+
+  clearFilters(): void {
+    this.searchTerm = '';
+    this.statusFilter = '';
+    this.paymentStatusFilter = '';
+    this.dateFromFilter = '';
+    this.dateToFilter = '';
+    this.applyFilters();
+  }
+
+  openViewModal(order: DonHang): void {
+    this.currentOrder = order;
+    this.showViewModal = true;
+  }
+
+  openUpdateStatusModal(order: DonHang): void {
+    this.currentOrder = order;
+    this.newStatus = order.trangthaidonhang;
+    this.showUpdateStatusModal = true;
+  }
+
+  openCancelModal(order: DonHang): void {
+    this.currentOrder = order;
+    this.showCancelModal = true;
+  }
+
+  updateOrderStatus(): void {
+    if (!this.currentOrder || !this.newStatus) return;
+
+    this.loadingService.startOperation('update-order-status');
+
+    this.adminDataService.updateOrderStatus(this.currentOrder.id, this.newStatus)
+      .subscribe({
+        next: () => {
+          this.currentOrder!.trangthaidonhang = this.newStatus;
+          this.calculateStatistics();
+          this.applyFilters();
+          this.notificationService.operationSuccess('Cập nhật', 'trạng thái đơn hàng');
+          this.closeModals();
+          this.loadingService.endOperation('update-order-status');
+        },
+        error: (error: any) => {
+          this.notificationService.operationError('cập nhật', 'trạng thái đơn hàng', error);
+          this.loadingService.endOperation('update-order-status');
+        }
+      });
+  }
+
+  cancelOrder(): void {
+    if (!this.currentOrder) return;
+
+    this.loadingService.startOperation('cancel-order');
+
+    this.adminDataService.cancelOrder(this.currentOrder.id)
+      .subscribe({
+        next: () => {
+          this.currentOrder!.trangthaidonhang = 'Đã hủy';
+          this.calculateStatistics();
+          this.applyFilters();
+          this.notificationService.operationSuccess('Hủy', 'đơn hàng');
+          this.closeModals();
+          this.loadingService.endOperation('cancel-order');
+        },
+        error: (error: any) => {
+          this.notificationService.operationError('hủy', 'đơn hàng', error);
+          this.loadingService.endOperation('cancel-order');
+        }
+      });
+  }
+
+  closeModals(): void {
+    this.showViewModal = false;
+    this.showUpdateStatusModal = false;
+    this.showCancelModal = false;
+    this.currentOrder = null;
+    this.newStatus = '';
+  }
+
+  formatCurrency(amount: number): string {
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND'
+    }).format(amount);
+  }
+
+  formatNumber(num: number): string {
+    return new Intl.NumberFormat('vi-VN').format(num);
+  }
+
+  formatDate(dateString: string): string {
+    return new Date(dateString).toLocaleDateString('vi-VN', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  getStatusClass(status: string): string {
+    switch (status) {
+      case 'Hoàn thành':
+        return 'status-completed';
+      case 'Chờ xử lý':
+        return 'status-pending';
+      case 'Đã xác nhận':
+        return 'status-confirmed';
+      case 'Đang chuẩn bị':
+        return 'status-preparing';
+      case 'Đang giao':
+        return 'status-shipping';
+      case 'Đã hủy':
+        return 'status-cancelled';
+      default:
+        return 'status-default';
+    }
+  }
+
+  getPaymentStatusClass(paid: boolean): string {
+    return paid ? 'payment-paid' : 'payment-unpaid';
+  }
+
+  getPaymentStatusLabel(paid: boolean): string {
+    return paid ? 'Đã thanh toán' : 'Chưa thanh toán';
+  }
+
+  canUpdateStatus(order: DonHang): boolean {
+    return !['Hoàn thành', 'Đã hủy'].includes(order.trangthaidonhang);
+  }
+
+  canCancelOrder(order: DonHang): boolean {
+    return !['Hoàn thành', 'Đã hủy'].includes(order.trangthaidonhang);
+  }
+
+  getCustomerName(order: DonHang): string {
+    return order.khachhang?.hoten || 'Khách vãng lai';
+  }
+
+  getOrderTotal(order: DonHang): number {
+    if (order.chitietdonhang && order.chitietdonhang.length > 0) {
+      return order.chitietdonhang.reduce((sum, item) => 
+        sum + (item.soluong * item.dongia), 0);
+    }
+    return order.tongtien || 0;
+  }
+
+  getOrderItemCount(order: DonHang): number {
+    if (order.chitietdonhang && order.chitietdonhang.length > 0) {
+      return order.chitietdonhang.reduce((sum, item) => sum + item.soluong, 0);
+    }
+    return 0;
+  }
+
+  getCompletionRate(): number {
+    if (this.totalOrders === 0) return 0;
+    return Math.round((this.completedOrders / this.totalOrders) * 100);
+  }
+
+  getPaymentRate(): number {
+    if (this.totalOrders === 0) return 0;
+    return Math.round((this.paidOrders / this.totalOrders) * 100);
+  }
+
+  refreshData(): void {
+    this.loadOrders();
+  }
+
+  exportOrders(): void {
+    this.notificationService.featureNotAvailable();
+  }
+
+  isComponentLoading(): boolean {
+    return this.loadingService.isLoading('order-management');
+  }
+
+  isOperationLoading(operation: string): boolean {
+    return this.loadingService.isLoading(operation);
+  }
+
+  trackByOrderId(index: number, order: DonHang): number {
+    return order.id;
+  }
+
+  navigateToOrderDetail(orderId: number): void {
+    this.router.navigate(['/admin/order-detail', orderId]);
+  }
+
+  navigateToCustomerDetail(customerId: number): void {
+    this.router.navigate(['/admin/customer-detail', customerId]);
+  }
+}

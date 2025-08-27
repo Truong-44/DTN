@@ -5,6 +5,8 @@ import {
   EventEmitter,
   OnInit,
   OnDestroy,
+  OnChanges,
+  SimpleChanges,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -38,7 +40,7 @@ import {
   templateUrl: './buynow.component.html',
   styleUrls: ['./buynow.component.scss'],
 })
-export class BuynowComponent implements OnInit, OnDestroy {
+export class BuynowComponent implements OnInit, OnDestroy, OnChanges {
   @Input() isVisible = true;
   @Input() productDetail: ChiTietSanPham | null = null;
   @Output() closeModal = new EventEmitter<void>();
@@ -72,8 +74,59 @@ export class BuynowComponent implements OnInit, OnDestroy {
     private router: Router
   ) {}
 
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['productDetail']) {
+      console.log('🔄 [BuyNow] ProductDetail changed:', {
+        previous: changes['productDetail'].previousValue,
+        current: changes['productDetail'].currentValue
+      });
+      
+      if (this.productDetail) {
+        console.log('📊 [BuyNow] New productDetail structure:', this.productDetail);
+        console.log('🏷️ [BuyNow] SanPham in productDetail:', (this.productDetail as any)?.sanpham);
+        
+        // Debug full structure
+        this.debugProductData();
+        
+        // Test price calculation immediately
+        const price = this.getCurrentPrice();
+        console.log('💰 [BuyNow] Calculated price:', price);
+        console.log('💲 [BuyNow] Formatted price:', this.formatCurrency(price));
+      }
+    }
+  }
+
+  debugProductData() {
+    console.group('🔍 [BuyNow] Product Data Debug');
+    console.log('ProductDetail:', this.productDetail);
+    console.log('ProductDetail keys:', this.productDetail ? Object.keys(this.productDetail) : 'null');
+    
+    const sanpham = this.getSanPham();
+    console.log('SanPham:', sanpham);
+    console.log('SanPham keys:', sanpham ? Object.keys(sanpham) : 'null');
+    
+    if (sanpham) {
+      console.log('GiaCu:', sanpham.giacu);
+      console.log('GiaMoi:', sanpham.giamoi);
+      console.log('TenSanPham:', sanpham.tensanpham);
+    }
+    
+    // Check if price data exists directly in productDetail
+    const directPrice = (this.productDetail as any);
+    console.log('Direct price fields in productDetail:', {
+      gia: directPrice?.gia,
+      giaban: directPrice?.giaban,
+      giacu: directPrice?.giacu,
+      giamoi: directPrice?.giamoi
+    });
+    
+    console.groupEnd();
+  }
+
   ngOnInit() {
     console.log('🛒 [BuyNow] Component initializing...');
+    console.log('📦 [BuyNow] Initial productDetail:', this.productDetail);
+    
     this.authService.currentUser$
       .pipe(takeUntil(this.destroy$))
       .subscribe((user) => {
@@ -99,6 +152,15 @@ export class BuynowComponent implements OnInit, OnDestroy {
           this.diachinhan = '';
         }
       });
+    
+    // Log productDetail structure
+    setTimeout(() => {
+      console.log('🔍 [BuyNow] ProductDetail after timeout:', this.productDetail);
+      if (this.productDetail) {
+        console.log('📊 [BuyNow] SanPham data:', (this.productDetail as any)?.sanpham);
+        console.log('💰 [BuyNow] Current price:', this.getCurrentPrice());
+      }
+    }, 100);
   }
 
   ngOnDestroy() {
@@ -132,17 +194,34 @@ export class BuynowComponent implements OnInit, OnDestroy {
   }
 
   getSanPham(): SanPham | undefined {
-    return (this.productDetail as any)?.sanpham;
+    console.log('🔍 [BuyNow] Getting SanPham from productDetail:', this.productDetail);
+    const sanpham = (this.productDetail as any)?.sanpham;
+    console.log('📊 [BuyNow] SanPham data:', sanpham);
+    return sanpham;
   }
 
   getCurrentPrice(): number {
     const sanpham = this.getSanPham();
-    return sanpham?.giamoi ?? sanpham?.giacu ?? 0;
+    console.log('💰 [BuyNow] SanPham for price calculation:', sanpham);
+    
+    if (!sanpham) {
+      console.warn('⚠️ [BuyNow] No SanPham data found, checking productDetail directly');
+      // Fallback: try to get price directly from productDetail
+      const fallbackPrice = (this.productDetail as any)?.gia || (this.productDetail as any)?.giaban || 0;
+      console.log('🔄 [BuyNow] Fallback price from productDetail:', fallbackPrice);
+      return fallbackPrice;
+    }
+    
+    const currentPrice = sanpham?.giamoi ?? sanpham?.giacu ?? 0;
+    console.log('💵 [BuyNow] Current price:', currentPrice, 'giamoi:', sanpham?.giamoi, 'giacu:', sanpham?.giacu);
+    return currentPrice;
   }
 
   getOldPrice(): number {
     const sanpham = this.getSanPham();
-    return sanpham?.giacu ?? 0;
+    const oldPrice = sanpham?.giacu ?? 0;
+    console.log('🏷️ [BuyNow] Old price:', oldPrice);
+    return oldPrice;
   }
 
   hasDiscount(): boolean {
@@ -168,7 +247,21 @@ export class BuynowComponent implements OnInit, OnDestroy {
   }
 
   formatCurrency(amount: number): string {
-    return new Intl.NumberFormat('vi-VN').format(amount) + 'đ';
+    console.log('💲 [BuyNow] Formatting currency for amount:', amount);
+    
+    if (amount === null || amount === undefined || isNaN(amount)) {
+      console.warn('⚠️ [BuyNow] Invalid amount for currency formatting:', amount);
+      return '0đ';
+    }
+    
+    try {
+      const formatted = new Intl.NumberFormat('vi-VN').format(amount) + 'đ';
+      console.log('✅ [BuyNow] Formatted currency:', formatted);
+      return formatted;
+    } catch (error) {
+      console.error('❌ [BuyNow] Error formatting currency:', error);
+      return amount.toLocaleString() + 'đ';
+    }
   }
 
   getStockStatusMessage(): string {
@@ -261,8 +354,21 @@ export class BuynowComponent implements OnInit, OnDestroy {
   }
 
   getTotalPrice(): number {
-    if (!this.productDetail) return 0;
-    return this.getCurrentPrice() * this.quantity;
+    if (!this.productDetail) {
+      console.warn('⚠️ [BuyNow] No productDetail for total price calculation');
+      return 0;
+    }
+    
+    const currentPrice = this.getCurrentPrice();
+    const total = currentPrice * this.quantity;
+    
+    console.log('🧮 [BuyNow] Total price calculation:', {
+      currentPrice,
+      quantity: this.quantity,
+      total
+    });
+    
+    return total;
   }
 
   resetForm() {

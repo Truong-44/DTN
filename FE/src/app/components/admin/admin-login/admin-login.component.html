@@ -9,6 +9,7 @@
         [(ngModel)]="username"
         name="username"
         required
+        placeholder="Nhập tên đăng nhập"
       />
     </div>
     <div class="form-group">
@@ -19,9 +20,19 @@
         [(ngModel)]="password"
         name="password"
         required
+        placeholder="Nhập mật khẩu"
       />
     </div>
     <div *ngIf="error" class="error">{{ error }}</div>
-    <button type="submit">Đăng nhập</button>
+    <button type="submit" [disabled]="!f.valid">Đăng nhập</button>
+    
+    <div class="login-options">
+      <button type="button" (click)="goToMainLogin()" class="btn-secondary">
+        🔙 Đăng nhập thường
+      </button>
+      <button type="button" (click)="goToDebug()" class="btn-debug">
+        🔍 Debug Admin
+      </button>
+    </div>
   </form>
 </div>

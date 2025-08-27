@@ -1,0 +1,35 @@
+<div class="order-management">
+  <h2>Quản lý đơn hàng</h2>
+  
+  <div class="order-table">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Khách hàng</th>
+          <th>Tổng tiền</th>
+          <th>Trạng thái</th>
+          <th>Ngày đặt</th>
+          <th>Thao tác</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let order of orders">
+          <td>{{ order.id }}</td>
+          <td>{{ order.customer }}</td>
+          <td>{{ formatCurrency(order.total) }}</td>
+          <td>
+            <span class="status-badge" [ngClass]="getStatusClass(order.status)">
+              {{ order.status }}
+            </span>
+          </td>
+          <td>{{ order.date }}</td>
+          <td>
+            <button class="btn-view">Xem</button>
+            <button class="btn-edit">Sửa</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

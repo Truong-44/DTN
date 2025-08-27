@@ -1,0 +1,29 @@
+<div class="customer-management">
+  <h2>Quản lý khách hàng</h2>
+  
+  <div class="customer-table">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Tên</th>
+          <th>Email</th>
+          <th>Điện thoại</th>
+          <th>Thao tác</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let customer of customers">
+          <td>{{ customer.id }}</td>
+          <td>{{ customer.name }}</td>
+          <td>{{ customer.email }}</td>
+          <td>{{ customer.phone }}</td>
+          <td>
+            <button class="btn-edit">Sửa</button>
+            <button class="btn-delete">Xóa</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

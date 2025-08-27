@@ -3,12 +3,16 @@
     <div class="auth-card">
       <div class="auth-header">
         <h2>Đăng ký tài khoản</h2>
-        <p>Tạo tài khoản mới để bắt đầu mua sắm</p>
+        <p *ngIf="registrationStep === 'form'">Tạo tài khoản mới để bắt đầu mua sắm</p>
+        <p *ngIf="registrationStep === 'otp'">Xác thực OTP để hoàn tất đăng ký</p>
+        <p *ngIf="registrationStep === 'completed'">Đăng ký thành công!</p>
       </div>
 
+      <!-- Bước 1: Form đăng ký -->
       <form
+        *ngIf="registrationStep === 'form'"
         #registerForm="ngForm"
-        (ngSubmit)="onRegister(registerForm)"
+        (ngSubmit)="onRegister()"
         class="auth-form"
         autocomplete="off"
       >
@@ -20,34 +24,18 @@
               name="hoten"
               type="text"
               [(ngModel)]="registerData.hoten"
-              required
               placeholder="Nhập họ và tên"
-              [class.error]="registerForm.submitted && !registerData.hoten"
             />
-            <div
-              *ngIf="registerForm.submitted && !registerData.hoten"
-              class="field-error"
-            >
-              Vui lòng nhập họ và tên
-            </div>
           </div>
           <div class="form-group">
-            <label for="email">Email *</label>
+            <label for="email">Email</label>
             <input
               id="email"
               name="email"
               type="email"
               [(ngModel)]="registerData.email"
-              required
-              placeholder="Nhập địa chỉ email"
-              [class.error]="registerForm.submitted && !registerData.email"
+              placeholder="Nhập địa chỉ email (để nhận OTP)"
             />
-            <div
-              *ngIf="registerForm.submitted && !registerData.email"
-              class="field-error"
-            >
-              Vui lòng nhập email
-            </div>
           </div>
         </div>
 
@@ -59,18 +47,8 @@
               name="tendangnhap"
               type="text"
               [(ngModel)]="registerData.tendangnhap"
-              required
               placeholder="Nhập tên đăng nhập"
-              [class.error]="
-                registerForm.submitted && !registerData.tendangnhap
-              "
             />
-            <div
-              *ngIf="registerForm.submitted && !registerData.tendangnhap"
-              class="field-error"
-            >
-              Vui lòng nhập tên đăng nhập
-            </div>
           </div>
           <div class="form-group">
             <label for="sodienthoai">Số điện thoại</label>
@@ -79,7 +57,7 @@
               name="sodienthoai"
               type="tel"
               [(ngModel)]="registerData.sodienthoai"
-              placeholder="Nhập số điện thoại"
+              placeholder="Nhập số điện thoại (để nhận OTP)"
             />
           </div>
         </div>
@@ -93,10 +71,7 @@
                 name="matkhau"
                 [type]="showPassword ? 'text' : 'password'"
                 [(ngModel)]="registerData.matkhau"
-                required
-                minlength="6"
                 placeholder="Nhập mật khẩu"
-                [class.error]="registerForm.submitted && !registerData.matkhau"
               />
               <button
                 type="button"
@@ -113,12 +88,6 @@
                 ></i>
               </button>
             </div>
-            <div
-              *ngIf="registerForm.submitted && !registerData.matkhau"
-              class="field-error"
-            >
-              Vui lòng nhập mật khẩu
-            </div>
           </div>
           <div class="form-group">
             <label for="xacnhanmatkhau">Xác nhận mật khẩu *</label>
@@ -128,12 +97,7 @@
                 name="xacnhanmatkhau"
                 [type]="showConfirmPassword ? 'text' : 'password'"
                 [(ngModel)]="registerData.xacnhanmatkhau"
-                required
-                minlength="6"
                 placeholder="Nhập lại mật khẩu"
-                [class.error]="
-                  registerForm.submitted && !registerData.xacnhanmatkhau
-                "
               />
               <button
                 type="button"
@@ -150,13 +114,12 @@
                 ></i>
               </button>
             </div>
-            <div
-              *ngIf="registerForm.submitted && !registerData.xacnhanmatkhau"
-              class="field-error"
-            >
-              Vui lòng xác nhận mật khẩu
-            </div>
           </div>
+        </div>
+
+        <div class="info-note">
+          <i class="fas fa-info-circle"></i>
+          <span>Vui lòng nhập ít nhất email hoặc số điện thoại để nhận mã OTP xác thực</span>
         </div>
 
         <div class="form-group checkbox-group">
@@ -179,10 +142,10 @@
           [disabled]="loading"
           [class.loading]="loading"
         >
-          <span *ngIf="!loading">Đăng ký</span>
+          <span *ngIf="!loading">Gửi mã OTP</span>
           <span *ngIf="loading" class="loading-spinner">
             <i class="fas fa-spinner fa-spin"></i>
-            Đang đăng ký...
+            Đang gửi OTP...
           </span>
         </button>
 
@@ -197,16 +160,87 @@
         </div>
       </form>
 
-      <div *ngIf="otpSent" class="otp-section">
-        <h3>Xác thực email</h3>
-        <p>
-          Mã xác thực đã được gửi tới email: <b>{{ registeredEmail }}</b>
+      <!-- Bước 2: Nhập OTP -->
+      <div *ngIf="registrationStep === 'otp'" class="otp-section">
+        <div class="otp-icon">
+          <i class="fas fa-shield-alt"></i>
+        </div>
+        <h3>Xác thực OTP</h3>
+        <p class="otp-description">
+          Mã xác thực đã được gửi đến 
+          <strong>
+            {{ otpMethod === 'email' ? 'email' : 'số điện thoại' }}: 
+            {{ otpTarget }}
+          </strong>
         </p>
-        <input type="text" [(ngModel)]="otpCode" placeholder="Nhập mã OTP" />
-        <button (click)="verifyOtp()" [disabled]="!otpCode || loading">
-          Xác nhận
-        </button>
-        <div *ngIf="otpError" class="error-message">{{ otpError }}</div>
+        
+        <div class="otp-input-group">
+          <input 
+            type="text" 
+            [(ngModel)]="otpCode" 
+            placeholder="Nhập mã OTP (6 số)"
+            maxlength="6"
+            class="otp-input"
+          />
+          <button 
+            (click)="verifyOtpAndCreateAccount()" 
+            [disabled]="!otpCode || loading"
+            class="verify-btn"
+            [class.loading]="loading"
+          >
+            <span *ngIf="!loading">Xác nhận</span>
+            <span *ngIf="loading">
+              <i class="fas fa-spinner fa-spin"></i>
+              Đang xác thực...
+            </span>
+          </button>
+        </div>
+
+        <div class="otp-actions">
+          <button 
+            type="button"
+            class="resend-btn"
+            (click)="resendOtp()"
+            [disabled]="loading"
+          >
+            <i class="fas fa-redo"></i>
+            Gửi lại mã OTP
+          </button>
+          
+          <button 
+            type="button"
+            class="back-btn"
+            (click)="backToRegistrationForm()"
+            [disabled]="loading"
+          >
+            <i class="fas fa-arrow-left"></i>
+            Quay lại
+          </button>
+        </div>
+
+        <div *ngIf="otpError" class="error-message">
+          <i class="fas fa-exclamation-circle"></i>
+          {{ otpError }}
+        </div>
+
+        <div *ngIf="successMessage" class="success-message">
+          <i class="fas fa-check-circle"></i>
+          {{ successMessage }}
+        </div>
+      </div>
+
+      <!-- Bước 3: Hoàn tất -->
+      <div *ngIf="registrationStep === 'completed'" class="completion-section">
+        <div class="success-icon">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <h3>Chúc mừng!</h3>
+        <p class="completion-message">{{ successMessage }}</p>
+        
+        <div class="loading-spinner" *ngIf="loading">
+          <i class="fas fa-spinner fa-spin"></i>
+          <span>Đang chuyển hướng...</span>
+        </div>
       </div>
 
       <div class="auth-footer">

@@ -53,6 +53,45 @@ button[type="submit"]:hover {
   background: #74b9ff;
 }
 
+button[type="submit"]:disabled {
+  background: #ddd;
+  cursor: not-allowed;
+}
+
+.login-options {
+  display: flex;
+  gap: 10px;
+  margin-top: 1rem;
+}
+
+.btn-secondary, .btn-debug {
+  flex: 1;
+  padding: 0.6rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background: #f8f9fa;
+  color: #666;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  background: #e9ecef;
+  color: #333;
+}
+
+.btn-debug {
+  background: #ffeaa7;
+  border-color: #fdcb6e;
+  color: #e17055;
+}
+
+.btn-debug:hover {
+  background: #fdcb6e;
+  color: #d63031;
+}
+
 .error {
   color: #e74c3c;
   text-align: center;

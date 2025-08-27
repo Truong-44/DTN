@@ -1,5 +1,5 @@
-import { Injectable, Injector } from '@angular/core';
-import { Observable, BehaviorSubject, of, forkJoin } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { Observable, BehaviorSubject, of, forkJoin, Subscription } from 'rxjs';
 import { tap, switchMap, catchError, map, finalize } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { StorageService } from './storage.service';
@@ -8,6 +8,7 @@ import { ChiTietGioHang } from '../models/chitietgiohang.model';
 import { _ENDPOINTS } from '../constants/api.constants';
 import { APP_CONSTANTS } from '../constants/app.constants';
 import { ImageService } from './image.service';
+import { AuthService } from './auth.service';
 
 export interface CartItem {
   chitietsanphamid: number;
@@ -28,28 +29,34 @@ export class GioHangService {
   private cartCountSubject = new BehaviorSubject<number>(0);
   public cartCount$ = this.cartCountSubject.asObservable();
 
-  private authService: any = null; // Use any to avoid circular dependency
+  private authSubscription?: Subscription;
 
   constructor(
     private apiService: ApiService,
     private storageService: StorageService,
-    private injector: Injector,
-    private imageService: ImageService
+    private imageService: ImageService,
+    private authService: AuthService
   ) {
     // Initialize cart from storage first
     this.loadCartFromStorage();
 
-    // Delay AuthService injection to prevent circular dependency
-    setTimeout(() => {
-      try {
-        const AuthServiceClass = this.injector.get('AuthService' as any);
-        this.authService = AuthServiceClass;
-        // Re-initialize after auth service is available
-        this.initializeCart();
-      } catch (error) {
-        console.warn('[CartService] Could not inject AuthService:', error);
+    // React to auth state changes
+    this.authSubscription = this.authService.isAuthenticated$.subscribe(
+      (isAuth) => {
+        if (isAuth) {
+          this.handleLogin();
+        } else {
+          this.handleLogout();
+        }
       }
-    }, 100);
+    );
+
+    // Initialize based on current state
+    this.initializeCart();
+  }
+
+  ngOnDestroy() {
+    this.authSubscription?.unsubscribe();
   }
 
   /**
@@ -61,12 +68,6 @@ export class GioHangService {
   }
 
   private initializeCart(): void {
-    if (!this.authService || !this.authService.isAuthenticated) {
-      // If authService is not ready, load from storage for now
-      this.loadCartFromStorage();
-      return;
-    }
-
     const isAuthenticated = this.authService.isAuthenticated();
     if (isAuthenticated) {
       console.log(
@@ -101,12 +102,6 @@ export class GioHangService {
   }
 
   private loadCartFromServer(): void {
-    if (!this.authService || !this.authService.getCurrentUser) {
-      console.log('[CartService] AuthService not ready, loading from storage.');
-      this.loadCartFromStorage();
-      return;
-    }
-
     const currentUser = this.authService.getCurrentUser();
     if (!currentUser || !currentUser.khachhang) {
       console.log(
@@ -167,7 +162,7 @@ export class GioHangService {
     quantity: number = 1,
     price: number = 0
   ): Observable<any> {
-    if (!this.authService || !this.authService.isAuthenticated) {
+  if (!this.authService.isAuthenticated()) {
       // If authService is not ready, add to local cart
       let cartItem: CartItem;
       if (typeof chiTietSanPhamIdOrItem === 'object') {
@@ -183,7 +178,7 @@ export class GioHangService {
       return of({ success: true });
     }
 
-    const isAuthenticated = this.authService.isAuthenticated();
+  const isAuthenticated = this.authService.isAuthenticated();
 
     let cartItem: CartItem;
     if (typeof chiTietSanPhamIdOrItem === 'object') {
@@ -204,6 +199,13 @@ export class GioHangService {
       this.addToLocalCart(cartItem);
       return of({ success: true });
     }
+  }
+
+  /**
+   * Clear local cart on logout
+   */
+  private handleLogout(): void {
+    this.clearLocalCart();
   }
 
   private addToServerCart(
@@ -316,7 +318,7 @@ export class GioHangService {
 
     this.apiService
       .delete(
-        `${_ENDPOINTS.GIOHANG}/${currentUser.khachhang.khachhangid}/chi-tiet/${chiTietSanPhamId}`
+        `${_ENDPOINTS.GIOHANG}/${currentUser.khachhang.id}/chi-tiet/${chiTietSanPhamId}`
       )
       .pipe(
         tap(() => {

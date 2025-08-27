@@ -21,7 +21,8 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         case 401:
           errorMessage = 'Phiên đăng nhập đã hết hạn';
           authService.logout();
-          router.navigate(['/auth/login']);
+          console.warn('[HTTP 401] Redirecting to /login');
+          router.navigate(['/login']);
           break;
         case 403:
           errorMessage = 'Bạn không có quyền thực hiện hành động này';

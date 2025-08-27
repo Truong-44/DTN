@@ -1,14 +1,13 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-admin-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, RouterLink, RouterLinkActive, FormsModule],
   templateUrl: './admin-sidebar.component.html',
   styleUrls: ['./admin-sidebar.component.scss'],
 })

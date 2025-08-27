@@ -1,31 +1,187 @@
+/* ========== ADMIN SIDEBAR ========== */
 .admin-sidebar {
-  width: 220px;
-  background: #222e3c;
+  width: 280px;
+  background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
   color: #fff;
   min-height: 100vh;
-  padding-top: 24px;
+  padding: 0;
   position: sticky;
   top: 0;
-  .sidebar-logo {
-    font-size: 1.25rem;
-    font-weight: bold;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  
+  .sidebar-header {
+    padding: 32px 24px;
     text-align: center;
-    margin-bottom: 32px;
-    letter-spacing: 1px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.1);
+    
+    .sidebar-logo {
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #ff8c00 0%, #ff6b35 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 1px;
+    }
+    
+    .sidebar-subtitle {
+      font-size: 0.9rem;
+      color: #bdc3c7;
+      font-weight: 400;
+    }
   }
+  
   .sidebar-menu {
     list-style: none;
-    padding: 0;
+    padding: 16px 0;
     margin: 0;
+    
     li {
-      padding: 14px 28px;
-      cursor: pointer;
-      border-left: 4px solid transparent;
-      transition: background 0.2s, border-color 0.2s;
-      &:hover,
+      margin: 4px 16px;
+      border-radius: 12px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 4px;
+        background: linear-gradient(135deg, #ff8c00 0%, #ff6b35 100%);
+        transform: scaleY(0);
+        transition: transform 0.3s ease;
+      }
+      
+      a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px 20px;
+        color: #ecf0f1;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        border-radius: 12px;
+        
+        i {
+          width: 20px;
+          font-size: 1.1rem;
+          color: #bdc3c7;
+          transition: color 0.3s ease;
+        }
+        
+        span {
+          flex: 1;
+        }
+      }
+      
+      &:hover {
+        background: rgba(255, 140, 0, 0.1);
+        transform: translateX(4px);
+        
+        &::before {
+          transform: scaleY(1);
+        }
+        
+        a {
+          color: #fff;
+          
+          i {
+            color: #ff8c00;
+            transform: scale(1.1);
+          }
+        }
+      }
+      
       &.active {
-        background: #1a2233;
-        border-left: 4px solid #ff7043;
+        background: linear-gradient(135deg, rgba(255, 140, 0, 0.2) 0%, rgba(255, 107, 53, 0.2) 100%);
+        
+        &::before {
+          transform: scaleY(1);
+        }
+        
+        a {
+          color: #fff;
+          font-weight: 600;
+          
+          i {
+            color: #ff8c00;
+            transform: scale(1.1);
+          }
+        }
+      }
+      
+      // Active state for anchor tag
+      a.active {
+        color: #fff !important;
+        font-weight: 600 !important;
+        
+        i {
+          color: #ff8c00 !important;
+          transform: scale(1.1) !important;
+        }
+      }
+      
+      // Show left border when a is active
+      &:has(a.active) {
+        background: linear-gradient(135deg, rgba(255, 140, 0, 0.2) 0%, rgba(255, 107, 53, 0.2) 100%);
+        
+        &::before {
+          transform: scaleY(1);
+        }
+      }
+    }
+  }
+
+  .sidebar-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.1);
+    
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      
+      .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #ff8c00 0%, #ff6b35 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 1.1rem;
+        color: #fff;
+      }
+      
+      .user-details {
+        flex: 1;
+        
+        .user-name {
+          font-size: 0.9rem;
+          font-weight: 600;
+          color: #fff;
+          margin: 0 0 4px 0;
+        }
+        
+        .user-role {
+          font-size: 0.8rem;
+          color: #bdc3c7;
+          margin: 0;
+        }
       }
     }
   }

@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { SearchComponent } from './components/shared/search/search.component';
 import { CartComponent } from './components/cart/cart.component';
-import { AdminGuard } from './components/shared/guards/admin.guard';
+import { adminGuard } from './core/guards/role.guard';
 import { authGuard } from './core/guards/auth.guard';
 import { LoginComponent } from './components/auth/login/login.component';
 import { RegisterComponent } from './components/auth/register/register.component';
@@ -9,6 +9,7 @@ import { OrderListComponent } from './components/shared/order-list/order-list.co
 import { OrderDetailComponent } from './components/shared/order-detail/order-detail.component';
 import { ProfileComponent } from './components/shared/profile/profile.component';
 import { DebugComponent } from './components/debug/debug.component';
+import { AuthDebugComponent } from './components/auth-debug/auth-debug.component';
 export const routes: Routes = [
   {
     path: '',
@@ -16,6 +17,18 @@ export const routes: Routes = [
       import('./components/home/home.component').then((m) => m.HomeComponent),
   },
   { path: 'debug', component: DebugComponent },
+  { path: 'auth-debug', component: AuthDebugComponent },
+  { 
+    path: 'debug-user', 
+    loadComponent: () => import('./components/debug-user/debug-user.component').then(m => m.DebugUserComponent) 
+  },
+  {
+    path: 'admin-debug',
+    loadComponent: () =>
+      import('./components/admin/admin-debug/admin-debug.component').then(
+        (m) => m.AdminDebugComponent
+      ),
+  },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'search', component: SearchComponent },
@@ -60,101 +73,43 @@ export const routes: Routes = [
   // Admin routes
   {
     path: 'admin',
+    loadComponent: () =>
+      import('./components/admin/admin.component').then((m) => m.AdminComponent),
+    canActivate: [adminGuard],
     children: [
       {
-        path: 'login',
-        loadComponent: () =>
-          import('./components/admin/admin-login/admin-login.component').then(
-            (m) => m.AdminLoginComponent
-          ),
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full'
       },
       {
-        path: '',
+        path: 'dashboard',
         loadComponent: () =>
-          import('./components/admin/admin.component').then(
-            (m) => m.AdminComponent
+          import('./components/admin/dashboard-new/dashboard-new').then(
+            (m) => m.DashboardNew
           ),
-        children: [
-          { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-          {
-            path: 'dashboard',
-            loadComponent: () =>
-              import('./components/admin/dashboard/dashboard.component').then(
-                (m) => m.DashboardComponent
-              ),
-          },
-          {
-            path: 'category-management',
-            loadComponent: () =>
-              import(
-                './components/admin/category-management/category-list/category-list.component'
-              ).then((m) => m.CategoryListComponent),
-          },
-          {
-            path: 'product-management',
-            loadComponent: () =>
-              import(
-                './components/admin/product-management/product-management.component'
-              ).then((m) => m.ProductManagementComponent),
-          },
-          {
-            path: 'customer-management',
-            loadComponent: () =>
-              import(
-                './components/admin/customer-management/customer-list/customer-list-new.component'
-              ).then((m) => m.CustomerListComponent),
-          },
-          {
-            path: 'order-management',
-            loadComponent: () =>
-              import(
-                './components/admin/order-management/order-list/order-list.component'
-              ).then((m) => m.AdminOrderListComponent),
-          },
-          {
-            path: 'order-management/detail/:id',
-            loadComponent: () =>
-              import(
-                './components/admin/order-management/order-detail/order-detail.component'
-              ).then((m) => m.AdminOrderDetailComponent),
-          },
-          {
-            path: 'employee-management',
-            loadComponent: () =>
-              import(
-                './components/admin/employee-management/employee-list/employee-list-new.component'
-              ).then((m) => m.EmployeeListComponent),
-          },
-          {
-            path: 'invoice-management',
-            loadComponent: () =>
-              import(
-                './components/admin/invoice-management/invoice-list/invoice-list-new.component'
-              ).then((m) => m.InvoiceListComponent),
-          },
-          {
-            path: 'shipping-management',
-            loadComponent: () =>
-              import(
-                './components/admin/shipping-management/shipping-list/shipping-list-new.component'
-              ).then((m) => m.ShippingListComponent),
-          },
-          {
-            path: 'stock-management',
-            loadComponent: () =>
-              import(
-                './components/admin/stock-management/stock-list/stock-list-new.component'
-              ).then((m) => m.StockListNewComponent),
-          },
-          {
-            path: 'permission-management',
-            loadComponent: () =>
-              import(
-                './components/admin/permission-management/permission-list/permission-list.component'
-              ).then((m) => m.PermissionListComponent),
-          },
-        ],
-      },
+      }
     ],
+  },
+  {
+    path: 'admin-login',
+    loadComponent: () =>
+      import('./components/admin/admin-login/admin-login.component').then(
+        (m) => m.AdminLoginComponent
+      ),
+  },
+  {
+    path: 'auth-debug',
+    loadComponent: () =>
+      import('./components/admin/auth-debug/auth-debug.component').then(
+        (m) => m.AuthDebugComponent
+      ),
+  },
+  {
+    path: 'unauthorized',
+    loadComponent: () =>
+      import('./shared/components/unauthorized/unauthorized.component').then(
+        (m) => m.UnauthorizedComponent
+      ),
   },
 ];

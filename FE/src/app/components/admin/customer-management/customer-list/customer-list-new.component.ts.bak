@@ -1,0 +1,375 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AdminNotificationService } from '../../shared/services/admin-notification.service';
+import { AdminLoadingService } from '../../shared/services/admin-loading.service';
+import { AdminDataService, KhachHang } from '../../shared/services/admin-data.service';
+
+@Component({
+  selector: 'app-customer-list',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+  templateUrl: './customer-list-new.component.html',
+  styleUrls: ['./customer-list-new.component.scss']
+})
+export class CustomerListComponent implements OnInit {
+  customers: KhachHang[] = [];
+  filteredCustomers: KhachHang[] = [];
+  isLoading = true;
+
+  // Filters
+  searchTerm = '';
+  statusFilter = 'all';
+  genderFilter = '';
+
+  // Pagination
+  currentPage = 1;
+  itemsPerPage = 10;
+  totalPages = 0;
+
+  // Statistics
+  totalCustomers = 0;
+  activeCustomers = 0;
+  inactiveCustomers = 0;
+
+  // Modals
+  showAddForm = false;
+  showEditForm = false;
+  showViewModal = false;
+  showDeleteConfirm = false;
+  currentCustomer: KhachHang | null = null;
+
+  // Form data
+  customerForm: any = {
+    hoten: '',
+    email: '',
+    sodienthoai: '',
+    diachi: '',
+    gioitinh: 'Nam',
+    ngaysinh: ''
+  };
+
+  constructor(
+    private router: Router,
+    private adminDataService: AdminDataService,
+    private notificationService: AdminNotificationService,
+    private loadingService: AdminLoadingService
+  ) {}
+
+  ngOnInit(): void {
+    this.loadCustomers();
+  }
+
+  loadCustomers(): void {
+    this.isLoading = true;
+    this.loadingService.setLoading('customer-management', true);
+    
+    this.adminDataService.getAllCustomers()
+      .subscribe({
+        next: (customers) => {
+          this.customers = customers || [];
+          this.calculateStatistics();
+          this.applyFilters();
+          this.isLoading = false;
+          this.loadingService.setLoading('customer-management', false);
+        },
+        error: (error: any) => {
+          console.error('Error loading customers:', error);
+          this.notificationService.warning('Cảnh báo', 'Không thể tải dữ liệu khách hàng từ server');
+          this.customers = this.getMockCustomers();
+          this.calculateStatistics();
+          this.applyFilters();
+          this.isLoading = false;
+          this.loadingService.setLoading('customer-management', false);
+        }
+      });
+  }
+
+  getMockCustomers(): KhachHang[] {
+    return [
+      {
+        id: 1,
+        hoten: 'Nguyễn Văn An',
+        email: 'nguyenvanan@email.com',
+        sodienthoai: '0901234567',
+        diachi: '123 Đường ABC, Quận 1, TP.HCM',
+        gioitinh: 'Nam',
+        ngaysinh: '1990-05-15'
+      },
+      {
+        id: 2,
+        hoten: 'Trần Thị Bình',
+        email: 'tranthibinh@email.com',
+        sodienthoai: '0902345678',
+        diachi: '456 Đường XYZ, Quận 2, TP.HCM',
+        gioitinh: 'Nữ',
+        ngaysinh: '1985-12-20'
+      },
+      {
+        id: 3,
+        hoten: 'Lê Văn Cường',
+        email: 'levancuong@email.com',
+        sodienthoai: '0903456789',
+        diachi: '789 Đường DEF, Quận 3, TP.HCM',
+        gioitinh: 'Nam',
+        ngaysinh: '1992-08-10'
+      }
+    ];
+  }
+
+  calculateStatistics(): void {
+    this.totalCustomers = this.customers.length;
+    this.activeCustomers = this.customers.length; // Tất cả khách hàng đều active
+    this.inactiveCustomers = 0;
+  }
+
+  applyFilters(): void {
+    this.filteredCustomers = this.customers.filter(customer => {
+      const matchesSearch = !this.searchTerm || 
+        customer.hoten.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        (customer.email && customer.email.toLowerCase().includes(this.searchTerm.toLowerCase())) ||
+        (customer.sodienthoai && customer.sodienthoai.includes(this.searchTerm));
+
+      const matchesStatus = !this.statusFilter || 
+        this.statusFilter === 'all';
+
+      const matchesGender = !this.genderFilter || 
+        customer.gioitinh === this.genderFilter;
+
+      return matchesSearch && matchesStatus && matchesGender;
+    });
+
+    this.totalPages = Math.ceil(this.filteredCustomers.length / this.itemsPerPage);
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = 1;
+    }
+  }
+
+  get paginatedCustomers(): KhachHang[] {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    return this.filteredCustomers.slice(startIndex, startIndex + this.itemsPerPage);
+  }
+
+  // Modals
+  openAddForm(): void {
+    this.showAddForm = true;
+    this.resetForm();
+  }
+
+  openEditForm(customer: KhachHang): void {
+    this.showEditForm = true;
+    this.currentCustomer = customer;
+    this.customerForm = {
+      hoten: customer.hoten,
+      email: customer.email || '',
+      sodienthoai: customer.sodienthoai || '',
+      diachi: customer.diachi || '',
+      gioitinh: customer.gioitinh || 'Nam',
+      ngaysinh: customer.ngaysinh || ''
+    };
+  }
+
+  openViewModal(customer: KhachHang): void {
+    this.showViewModal = true;
+    this.currentCustomer = customer;
+  }
+
+  openDeleteConfirm(customer: KhachHang): void {
+    this.showDeleteConfirm = true;
+    this.currentCustomer = customer;
+  }
+
+  closeModals(): void {
+    this.showAddForm = false;
+    this.showEditForm = false;
+    this.showViewModal = false;
+    this.showDeleteConfirm = false;
+    this.currentCustomer = null;
+  }
+
+  // CRUD Operations using AdminDataService
+  createCustomer(): void {
+    if (!this.validateForm()) return;
+
+    const customerData = {
+      hoten: this.customerForm.hoten,
+      email: this.customerForm.email,
+      sodienthoai: this.customerForm.sodienthoai,
+      diachi: this.customerForm.diachi,
+      gioitinh: this.customerForm.gioitinh,
+      ngaysinh: this.customerForm.ngaysinh
+    };
+
+    this.adminDataService.createCustomer(customerData)
+      .subscribe({
+        next: () => {
+          this.notificationService.success('Thành công', 'Thêm khách hàng thành công!');
+          this.loadCustomers();
+          this.closeModals();
+        },
+        error: (error: any) => {
+          console.error('Error creating customer:', error);
+          this.notificationService.error('Lỗi', 'Có lỗi xảy ra khi thêm khách hàng');
+        }
+      });
+  }
+
+  updateCustomer(): void {
+    if (!this.validateForm() || !this.currentCustomer) return;
+
+    const customerData = {
+      hoten: this.customerForm.hoten,
+      email: this.customerForm.email,
+      sodienthoai: this.customerForm.sodienthoai,
+      diachi: this.customerForm.diachi,
+      gioitinh: this.customerForm.gioitinh,
+      ngaysinh: this.customerForm.ngaysinh
+    };
+
+    this.adminDataService.updateCustomer(this.currentCustomer.id, customerData)
+      .subscribe({
+        next: () => {
+          this.notificationService.success('Thành công', 'Cập nhật thông tin khách hàng thành công!');
+          this.loadCustomers();
+          this.closeModals();
+        },
+        error: (error: any) => {
+          console.error('Error updating customer:', error);
+          this.notificationService.error('Lỗi', 'Có lỗi xảy ra khi cập nhật thông tin khách hàng');
+        }
+      });
+  }
+
+  deleteCustomer(): void {
+    if (!this.currentCustomer) return;
+
+    this.adminDataService.deleteCustomer(this.currentCustomer.id)
+      .subscribe({
+        next: () => {
+          this.notificationService.success('Thành công', 'Xóa khách hàng thành công!');
+          this.loadCustomers();
+          this.closeModals();
+        },
+        error: (error: any) => {
+          console.error('Error deleting customer:', error);
+          this.notificationService.error('Lỗi', 'Có lỗi xảy ra khi xóa khách hàng');
+        }
+      });
+  }
+
+  // Validation
+  validateForm(): boolean {
+    if (!this.customerForm.hoten.trim()) {
+      this.notificationService.warning('Cảnh báo', 'Vui lòng nhập họ tên khách hàng');
+      return false;
+    }
+
+    if (this.customerForm.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.customerForm.email)) {
+      this.notificationService.warning('Cảnh báo', 'Email không hợp lệ');
+      return false;
+    }
+
+    return true;
+  }
+
+  resetForm(): void {
+    this.customerForm = {
+      hoten: '',
+      email: '',
+      sodienthoai: '',
+      diachi: '',
+      gioitinh: 'Nam',
+      ngaysinh: ''
+    };
+  }
+
+  // Pagination
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
+  }
+
+  // Filter methods
+  onSearchChange(): void {
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+
+  onStatusFilterChange(): void {
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+
+  onGenderFilterChange(): void {
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+
+  clearFilters(): void {
+    this.searchTerm = '';
+    this.statusFilter = 'all';
+    this.genderFilter = '';
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+
+  // Utility methods
+  formatDate(dateString?: string): string {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('vi-VN');
+  }
+
+  getGenderLabel(gender?: string): string {
+    switch (gender) {
+      case 'Nam': return 'Nam';
+      case 'Nữ': return 'Nữ';
+      default: return 'Không xác định';
+    }
+  }
+
+  getStatusClass(status?: boolean): string {
+    return status ? 'text-success' : 'text-danger';
+  }
+
+  getStatusLabel(status?: boolean): string {
+    return status ? 'Hoạt động' : 'Không hoạt động';
+  }
+
+  getActivePercentage(): number {
+    if (this.totalCustomers === 0) return 0;
+    return Math.round((this.activeCustomers / this.totalCustomers) * 100);
+  }
+
+  trackByCustomerId(index: number, customer: KhachHang): number {
+    return customer.id;
+  }
+
+  refreshData(): void {
+    this.loadCustomers();
+  }
+
+  exportCustomers(): void {
+    this.exportToCSV();
+  }
+
+  saveCustomer(): void {
+    if (this.showEditForm) {
+      this.updateCustomer();
+    } else {
+      this.createCustomer();
+    }
+  }
+
+  toggleCustomerStatus(customer: KhachHang): void {
+    // Mock implementation since interface doesn't have status
+    this.notificationService.info('Thông báo', 'Tính năng thay đổi trạng thái sẽ được phát triển');
+  }
+
+  exportToCSV(): void {
+    // Export logic here
+    this.notificationService.info('Thông báo', 'Tính năng xuất CSV sẽ được phát triển');
+  }
+}

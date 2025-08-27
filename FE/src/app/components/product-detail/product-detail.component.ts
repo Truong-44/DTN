@@ -72,35 +72,66 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.error = null;
 
-    // Simple data loading with existing services
-    this.sanPhamService.getSanPhamById(id).subscribe({
+    // Load both product and details, then combine
+    const product$ = this.sanPhamService.getSanPhamById(id);
+    const details$ = this.sanPhamService.getChiTietSanPhamBySanPhamId(id);
+
+    // Wait for both to complete
+    product$.subscribe({
       next: (response: any) => {
         this.product = response?.data || response;
-        this.loading = false;
-        console.log('Product loaded:', this.product);
+        console.log('✅ Product loaded:', this.product);
+        
+        // If we already have details, populate them
+        if (this.productDetails.length > 0) {
+          this.populateProductDetails();
+        }
       },
       error: (error) => {
         this.error = 'Không thể tải thông tin sản phẩm';
         this.loading = false;
-        console.error('Error loading product:', error);
+        console.error('❌ Error loading product:', error);
       },
     });
 
-    // Load product details
-    this.sanPhamService.getChiTietSanPhamBySanPhamId(id).subscribe({
+    details$.subscribe({
       next: (response: any) => {
         this.productDetails = response?.data || response || [];
+        console.log('✅ Product details loaded:', this.productDetails);
+        
         if (this.productDetails.length > 0) {
           this.selectedColor = this.productDetails[0].tenmau || '';
           this.selectedSize = this.productDetails[0].kichthuoc || '';
           this.selectedDetail = this.productDetails[0];
+          
+          // If we already have product, populate now
+          if (this.product) {
+            this.populateProductDetails();
+          }
         }
-        console.log('Product details loaded:', this.productDetails);
+        this.loading = false;
       },
       error: (error) => {
-        console.error('Error loading product details:', error);
+        this.error = 'Không thể tải chi tiết sản phẩm';
+        this.loading = false;
+        console.error('❌ Error loading product details:', error);
       },
     });
+  }
+
+  private populateProductDetails(): void {
+    if (this.product && this.productDetails.length > 0) {
+      // Populate all product details with sanpham data
+      this.productDetails.forEach(detail => {
+        detail.sanpham = this.product;
+      });
+      
+      // Update selectedDetail
+      if (this.selectedDetail) {
+        this.selectedDetail.sanpham = this.product;
+        console.log('🔗 Populated all product details with sanpham data');
+      }
+    }
   }
 
   // Methods that template expects
@@ -187,6 +218,25 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
         (d) =>
           d.tenmau === this.selectedColor && d.kichthuoc === this.selectedSize
       ) || null;
+    
+    // The sanpham should already be populated, but ensure it's there
+    if (this.selectedDetail && this.product && !this.selectedDetail.sanpham) {
+      this.selectedDetail.sanpham = this.product;
+      console.log('🔄 Re-populated sanpham in updateSelectedDetail');
+    }
+    
+    if (this.selectedDetail) {
+      console.log('📋 Selected detail updated:', {
+        id: this.selectedDetail.id,
+        color: this.selectedDetail.tenmau,
+        size: this.selectedDetail.kichthuoc,
+        hasSanPham: !!this.selectedDetail.sanpham,
+        sanPhamPrice: {
+          giacu: this.selectedDetail.sanpham?.giacu,
+          giamoi: this.selectedDetail.sanpham?.giamoi
+        }
+      });
+    }
   }
 
   onImageError(event: any): void {

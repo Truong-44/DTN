@@ -9,6 +9,8 @@ import { takeUntil } from 'rxjs/operators';
 import { SanPhamService } from '../../core/services/sanpham.service';
 import { LoadingService } from '../../core/services/loading.service';
 import { ImageService } from '../../core/services/image.service';
+import { GioHangService } from '../../core/services/giohang.service';
+import { NotificationService } from '../../core/services/notification.service';
 
 // Models
 import { SanPham } from '../../core/models/sanpham.model';
@@ -50,6 +52,8 @@ export class ProductListComponent implements OnInit, OnDestroy {
     private sanPhamService: SanPhamService,
     private loadingService: LoadingService,
     private imageService: ImageService,
+    private gioHangService: GioHangService,
+    private notificationService: NotificationService,
     private router: Router,
     private route: ActivatedRoute
   ) {}
@@ -412,9 +416,52 @@ export class ProductListComponent implements OnInit, OnDestroy {
   addToCart(product: SanPham, event: Event): void {
     event.stopPropagation(); // Prevent navigation to product detail
 
-    // TODO: Implement add to cart functionality
-    console.log('Adding to cart:', product.tensanpham);
-    // this.cartService.addToCart(product);
+    if (!product.trangthai) {
+      this.notificationService.warning('Sản phẩm hết hàng', 'Sản phẩm này hiện tại không có sẵn');
+      return;
+    }
+
+    // Get the first available product detail (chi tiết sản phẩm)
+    const firstDetail = product.chitietsanpham?.[0];
+    
+    if (!firstDetail) {
+      this.notificationService.error('Lỗi', 'Không tìm thấy thông tin chi tiết sản phẩm');
+      return;
+    }
+
+    const price = product.giamoi || product.giacu || 0;
+    
+    if (price <= 0) {
+      this.notificationService.error('Lỗi', 'Giá sản phẩm không hợp lệ');
+      return;
+    }
+
+    const cartItem = {
+      chitietsanphamid: firstDetail.id,
+      soluong: 1,
+      dongia: price,
+      tensanpham: product.tensanpham,
+      tenmau: firstDetail.tenmau || 'Mặc định',
+      hinhchinh: firstDetail.hinhchinh || ''
+    };
+
+    console.log('🛒 Adding to cart:', cartItem);
+
+    this.gioHangService.addToCart(cartItem).subscribe({
+      next: () => {
+        this.notificationService.success(
+          'Thêm vào giỏ hàng thành công!',
+          `${product.tensanpham} đã được thêm vào giỏ hàng`
+        );
+      },
+      error: (error) => {
+        console.error('❌ Error adding to cart:', error);
+        this.notificationService.error(
+          'Lỗi',
+          'Không thể thêm sản phẩm vào giỏ hàng. Vui lòng thử lại.'
+        );
+      }
+    });
   }
 
   // ==================== UTILITY METHODS ====================
@@ -427,6 +474,18 @@ export class ProductListComponent implements OnInit, OnDestroy {
     if (!categoryId) return 'Chưa phân loại';
     const category = this.categories.find((c) => c.id === categoryId);
     return category?.tendanhmuc || 'Chưa phân loại';
+  }
+
+  getSortLabel(sortValue: string): string {
+    const sortLabels: { [key: string]: string } = {
+      'default': 'Mặc định',
+      'newest': 'Mới nhất',
+      'price-asc': 'Giá: Thấp → Cao',
+      'price-desc': 'Giá: Cao → Thấp',
+      'name-asc': 'Tên: A → Z',
+      'name-desc': 'Tên: Z → A'
+    };
+    return sortLabels[sortValue] || 'Mặc định';
   }
 
   // ==================== PAGINATION METHODS ====================

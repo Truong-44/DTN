@@ -262,7 +262,7 @@ $border-light: #ecf0f1;
         }
 
         &.DA_GIAO {
-          background: linear-gradient(135deg, $success 0%, lighten($success, 10%) 100%);
+          background: linear-gradient(135deg, $success 0%, #32c974 100%);
           color: $white;
         }
 
@@ -385,7 +385,7 @@ $border-light: #ecf0f1;
   }
 
   &.btn-danger {
-    background: linear-gradient(135deg, $danger 0%, lighten($danger, 10%) 100%);
+    background: linear-gradient(135deg, $danger 0%, #f16b6b 100%);
     color: $white;
 
     &:hover {
@@ -395,7 +395,7 @@ $border-light: #ecf0f1;
   }
 
   &.btn-success {
-    background: linear-gradient(135deg, $success 0%, lighten($success, 10%) 100%);
+    background: linear-gradient(135deg, $success 0%, #32c974 100%);
     color: $white;
 
     &:hover {

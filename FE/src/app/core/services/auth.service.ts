@@ -23,26 +23,28 @@ export class AuthService {
 
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
   public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
-
-  private gioHangService: any = null; // Use any to avoid circular dependency
+  private normalizeUser(u: any): TaiKhoan {
+    if (!u || typeof u !== 'object') return u as TaiKhoan;
+    const user: any = { ...u };
+    if (user.quyenId != null && user.quyenid == null) {
+      user.quyenid = user.quyenId;
+    }
+    // Optional: normalize nested ids if backend uses different casing
+    if (user.khachhang && user.khachhang.khachHangId && !user.khachhang.id) {
+      user.khachhang.id = user.khachhang.khachHangId;
+    }
+    if (user.nhanvien && user.nhanvien.nhanVienId && !user.nhanvien.id) {
+      user.nhanvien.id = user.nhanvien.nhanVienId;
+    }
+    return user as TaiKhoan;
+  }
 
   constructor(
     private apiService: ApiService,
     private storageService: StorageService,
-    private injector: Injector, // Sử dụng Injector để tránh circular dependency
     private taiKhoanService: TaiKhoanService
   ) {
     this.initializeAuth();
-
-    // Delay GioHangService injection to prevent circular dependency
-    setTimeout(() => {
-      try {
-        const GioHangServiceClass = this.injector.get('GioHangService' as any);
-        this.gioHangService = GioHangServiceClass;
-      } catch (error) {
-        console.warn('[AuthService] Could not inject GioHangService:', error);
-      }
-    }, 50);
   }
 
   public forceInitializeAuth(): void {
@@ -55,9 +57,9 @@ export class AuthService {
     const token = this.storageService.getItem(APP_CONSTANTS.TOKEN_KEY);
     const userJson = this.storageService.getItem(APP_CONSTANTS.USER_KEY);
 
-    if (token && userJson) {
+  if (token && userJson) {
       try {
-        const user = JSON.parse(userJson);
+    const user = this.normalizeUser(JSON.parse(userJson));
         console.log('📖 Restored user from storage:', user);
         this.currentUserSubject.next(user);
         this.isAuthenticatedSubject.next(true);
@@ -126,9 +128,6 @@ export class AuthService {
       tap((response) => {
         console.log('✅ Login successful, response user:', response.user);
         this.setAuthData(response);
-        if (this.gioHangService && this.gioHangService.handleLogin) {
-          this.gioHangService.handleLogin();
-        }
       })
     );
   }
@@ -169,20 +168,17 @@ export class AuthService {
       '💾 [AuthService] Saving auth data. User object received:',
       response.user
     );
-    console.log(
-      '👤 [AuthService] KhachHang data in response:',
-      response.user.khachhang
-    );
-    console.log(
-      '👔 [AuthService] NhanVien data in response:',
-      response.user.nhanvien
-    );
+    
+    // Sửa lỗi: Sử dụng đúng key trong APP_CONSTANTS
+  const normalizedUser = this.normalizeUser(response.user);
+  this.storageService.setItem(APP_CONSTANTS.TOKEN_KEY, response.token);
+  this.storageService.setObject(APP_CONSTANTS.USER_KEY, normalizedUser);
 
-    this.storageService.setItem(APP_CONSTANTS.TOKEN_KEY, response.token);
-    this.storageService.setObject(APP_CONSTANTS.USER_KEY, response.user);
-
-    this.currentUserSubject.next(response.user);
+  this.currentUserSubject.next(normalizedUser);
     this.isAuthenticatedSubject.next(true);
+
+    console.log('✅ [AuthService] Data saved to Storage. Token:', this.storageService.getItem(APP_CONSTANTS.TOKEN_KEY));
+    console.log('✅ [AuthService] User Data:', this.storageService.getItem(APP_CONSTANTS.USER_KEY));
   }
   private clearAuthData(): void {
     console.log('🗑️ Clearing all authentication data.');
@@ -203,22 +199,7 @@ export class AuthService {
           if (response.token && response.user) {
             this.setAuthData(response);
             if (response.user?.id) {
-              this.fetchAndSetFullUser(response.user.id).subscribe({
-                next: () => {
-                  if (this.gioHangService && this.gioHangService.handleLogin) {
-                    this.gioHangService.handleLogin();
-                  }
-                },
-                error: () => {
-                  if (this.gioHangService && this.gioHangService.handleLogin) {
-                    this.gioHangService.handleLogin();
-                  }
-                },
-              });
-            } else {
-              if (this.gioHangService && this.gioHangService.handleLogin) {
-                this.gioHangService.handleLogin();
-              }
+              this.fetchAndSetFullUser(response.user.id).subscribe();
             }
           }
         })
@@ -243,8 +224,10 @@ export class AuthService {
   }
 
   hasRole(roleId: number): boolean {
-    const user = this.getCurrentUser();
-    return user ? user.quyenid === roleId : false;
+    const user: any = this.getCurrentUser();
+    if (!user) return false;
+    const qid = user.quyenid ?? user.quyenId;
+    return qid === roleId;
   }
 
   isAdmin(): boolean {

@@ -40,8 +40,8 @@ export const roleGuard = (allowedRoles: UserRoles[]): CanActivateFn => {
   };
 };
 
-// Guard đặc biệt cho Admin
-export const adminGuard: CanActivateFn = roleGuard([UserRoles.ADMIN]);
+// Guard đặc biệt cho Admin - cho phép quyền 1 và 2
+export const adminGuard: CanActivateFn = roleGuard([UserRoles.ADMIN, UserRoles.EMPLOYEE]);
 
 // Guard đặc biệt cho Employee và Admin
 export const employeeGuard: CanActivateFn = roleGuard([

@@ -11,21 +11,34 @@
   <div class="filters-section">
     <div class="filters-wrapper">
       <!-- Search Filter -->
-      <div class="filter-group">
-        <label for="search">Tìm kiếm:</label>
-        <input
-          id="search"
-          type="text"
-          [(ngModel)]="searchKeyword"
-          (input)="onSearchChange()"
-          placeholder="Nhập tên sản phẩm..."
-          class="search-input"
-        />
+      <div class="filter-group search-group">
+        <div class="search-wrapper">
+          <i class="fas fa-search search-icon"></i>
+          <input
+            id="search"
+            type="text"
+            [(ngModel)]="searchKeyword"
+            (input)="onSearchChange()"
+            placeholder="Tìm kiếm sản phẩm..."
+            class="search-input"
+          />
+          <button 
+            *ngIf="searchKeyword" 
+            type="button" 
+            class="clear-search"
+            (click)="searchKeyword = ''; onSearchChange()"
+          >
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
       </div>
 
       <!-- Category Filter -->
       <div class="filter-group">
-        <label for="category">Danh mục:</label>
+        <label for="category">
+          <i class="fas fa-layer-group"></i>
+          Danh mục
+        </label>
         <select
           id="category"
           [(ngModel)]="selectedCategoryId"
@@ -43,30 +56,44 @@
       </div>
 
       <!-- Price Range Filter -->
-      <div class="filter-group">
-        <label>Khoảng giá:</label>
+      <div class="filter-group price-group">
+        <label>
+          <i class="fas fa-money-bill-wave"></i>
+          Khoảng giá
+        </label>
         <div class="price-range">
-          <input
-            type="number"
-            [(ngModel)]="priceRange.min"
-            (input)="onPriceRangeChange()"
-            placeholder="Từ"
-            class="price-input"
-          />
-          <span>-</span>
-          <input
-            type="number"
-            [(ngModel)]="priceRange.max"
-            (input)="onPriceRangeChange()"
-            placeholder="Đến"
-            class="price-input"
-          />
+          <div class="price-input-wrapper">
+            <input
+              type="number"
+              [(ngModel)]="priceRange.min"
+              (input)="onPriceRangeChange()"
+              placeholder="0"
+              class="price-input"
+              min="0"
+            />
+            <span class="currency">₫</span>
+          </div>
+          <span class="range-separator">-</span>
+          <div class="price-input-wrapper">
+            <input
+              type="number"
+              [(ngModel)]="priceRange.max"
+              (input)="onPriceRangeChange()"
+              placeholder="50,000,000"
+              class="price-input"
+              min="0"
+            />
+            <span class="currency">₫</span>
+          </div>
         </div>
       </div>
 
       <!-- Sort Filter -->
       <div class="filter-group">
-        <label for="sort">Sắp xếp:</label>
+        <label for="sort">
+          <i class="fas fa-sort"></i>
+          Sắp xếp
+        </label>
         <select
           id="sort"
           [(ngModel)]="sortBy"
@@ -75,23 +102,62 @@
         >
           <option value="default">Mặc định</option>
           <option value="newest">Mới nhất</option>
-          <option value="price-asc">Giá thấp đến cao</option>
-          <option value="price-desc">Giá cao đến thấp</option>
-          <option value="name-asc">Tên A-Z</option>
-          <option value="name-desc">Tên Z-A</option>
+          <option value="price-asc">Giá: Thấp → Cao</option>
+          <option value="price-desc">Giá: Cao → Thấp</option>
+          <option value="name-asc">Tên: A → Z</option>
+          <option value="name-desc">Tên: Z → A</option>
         </select>
       </div>
 
       <!-- Clear Filters Button -->
-      <div class="filter-group">
+      <div class="filter-group clear-group">
         <button
           type="button"
           (click)="clearFilters()"
           class="clear-filters-btn"
+          [disabled]="!selectedCategoryId && !searchKeyword && priceRange.min === 0 && priceRange.max === 50000000 && sortBy === 'default'"
         >
-          Xóa
+          <i class="fas fa-eraser"></i>
+          Xóa lọc
         </button>
       </div>
+    </div>
+
+    <!-- Active Filters Display -->
+    <div class="active-filters" *ngIf="selectedCategoryId || searchKeyword || priceRange.min > 0 || priceRange.max < 50000000 || sortBy !== 'default'">
+      <span class="filters-label">Bộ lọc đang áp dụng:</span>
+      
+      <span class="filter-tag" *ngIf="selectedCategoryId">
+        <i class="fas fa-layer-group"></i>
+        {{ getCategoryName(selectedCategoryId) }}
+        <button (click)="selectedCategoryId = null; onCategoryChange(null)">
+          <i class="fas fa-times"></i>
+        </button>
+      </span>
+      
+      <span class="filter-tag" *ngIf="searchKeyword">
+        <i class="fas fa-search"></i>
+        "{{ searchKeyword }}"
+        <button (click)="searchKeyword = ''; onSearchChange()">
+          <i class="fas fa-times"></i>
+        </button>
+      </span>
+      
+      <span class="filter-tag" *ngIf="priceRange.min > 0 || priceRange.max < 50000000">
+        <i class="fas fa-money-bill-wave"></i>
+        {{ formatPrice(priceRange.min) }}₫ - {{ formatPrice(priceRange.max) }}₫
+        <button (click)="priceRange = {min: 0, max: 50000000}; onPriceRangeChange()">
+          <i class="fas fa-times"></i>
+        </button>
+      </span>
+      
+      <span class="filter-tag" *ngIf="sortBy !== 'default'">
+        <i class="fas fa-sort"></i>
+        {{ getSortLabel(sortBy) }}
+        <button (click)="sortBy = 'default'; onSortChange()">
+          <i class="fas fa-times"></i>
+        </button>
+      </span>
     </div>
   </div>
 
@@ -187,15 +253,27 @@
         </div>
       </div>
 
-      <!-- Action Button -->
-      <button
-        type="button"
-        class="add-to-cart-btn"
-        [disabled]="!product.trangthai"
-        (click)="addToCart(product, $event)"
-      >
-        {{ product.trangthai ? "Thêm vào giỏ" : "Hết hàng" }}
-      </button>
+      <!-- Action Buttons -->
+      <div class="product-actions">
+        <button
+          type="button"
+          class="add-to-cart-btn"
+          [disabled]="!product.trangthai"
+          (click)="addToCart(product, $event)"
+        >
+          <i class="fas fa-shopping-cart"></i>
+          {{ product.trangthai ? "Thêm vào giỏ" : "Hết hàng" }}
+        </button>
+        
+        <button
+          type="button"
+          class="view-detail-btn"
+          (click)="goToProductDetail(product)"
+        >
+          <i class="fas fa-eye"></i>
+          Xem chi tiết
+        </button>
+      </div>
     </div>
   </div>
 

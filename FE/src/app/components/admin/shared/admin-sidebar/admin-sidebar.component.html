@@ -1,35 +1,90 @@
 <nav class="admin-sidebar">
-  <div class="sidebar-logo">
-    <span>Quản trị hệ thống</span>
+  <div class="sidebar-header">
+    <div class="sidebar-logo">DTN ADMIN</div>
+    <div class="sidebar-subtitle">Hệ thống quản trị</div>
   </div>
+  
   <ul class="sidebar-menu">
-    <li routerLink="/admin/dashboard" routerLinkActive="active">Tổng quan</li>
-    <li routerLink="/admin/product-management" routerLinkActive="active">
-      Sản phẩm
+    <li>
+      <a routerLink="/admin/dashboard" routerLinkActive="active">
+        <i class="fas fa-tachometer-alt"></i>
+        <span>Tổng quan</span>
+      </a>
     </li>
-    <li routerLink="/admin/category-management" routerLinkActive="active">
-      Danh mục
+    
+    <li *ngIf="canShow({roles: [1, 2]})">
+      <a routerLink="/admin/product-management" routerLinkActive="active">
+        <i class="fas fa-box"></i>
+        <span>Sản phẩm</span>
+      </a>
     </li>
-    <li routerLink="/admin/order-management" routerLinkActive="active">
-      Đơn hàng
+    
+    <li *ngIf="canShow({roles: [1, 2]})">
+      <a routerLink="/admin/category-management" routerLinkActive="active">
+        <i class="fas fa-tags"></i>
+        <span>Danh mục</span>
+      </a>
     </li>
-    <li routerLink="/admin/customer-management" routerLinkActive="active">
-      Khách hàng
+    
+    <li *ngIf="canShow({roles: [1, 2]})">
+      <a routerLink="/admin/order-management" routerLinkActive="active">
+        <i class="fas fa-shopping-cart"></i>
+        <span>Đơn hàng</span>
+      </a>
     </li>
-    <li routerLink="/admin/employee-management" routerLinkActive="active">
-      Nhân viên
+    
+    <li *ngIf="canShow({roles: [1, 2]})">
+      <a routerLink="/admin/customer-management" routerLinkActive="active">
+        <i class="fas fa-users"></i>
+        <span>Khách hàng</span>
+      </a>
     </li>
-    <li routerLink="/admin/invoice-management" routerLinkActive="active">
-      Hóa đơn
+    
+    <li *ngIf="canShow({roles: [1]})">
+      <a routerLink="/admin/employee-management" routerLinkActive="active">
+        <i class="fas fa-user-tie"></i>
+        <span>Nhân viên</span>
+      </a>
     </li>
-    <li routerLink="/admin/shipping-management" routerLinkActive="active">
-      Vận chuyển
+    
+    <li *ngIf="canShow({roles: [1, 2]})">
+      <a routerLink="/admin/invoice-management" routerLinkActive="active">
+        <i class="fas fa-file-invoice"></i>
+        <span>Hóa đơn</span>
+      </a>
     </li>
-    <li routerLink="/admin/stock-management" routerLinkActive="active">
-      Kho hàng
+    
+    <li *ngIf="canShow({roles: [1, 2]})">
+      <a routerLink="/admin/shipping-management" routerLinkActive="active">
+        <i class="fas fa-truck"></i>
+        <span>Vận chuyển</span>
+      </a>
     </li>
-    <li routerLink="/admin/permission-management" routerLinkActive="active">
-      Phân quyền
+    
+    <li *ngIf="canShow({roles: [1, 2]})">
+      <a routerLink="/admin/stock-management" routerLinkActive="active">
+        <i class="fas fa-warehouse"></i>
+        <span>Kho hàng</span>
+      </a>
+    </li>
+    
+    <li *ngIf="canShow({roles: [1]})">
+      <a routerLink="/admin/permission-management" routerLinkActive="active">
+        <i class="fas fa-shield-alt"></i>
+        <span>Phân quyền</span>
+      </a>
     </li>
   </ul>
+  
+  <div class="sidebar-footer">
+    <div class="user-info">
+      <div class="user-avatar">
+        {{ (user?.tendangnhap || 'A')[0].toUpperCase() }}
+      </div>
+      <div class="user-details">
+        <p class="user-name">{{ user?.tendangnhap || 'Admin' }}</p>
+        <p class="user-role">{{ user?.quyenid === 1 ? 'Quản trị viên' : 'Nhân viên' }}</p>
+      </div>
+    </div>
+  </div>
 </nav>
